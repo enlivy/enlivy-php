@@ -25,6 +25,7 @@ class GuidelineService extends AbstractService
     use HasDownload;
 
     protected const string RESOURCE = 'guidelines';
+    protected const ?string RESOURCE_CLASS = Guideline::class;
 
     /**
      * @return Collection<Guideline>
@@ -39,32 +40,24 @@ class GuidelineService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Guideline
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Guideline */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Guideline
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Guideline */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Guideline
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Guideline */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Guideline
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Guideline */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 

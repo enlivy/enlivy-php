@@ -54,17 +54,27 @@ final class ApiRequestor
 
     /**
      * Make an API request and return a Collection (paginated list).
+     *
+     * @template T of EnlivyObject
+     * @param class-string<T>|null $resourceClass The class for items in the collection
+     * @return Collection<T>
      */
     public function requestCollection(
         string $method,
         string $path,
         ?array $params = null,
         ?RequestOptions $opts = null,
+        ?string $resourceClass = null,
     ): Collection {
         $response = $this->request($method, $path, $params, $opts);
 
-        /** @var Collection */
-        return Collection::constructFrom($response->json ?? []);
+        $data = $response->json ?? [];
+
+        // Create collection and hydrate items with the specified class
+        $collection = new Collection();
+        $collection->refreshFromWithClass($data, $resourceClass);
+
+        return $collection;
     }
 
     /**

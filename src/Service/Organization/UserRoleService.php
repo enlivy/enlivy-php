@@ -22,6 +22,7 @@ class UserRoleService extends AbstractService
     use HasTagging;
 
     protected const string RESOURCE = 'user-roles';
+    protected const ?string RESOURCE_CLASS = UserRole::class;
 
     /**
      * @return Collection<UserRole>
@@ -36,32 +37,24 @@ class UserRoleService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): UserRole
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var UserRole */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): UserRole
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var UserRole */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): UserRole
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var UserRole */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): UserRole
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var UserRole */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

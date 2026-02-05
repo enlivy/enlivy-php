@@ -22,6 +22,7 @@ class FileService extends AbstractService
     use HasTagging;
 
     protected const string RESOURCE = 'files';
+    protected const ?string RESOURCE_CLASS = File::class;
 
     /**
      * @return Collection<File>
@@ -36,32 +37,24 @@ class FileService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): File
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var File */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): File
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var File */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): File
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var File */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): File
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var File */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

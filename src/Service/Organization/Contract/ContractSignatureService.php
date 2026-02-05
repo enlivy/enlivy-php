@@ -20,6 +20,7 @@ class ContractSignatureService extends AbstractService
     use HasRestore;
 
     protected const string RESOURCE = 'contract-signatures';
+    protected const ?string RESOURCE_CLASS = ContractSignature::class;
 
     /**
      * @return Collection<ContractSignature>
@@ -34,32 +35,24 @@ class ContractSignatureService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ContractSignature
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractSignature */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ContractSignature
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractSignature */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): ContractSignature
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractSignature */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ContractSignature
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractSignature */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 

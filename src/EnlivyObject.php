@@ -35,9 +35,7 @@ class EnlivyObject implements \ArrayAccess, \JsonSerializable
         // Check if we should use a typed resource class
         $objectType = $data['object'] ?? null;
 
-        // Only do type mapping when called on base EnlivyObject class
-        // (not when called on Collection or other subclasses)
-        if ($objectType !== null && self::class === EnlivyObject::class) {
+        if ($objectType !== null) {
             $class = ObjectTypes::getClass($objectType);
 
             if ($class !== null) {
@@ -69,11 +67,13 @@ class EnlivyObject implements \ArrayAccess, \JsonSerializable
     {
         if (is_array($value)) {
             if (Util::isAssociativeArray($value)) {
-                return self::constructFrom($value);
+                // Always use EnlivyObject::constructFrom for nested values
+                // to enable proper type mapping based on 'object' field
+                return EnlivyObject::constructFrom($value);
             }
 
             return array_map(
-                static fn(mixed $item): mixed => is_array($item) ? self::constructFrom($item) : $item,
+                static fn(mixed $item): mixed => is_array($item) ? EnlivyObject::constructFrom($item) : $item,
                 $value,
             );
         }

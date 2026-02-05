@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Enlivy\Service;
 
+use Enlivy\ApiResource;
 use Enlivy\Collection;
 use Enlivy\EnlivyClientInterface;
 use Enlivy\EnlivyObject;
@@ -12,6 +13,14 @@ use Enlivy\Util\RequestOptions;
 
 abstract class AbstractService
 {
+    /**
+     * The resource class this service works with.
+     * Override in subclasses to enable automatic type casting.
+     *
+     * @var class-string<ApiResource>|null
+     */
+    protected const ?string RESOURCE_CLASS = null;
+
     public function __construct(
         protected readonly EnlivyClientInterface $client,
     ) {}
@@ -50,31 +59,51 @@ abstract class AbstractService
     }
 
     /**
-     * Make a request and return an EnlivyObject.
+     * Make a request and return an EnlivyObject (or typed resource).
+     *
+     * @template T of EnlivyObject
+     * @param class-string<T>|null $resourceClass Override the default resource class
+     * @return T|EnlivyObject
      */
     protected function request(
         string $method,
         string $path,
         ?array $params = null,
         ?RequestOptions $opts = null,
+        ?string $resourceClass = null,
     ): EnlivyObject {
         $response = $this->client->getRequestor()->request($method, $path, $params, $opts);
 
         $data = $response->json['data'] ?? $response->json ?? [];
+
+        $class = $resourceClass ?? static::RESOURCE_CLASS;
+
+        if ($class !== null && is_subclass_of($class, ApiResource::class)) {
+            $obj = new $class($data['id'] ?? null);
+            $obj->refreshFrom($data);
+            return $obj;
+        }
 
         return EnlivyObject::constructFrom($data);
     }
 
     /**
      * Make a request and return a Collection (paginated list).
+     *
+     * @template T of EnlivyObject
+     * @param class-string<T>|null $resourceClass The class for items in the collection
+     * @return Collection<T>
      */
     protected function requestCollection(
         string $method,
         string $path,
         ?array $params = null,
         ?RequestOptions $opts = null,
+        ?string $resourceClass = null,
     ): Collection {
-        return $this->client->getRequestor()->requestCollection($method, $path, $params, $opts);
+        $class = $resourceClass ?? static::RESOURCE_CLASS;
+
+        return $this->client->getRequestor()->requestCollection($method, $path, $params, $opts, $class);
     }
 
     /**

@@ -22,6 +22,7 @@ class TaskService extends AbstractService
     use HasReorder;
 
     protected const string RESOURCE = 'tasks';
+    protected const ?string RESOURCE_CLASS = Task::class;
 
     /**
      * @return Collection<Task>
@@ -36,32 +37,24 @@ class TaskService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Task
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Task */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Task
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Task */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Task
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Task */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Task
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Task */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

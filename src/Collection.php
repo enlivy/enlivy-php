@@ -27,6 +27,57 @@ namespace Enlivy;
 class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
 {
     /**
+     * Refresh collection from API data with typed items.
+     *
+     * @template TItem of EnlivyObject
+     * @param array<string, mixed> $data The raw API response
+     * @param class-string<TItem>|null $itemClass The class to use for items in the data array
+     */
+    public function refreshFromWithClass(array $data, ?string $itemClass = null): void
+    {
+        $this->values = [];
+        $this->unsavedValues = new \Enlivy\Util\Set();
+
+        foreach ($data as $key => $value) {
+            if ($key === 'data' && is_array($value) && $itemClass !== null) {
+                // Hydrate each item in data array with the specified class
+                $this->values[$key] = array_map(
+                    static function (mixed $item) use ($itemClass): EnlivyObject {
+                        if (is_array($item)) {
+                            $obj = new $itemClass($item['id'] ?? null);
+                            $obj->refreshFrom($item);
+                            return $obj;
+                        }
+                        return $item instanceof EnlivyObject ? $item : EnlivyObject::constructFrom((array) $item);
+                    },
+                    $value,
+                );
+            } else {
+                $this->values[$key] = self::convertValueStatic($value);
+            }
+        }
+    }
+
+    /**
+     * Convert a value for storage, using EnlivyObject for nested objects.
+     */
+    private static function convertValueStatic(mixed $value): mixed
+    {
+        if (is_array($value)) {
+            if (\Enlivy\Util\Util::isAssociativeArray($value)) {
+                return EnlivyObject::constructFrom($value);
+            }
+
+            return array_map(
+                static fn(mixed $item): mixed => is_array($item) ? EnlivyObject::constructFrom($item) : $item,
+                $value,
+            );
+        }
+
+        return $value;
+    }
+
+    /**
      * Get the data items in this collection.
      *
      * @return list<T>

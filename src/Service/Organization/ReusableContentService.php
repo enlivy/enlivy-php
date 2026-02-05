@@ -15,6 +15,7 @@ use Enlivy\Util\RequestOptions;
 class ReusableContentService extends AbstractService
 {
     protected const string RESOURCE = 'reusable-content';
+    protected const ?string RESOURCE_CLASS = ReusableContent::class;
 
     /**
      * @return Collection<ReusableContent>
@@ -29,32 +30,24 @@ class ReusableContentService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ReusableContent
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReusableContent */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ReusableContent
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReusableContent */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): ReusableContent
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReusableContent */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ReusableContent
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReusableContent */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

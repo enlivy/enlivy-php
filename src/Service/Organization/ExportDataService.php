@@ -18,6 +18,7 @@ class ExportDataService extends AbstractService
     use HasDownload;
 
     protected const string RESOURCE = 'export-data';
+    protected const ?string RESOURCE_CLASS = ExportData::class;
 
     /**
      * @return Collection<ExportData>
@@ -32,32 +33,24 @@ class ExportDataService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ExportData
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ExportData */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ExportData
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ExportData */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ExportData
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ExportData */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function retry(string $id, array $params = [], ?RequestOptions $opts = null): ExportData
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ExportData */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/retry"), $params, $opts);
     }
 }

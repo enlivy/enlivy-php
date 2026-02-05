@@ -23,6 +23,7 @@ class ProspectService extends AbstractService
     use HasImports;
 
     protected const string RESOURCE = 'prospects';
+    protected const ?string RESOURCE_CLASS = Prospect::class;
 
     /**
      * List all prospects.
@@ -55,8 +56,6 @@ class ProspectService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Prospect
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Prospect */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -87,8 +86,6 @@ class ProspectService extends AbstractService
     public function create(array $params, ?RequestOptions $opts = null): Prospect
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Prospect */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -110,8 +107,6 @@ class ProspectService extends AbstractService
     public function update(string $id, array $params, ?RequestOptions $opts = null): Prospect
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Prospect */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -121,8 +116,6 @@ class ProspectService extends AbstractService
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Prospect
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Prospect */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -142,8 +135,6 @@ class ProspectService extends AbstractService
     public function advance(string $id, array $params, ?RequestOptions $opts = null): Prospect
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Prospect */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/advance"), $params, $opts);
     }
 }

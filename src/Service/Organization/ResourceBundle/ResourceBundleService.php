@@ -15,6 +15,7 @@ use Enlivy\Util\RequestOptions;
 class ResourceBundleService extends AbstractService
 {
     protected const string RESOURCE = 'resource-bundles';
+    protected const ?string RESOURCE_CLASS = ResourceBundle::class;
 
     /**
      * @return Collection<ResourceBundle>
@@ -29,32 +30,24 @@ class ResourceBundleService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ResourceBundle
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ResourceBundle */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ResourceBundle
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ResourceBundle */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): ResourceBundle
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ResourceBundle */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ResourceBundle
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ResourceBundle */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

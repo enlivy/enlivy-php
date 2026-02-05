@@ -22,6 +22,7 @@ class BankTransactionCostTypeService extends AbstractService
     use HasTagging;
 
     protected const string RESOURCE = 'bank-transaction-cost-types';
+    protected const ?string RESOURCE_CLASS = BankTransactionCostType::class;
 
     /**
      * @return Collection<BankTransactionCostType>
@@ -36,32 +37,24 @@ class BankTransactionCostTypeService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): BankTransactionCostType
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankTransactionCostType */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): BankTransactionCostType
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankTransactionCostType */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): BankTransactionCostType
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankTransactionCostType */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): BankTransactionCostType
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankTransactionCostType */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

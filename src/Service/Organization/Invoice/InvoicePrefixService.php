@@ -20,6 +20,7 @@ class InvoicePrefixService extends AbstractService
     use HasRestore;
 
     protected const string RESOURCE = 'invoice-prefixes';
+    protected const ?string RESOURCE_CLASS = InvoicePrefix::class;
 
     /**
      * @return Collection<InvoicePrefix>
@@ -34,32 +35,24 @@ class InvoicePrefixService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): InvoicePrefix
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var InvoicePrefix */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): InvoicePrefix
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var InvoicePrefix */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): InvoicePrefix
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var InvoicePrefix */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): InvoicePrefix
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var InvoicePrefix */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

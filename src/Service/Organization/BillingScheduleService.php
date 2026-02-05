@@ -22,6 +22,7 @@ class BillingScheduleService extends AbstractService
     use HasImports;
 
     protected const string RESOURCE = 'billing-schedules';
+    protected const ?string RESOURCE_CLASS = BillingSchedule::class;
 
     /**
      * @return Collection<BillingSchedule>
@@ -36,32 +37,24 @@ class BillingScheduleService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): BillingSchedule
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BillingSchedule */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): BillingSchedule
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BillingSchedule */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): BillingSchedule
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BillingSchedule */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): BillingSchedule
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BillingSchedule */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

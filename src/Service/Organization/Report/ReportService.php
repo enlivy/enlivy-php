@@ -20,6 +20,7 @@ class ReportService extends AbstractService
     use HasRestore;
 
     protected const string RESOURCE = 'reports';
+    protected const ?string RESOURCE_CLASS = Report::class;
 
     /**
      * @return Collection<Report>
@@ -34,32 +35,24 @@ class ReportService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Report
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Report */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Report
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Report */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Report
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Report */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Report
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Report */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

@@ -20,6 +20,7 @@ class ProposalService extends AbstractService
     use HasRestore;
 
     protected const string RESOURCE = 'proposals';
+    protected const ?string RESOURCE_CLASS = Proposal::class;
 
     /**
      * @return Collection<Proposal>
@@ -34,72 +35,54 @@ class ProposalService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function fromOffer(array $params, ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/from-offer'), $params, $opts);
     }
 
     public function send(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/send"), $params, $opts);
     }
 
     public function accept(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/accept"), $params, $opts);
     }
 
     public function reject(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/reject"), $params, $opts);
     }
 
     public function expire(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/expire"), $params, $opts);
     }
 }

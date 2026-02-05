@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PHPUnit configuration for integration tests.
+
+  Setup:
+    1. Copy .env.testing.example to .env.testing
+    2. Fill in your API credentials
+    3. Run: ./vendor/bin/phpunit -c phpunit.integration.xml
+
+  Or pass credentials directly:
+    ENLIVY_API_KEY="1|xxx" ENLIVY_ORGANIZATION_ID="org_xxx" ./vendor/bin/phpunit -c phpunit.integration.xml
+-->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         executionOrder="depends,defects"
+         displayDetailsOnTestsThatTriggerWarnings="true">
+    <testsuites>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>src</directory>
+        </include>
+    </source>
+</phpunit>

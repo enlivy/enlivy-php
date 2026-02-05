@@ -22,6 +22,7 @@ class ContractStatusService extends AbstractService
     use HasReorder;
 
     protected const string RESOURCE = 'contract-statuses';
+    protected const ?string RESOURCE_CLASS = ContractStatus::class;
 
     /**
      * @return Collection<ContractStatus>
@@ -36,32 +37,24 @@ class ContractStatusService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ContractStatus
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractStatus */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ContractStatus
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractStatus */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): ContractStatus
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractStatus */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ContractStatus
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ContractStatus */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

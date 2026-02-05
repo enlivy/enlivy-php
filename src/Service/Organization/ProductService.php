@@ -22,6 +22,7 @@ class ProductService extends AbstractService
     use HasTagging;
 
     protected const string RESOURCE = 'products';
+    protected const ?string RESOURCE_CLASS = Product::class;
 
     /**
      * @return Collection<Product>
@@ -36,32 +37,24 @@ class ProductService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Product
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Product */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Product
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Product */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Product
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Product */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Product
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var Product */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

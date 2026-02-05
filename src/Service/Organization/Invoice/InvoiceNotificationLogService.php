@@ -20,6 +20,7 @@ class InvoiceNotificationLogService extends AbstractService
     use HasRestore;
 
     protected const string RESOURCE = 'invoice-notification-logs';
+    protected const ?string RESOURCE_CLASS = InvoiceNotificationLog::class;
 
     /**
      * @return Collection<InvoiceNotificationLog>
@@ -34,16 +35,12 @@ class InvoiceNotificationLogService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): InvoiceNotificationLog
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var InvoiceNotificationLog */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): InvoiceNotificationLog
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var InvoiceNotificationLog */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

@@ -23,6 +23,7 @@ class BankAccountService extends AbstractService
     use HasTagging;
 
     protected const string RESOURCE = 'bank-accounts';
+    protected const ?string RESOURCE_CLASS = BankAccount::class;
 
     /**
      * @return Collection<BankAccount>
@@ -37,32 +38,24 @@ class BankAccountService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): BankAccount
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankAccount */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): BankAccount
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankAccount */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): BankAccount
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankAccount */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): BankAccount
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var BankAccount */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 

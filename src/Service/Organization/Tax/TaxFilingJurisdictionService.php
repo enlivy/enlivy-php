@@ -15,6 +15,7 @@ use Enlivy\Util\RequestOptions;
 class TaxFilingJurisdictionService extends AbstractService
 {
     protected const string RESOURCE = 'tax-filing-jurisdictions';
+    protected const ?string RESOURCE_CLASS = TaxFilingJurisdiction::class;
 
     /**
      * @return Collection<TaxFilingJurisdiction>
@@ -29,24 +30,18 @@ class TaxFilingJurisdictionService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): TaxFilingJurisdiction
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var TaxFilingJurisdiction */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): TaxFilingJurisdiction
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var TaxFilingJurisdiction */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): TaxFilingJurisdiction
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var TaxFilingJurisdiction */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

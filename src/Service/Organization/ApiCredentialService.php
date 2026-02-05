@@ -15,6 +15,7 @@ use Enlivy\Util\RequestOptions;
 class ApiCredentialService extends AbstractService
 {
     protected const string RESOURCE = 'api-credentials';
+    protected const ?string RESOURCE_CLASS = ApiCredential::class;
 
     /**
      * @return Collection<ApiCredential>
@@ -29,32 +30,24 @@ class ApiCredentialService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ApiCredential
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ApiCredential */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ApiCredential
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ApiCredential */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): ApiCredential
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ApiCredential */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ApiCredential
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ApiCredential */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

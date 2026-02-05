@@ -25,6 +25,7 @@ class InvoiceService extends AbstractService
     use HasDownload;
 
     protected const string RESOURCE = 'invoices';
+    protected const ?string RESOURCE_CLASS = Invoice::class;
 
     /**
      * @return Collection<Invoice>
@@ -40,7 +41,6 @@ class InvoiceService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Invoice */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -48,7 +48,6 @@ class InvoiceService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Invoice */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -56,7 +55,6 @@ class InvoiceService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Invoice */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -64,7 +62,6 @@ class InvoiceService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Invoice */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 

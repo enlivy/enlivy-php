@@ -20,6 +20,7 @@ class ReportSchemaService extends AbstractService
     use HasRestore;
 
     protected const string RESOURCE = 'report-schemas';
+    protected const ?string RESOURCE_CLASS = ReportSchema::class;
 
     /**
      * @return Collection<ReportSchema>
@@ -34,32 +35,24 @@ class ReportSchemaService extends AbstractService
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ReportSchema
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReportSchema */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ReportSchema
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReportSchema */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): ReportSchema
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReportSchema */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ReportSchema
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
-
-        /** @var ReportSchema */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }
