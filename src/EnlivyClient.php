@@ -9,117 +9,117 @@ use Enlivy\Service;
 /**
  * Enlivy API Client.
  *
- * Non-org-scoped services:
+ * Global services:
  * @property Service\AuthenticationService $authentication
  * @property Service\OrganizationService $organizations
- * @property Service\User\UserService $users
- * @property Service\User\UserTokenService $userTokens
- * @property Service\AiAgentService $aiAgents (read-only + run for non-admins)
+ * @property Service\UserService $users
+ * @property Service\UserTokenService $userTokens
+ * @property Service\AiAgentService $aiAgents
+ * @property Service\InvitationCodeService $invitationCodes
+ * @property Service\FrontendService $frontend
  * @property Service\OAuth\OAuthClientService $oauthClients
  * @property Service\OAuth\OAuthAuthorizationService $oauthAuthorizations
  * @property Service\OAuth\OAuthTokenService $oauthTokens
- * @property Service\InvitationCodeService $invitationCodes
- * @property Service\ServiceIntegration\ServiceIntegrationService $serviceIntegration
- * @property Service\FrontendService $frontend
- * @property Service\User\UserOrganizationSettingService $userOrganizationSettings
  *
- * Org-scoped services - CRM:
- * @property Service\Prospect\ProspectService $prospects
- * @property Service\Prospect\ProspectActivityService $prospectActivities
- * @property Service\Prospect\ProspectStatusService $prospectStatuses
- * @property Service\Project\ProjectService $projects
- * @property Service\Project\ProjectMemberService $projectMembers
- * @property Service\Project\ProjectPermissionProspectService $projectPermissionProspects
- * @property Service\Project\ProjectPermissionGuidelineService $projectPermissionGuidelines
- * @property Service\Project\ProjectPermissionPlaybookService $projectPermissionPlaybooks
- * @property Service\Project\ProjectPermissionReportService $projectPermissionReports
- * @property Service\Project\ProjectProspectStatusService $projectProspectStatuses
+ * Organization-scoped services - Users & Roles:
+ * @property Service\Organization\UserService $organizationUsers
+ * @property Service\Organization\UserRoleService $userRoles
+ * @property Service\Organization\UserRoleAbilityService $userRoleAbilities
+ * @property Service\Organization\UserAddressService $userAddresses
+ * @property Service\Organization\UserOrganizationSettingService $userOrganizationSettings
  *
- * Org-scoped services - Users & Roles:
- * @property Service\OrganizationUserService $organizationUsers
- * @property Service\User\UserRoleService $userRoles
- * @property Service\User\UserRoleAbilityService $userRoleAbilities
- * @property Service\User\UserAddressService $userAddresses
+ * Organization-scoped services - CRM:
+ * @property Service\Organization\Prospect\ProspectService $prospects
+ * @property Service\Organization\Prospect\ProspectActivityService $prospectActivities
+ * @property Service\Organization\Prospect\ProspectStatusService $prospectStatuses
+ * @property Service\Organization\Project\ProjectService $projects
+ * @property Service\Organization\Project\ProjectMemberService $projectMembers
+ * @property Service\Organization\Project\ProjectPermissionProspectService $projectPermissionProspects
+ * @property Service\Organization\Project\ProjectPermissionGuidelineService $projectPermissionGuidelines
+ * @property Service\Organization\Project\ProjectPermissionPlaybookService $projectPermissionPlaybooks
+ * @property Service\Organization\Project\ProjectPermissionReportService $projectPermissionReports
+ * @property Service\Organization\Project\ProjectProspectStatusService $projectProspectStatuses
  *
- * Org-scoped services - Accounting:
- * @property Service\Invoice\InvoiceService $invoices
- * @property Service\Invoice\InvoicePrefixService $invoicePrefixes
- * @property Service\Invoice\InvoiceNotificationLogService $invoiceNotificationLogs
- * @property Service\Invoice\InvoiceNetworkExchangeService $invoiceNetworkExchanges
- * @property Service\Receipt\ReceiptService $receipts
- * @property Service\Receipt\ReceiptPrefixService $receiptPrefixes
- * @property Service\ProductService $products
- * @property Service\BankAccount\BankAccountService $bankAccounts
- * @property Service\BankAccount\BankTransactionService $bankTransactions
- * @property Service\BankAccount\BankTransactionCostTypeService $bankTransactionCostTypes
- * @property Service\BankAccount\BankAccountDataService $bankAccountData
- * @property Service\BillingScheduleService $billingSchedules
+ * Organization-scoped services - Accounting:
+ * @property Service\Organization\Invoice\InvoiceService $invoices
+ * @property Service\Organization\Invoice\InvoicePrefixService $invoicePrefixes
+ * @property Service\Organization\Invoice\InvoiceNotificationLogService $invoiceNotificationLogs
+ * @property Service\Organization\Invoice\InvoiceNetworkExchangeService $invoiceNetworkExchanges
+ * @property Service\Organization\Receipt\ReceiptService $receipts
+ * @property Service\Organization\Receipt\ReceiptPrefixService $receiptPrefixes
+ * @property Service\Organization\ProductService $products
+ * @property Service\Organization\BankAccount\BankAccountService $bankAccounts
+ * @property Service\Organization\BankAccount\BankTransactionService $bankTransactions
+ * @property Service\Organization\BankAccount\BankTransactionCostTypeService $bankTransactionCostTypes
+ * @property Service\Organization\BankAccount\BankAccountDataService $bankAccountData
+ * @property Service\Organization\BillingScheduleService $billingSchedules
  *
- * Org-scoped services - Contracts:
- * @property Service\Contract\ContractService $contracts
- * @property Service\Contract\ContractPrefixService $contractPrefixes
- * @property Service\Contract\ContractStatusService $contractStatuses
- * @property Service\Contract\ContractSignatureService $contractSignatures
+ * Organization-scoped services - Contracts:
+ * @property Service\Organization\Contract\ContractService $contracts
+ * @property Service\Organization\Contract\ContractPrefixService $contractPrefixes
+ * @property Service\Organization\Contract\ContractStatusService $contractStatuses
+ * @property Service\Organization\Contract\ContractSignatureService $contractSignatures
  *
- * Org-scoped services - Tax:
- * @property Service\Tax\TaxClassService $taxClasses
- * @property Service\Tax\TaxRateService $taxRates
- * @property Service\Tax\TaxTypeService $taxTypes
- * @property Service\Tax\TaxFilingJurisdictionService $taxFilingJurisdictions
+ * Organization-scoped services - Tax:
+ * @property Service\Organization\Tax\TaxClassService $taxClasses
+ * @property Service\Organization\Tax\TaxRateService $taxRates
+ * @property Service\Organization\Tax\TaxTypeService $taxTypes
+ * @property Service\Organization\Tax\TaxFilingJurisdictionService $taxFilingJurisdictions
  *
- * Org-scoped services - Payroll:
- * @property Service\Payslip\PayslipSchemaService $payslipSchemas
- * @property Service\Payslip\PayslipService $payslips
+ * Organization-scoped services - Payroll:
+ * @property Service\Organization\Payslip\PayslipSchemaService $payslipSchemas
+ * @property Service\Organization\Payslip\PayslipService $payslips
  *
- * Org-scoped services - Reports:
- * @property Service\Report\ReportService $reports
- * @property Service\Report\ReportSchemaService $reportSchemas
- * @property Service\Report\ReportSchemaFieldService $reportSchemaFields
+ * Organization-scoped services - Reports:
+ * @property Service\Organization\Report\ReportService $reports
+ * @property Service\Organization\Report\ReportSchemaService $reportSchemas
+ * @property Service\Organization\Report\ReportSchemaFieldService $reportSchemaFields
  *
- * Org-scoped services - Content & Files:
- * @property Service\FileService $files
- * @property Service\GuidelineService $guidelines
- * @property Service\PlaybookService $playbooks
- * @property Service\ReusableContentService $reusableContent
- * @property Service\EmailPreviewService $emailPreviews
+ * Organization-scoped services - Content & Files:
+ * @property Service\Organization\FileService $files
+ * @property Service\Organization\GuidelineService $guidelines
+ * @property Service\Organization\PlaybookService $playbooks
+ * @property Service\Organization\ReusableContentService $reusableContent
+ * @property Service\Organization\EmailPreviewService $emailPreviews
  *
- * Org-scoped services - Tasks:
- * @property Service\Task\TaskService $tasks
- * @property Service\Task\TaskStatusService $taskStatuses
+ * Organization-scoped services - Tasks:
+ * @property Service\Organization\Task\TaskService $tasks
+ * @property Service\Organization\Task\TaskStatusService $taskStatuses
  *
- * Org-scoped services - Settings & Tags:
- * @property Service\TagService $tags
- * @property Service\SettingService $settings
- * @property Service\PreferenceService $preferences
- * @property Service\NotificationService $notifications
+ * Organization-scoped services - Settings & Tags:
+ * @property Service\Organization\TagService $tags
+ * @property Service\Organization\SettingService $settings
+ * @property Service\Organization\PreferenceService $preferences
+ * @property Service\Organization\NotificationService $notifications
  *
- * Org-scoped services - Webhooks & Export:
- * @property Service\WebhookService $webhooks
- * @property Service\ExportDataService $exportData
+ * Organization-scoped services - Webhooks & Export:
+ * @property Service\Organization\WebhookService $webhooks
+ * @property Service\Organization\ExportDataService $exportData
  *
- * Org-scoped services - Portal:
- * @property Service\User\UserClientPortalSessionService $userClientPortalSessions
- * @property Service\User\UserPortalDomainService $userPortalDomain
+ * Organization-scoped services - Portal:
+ * @property Service\Organization\UserClientPortalSessionService $userClientPortalSessions
+ * @property Service\Organization\UserPortalDomainService $userPortalDomain
  *
- * Org-scoped services - Membership & Billing:
- * @property Service\MembershipService $membership
- * @property Service\OfferService $offers
- * @property Service\ProposalService $proposals
+ * Organization-scoped services - Membership & Billing:
+ * @property Service\Organization\MembershipService $membership
+ * @property Service\Organization\OfferService $offers
+ * @property Service\Organization\ProposalService $proposals
  *
- * Org-scoped services - Search & AI:
- * @property Service\SearchService $search
- * @property Service\MatchService $match
- * @property Service\MiscService $misc
- * @property Service\AnalyticsService $analytics
+ * Organization-scoped services - Search & AI:
+ * @property Service\Organization\SearchService $search
+ * @property Service\Organization\MatchService $match
+ * @property Service\Organization\MiscService $misc
+ * @property Service\Organization\AnalyticsService $analytics
  *
- * Org-scoped services - API & Integrations:
- * @property Service\ApiCredentialService $apiCredentials
- * @property Service\ResourceBundle\ResourceBundleService $resourceBundles
- * @property Service\ResourceBundle\ResourceBundlePermissionGuidelineService $resourceBundlePermissionGuidelines
- * @property Service\ResourceBundle\ResourceBundlePermissionPlaybookService $resourceBundlePermissionPlaybooks
- * @property Service\ResourceBundle\ResourceBundlePermissionReportService $resourceBundlePermissionReports
- * @property Service\StripeWebhookCallbackService $stripeWebhookCallbacks
- * @property Service\ServiceIntegration\ServiceIntegrationAnafService $serviceIntegrationAnaf
- * @property Service\ServiceIntegration\ServiceIntegrationStripeService $serviceIntegrationStripe
+ * Organization-scoped services - API & Integrations:
+ * @property Service\Organization\ApiCredentialService $apiCredentials
+ * @property Service\Organization\ResourceBundle\ResourceBundleService $resourceBundles
+ * @property Service\Organization\ResourceBundle\ResourceBundlePermissionGuidelineService $resourceBundlePermissionGuidelines
+ * @property Service\Organization\ResourceBundle\ResourceBundlePermissionPlaybookService $resourceBundlePermissionPlaybooks
+ * @property Service\Organization\ResourceBundle\ResourceBundlePermissionReportService $resourceBundlePermissionReports
+ * @property Service\Organization\StripeWebhookCallbackService $stripeWebhookCallbacks
+ * @property Service\Organization\ServiceIntegration\ServiceIntegrationService $serviceIntegration
+ * @property Service\Organization\ServiceIntegration\ServiceIntegrationAnafService $serviceIntegrationAnaf
+ * @property Service\Organization\ServiceIntegration\ServiceIntegrationStripeService $serviceIntegrationStripe
  */
 class EnlivyClient extends BaseEnlivyClient {}

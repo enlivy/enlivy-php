@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Enlivy\Organization;
+
+use Enlivy\ApiResource;
+
+/**
+ * Represents a Contract Prefix in the Enlivy API.
+ *
+ * @property string $id
+ * @property string $organization_id
+ * @property string $prefix
+ * @property int $next_number
+ * @property string $format
+ * @property bool $is_default
+ * @property string $created_at
+ * @property string $updated_at
+ */
+class ContractPrefix extends ApiResource
+{
+    public const ?string OBJECT_NAME = 'contract_prefix';
+}

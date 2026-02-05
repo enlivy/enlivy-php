@@ -8,7 +8,7 @@ use Enlivy\Collection;
 use Enlivy\EnlivyClient;
 use Enlivy\EnlivyObject;
 use Enlivy\Exception\InvalidArgumentException;
-use Enlivy\Prospect;
+use Enlivy\Organization\Prospect;
 use Enlivy\Tests\Mock\MockHttpClient;
 use Enlivy\Util\RequestOptions;
 use PHPUnit\Framework\TestCase;

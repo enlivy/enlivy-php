@@ -6,7 +6,7 @@ namespace Enlivy\Tests\Unit;
 
 use Enlivy\EnlivyClient;
 use Enlivy\Exception\InvalidArgumentException;
-use Enlivy\Service\Prospect\ProspectService;
+use Enlivy\Service\Organization\Prospect\ProspectService;
 use Enlivy\Tests\Mock\MockHttpClient;
 use PHPUnit\Framework\TestCase;
 
