@@ -7,17 +7,19 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents a Webhook in the Enlivy API.
+ * Represents a Webhook Endpoint in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
  * @property string $organization_id
  * @property string $url
- * @property array $events
- * @property string $secret
+ * @property string|null $description
+ * @property string $signing_secret
  * @property bool $is_active
- * @property string|null $last_triggered_at
  * @property string $created_at
  * @property string $updated_at
+ * @property string|null $deleted_at
+ * @property string|null $deleted_by_user_id
  */
 class Webhook extends ApiResource
 {

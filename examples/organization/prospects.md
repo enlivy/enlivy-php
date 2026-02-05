@@ -27,6 +27,7 @@ $client = new EnlivyClient([
     'organization_id' => 'org_xxx',
 ]);
 
+// Either first_name OR company_name is required
 $prospect = $client->prospects->create([
     'title' => 'Website Redesign Project',
     'first_name' => 'John',
@@ -48,7 +49,7 @@ $prospect = $client->prospects->create([
     // Title (deal name)
     'title' => 'Enterprise CRM Implementation',
 
-    // Contact info
+    // Contact info (either first_name or company_name required)
     'first_name' => 'Sarah',
     'last_name' => 'Johnson',
     'email' => 'sarah.johnson@bigcorp.com',
@@ -57,15 +58,22 @@ $prospect = $client->prospects->create([
     'company_name' => 'BigCorp Industries',
     'country_code' => 'US',
 
-    // Deal info
-    'budget' => 75000.00,
+    // Social profiles (optional array)
+    'social_profiles' => [
+        ['platform' => 'linkedin', 'url' => 'https://linkedin.com/in/sarah-johnson'],
+        ['platform' => 'twitter', 'handle' => '@sarahjohnson'],
+    ],
+
+    // Deal info (budget is string, not numeric)
+    'budget' => '75000',
     'budget_currency' => 'USD',
     'summary' => 'Looking for a complete CRM solution with custom integrations.',
 
     // Source tracking
-    'source_type' => 'inbound',
+    'source_type' => 'inbound', // inbound, outbound, referral, etc.
     'source_channel' => 'website',
     'source_campaign' => 'google-ads-q1',
+    'source_referrer_organization_user_id' => 'org_user_referrer_xxx', // Optional referrer
 
     // Pipeline position
     'organization_prospect_status_id' => 'org_pros_status_qualified_xxx',
@@ -73,10 +81,38 @@ $prospect = $client->prospects->create([
     // Assignment
     'assigned_organization_user_id' => 'org_user_sales_rep_xxx',
     'assigned_organization_project_id' => 'org_proj_xxx',
+
+    // Link to existing customer (if converting or re-engaging)
+    'linked_organization_user_id' => 'org_user_xxx',
 ]);
 
 echo "Created: {$prospect->title}\n";
 echo "Budget: {$prospect->budget} {$prospect->budget_currency}\n";
+```
+
+### Prospect with State Tracking
+
+```php
+<?php
+
+// Create prospect with qualification state
+$prospect = $client->prospects->create([
+    'first_name' => 'Alex',
+    'last_name' => 'Chen',
+    'email' => 'alex@startup.io',
+    'company_name' => 'Tech Startup Inc',
+    'title' => 'SaaS Integration',
+    'budget' => '25000',
+    'budget_currency' => 'USD',
+
+    // State timestamps (set when prospect moves through stages)
+    'state_qualified_at' => '2026-02-05 10:30:00',
+    // 'state_disqualified_at' => null,
+    // 'state_disqualified_reason' => null,
+    // 'state_won_at' => null,
+    // 'state_lost_at' => null,
+    // 'state_lost_reason' => null,
+]);
 ```
 
 ## Listing Prospects
@@ -89,7 +125,8 @@ echo "Budget: {$prospect->budget} {$prospect->budget_currency}\n";
 $prospects = $client->prospects->list();
 
 foreach ($prospects as $prospect) {
-    echo "{$prospect->title} - {$prospect->company_name}\n";
+    $name = $prospect->company_name ?? "{$prospect->first_name} {$prospect->last_name}";
+    echo "{$prospect->title} - {$name}\n";
 }
 ```
 
@@ -126,11 +163,10 @@ $myProspects = $client->prospects->list([
     ],
 ]);
 
-// By budget range
-$highValue = $client->prospects->list([
+// By project
+$projectProspects = $client->prospects->list([
     'filter' => [
-        'budget_from' => 50000,
-        'budget_currency' => 'USD',
+        'assigned_organization_project_id' => 'org_proj_xxx',
     ],
 ]);
 
@@ -138,6 +174,13 @@ $highValue = $client->prospects->list([
 $inboundLeads = $client->prospects->list([
     'filter' => [
         'source_type' => 'inbound',
+    ],
+]);
+
+// By linked customer
+$linkedProspects = $client->prospects->list([
+    'filter' => [
+        'linked_organization_user_id' => 'org_user_xxx',
     ],
 ]);
 ```
@@ -148,15 +191,19 @@ $inboundLeads = $client->prospects->list([
 <?php
 
 $prospects = $client->prospects->list([
-    'include' => ['status', 'assigned_user', 'activities', 'project'],
+    'include' => ['status', 'assigned_user', 'activities', 'project', 'linked_user'],
 ]);
 
 foreach ($prospects as $prospect) {
     echo "{$prospect->title}\n";
-    echo "  Status: {$prospect->status->name}\n";
+
+    if ($prospect->status) {
+        echo "  Status: {$prospect->status->name}\n";
+    }
 
     if ($prospect->assigned_user) {
-        echo "  Assigned to: {$prospect->assigned_user->first_name}\n";
+        $name = $prospect->assigned_user->first_name ?? $prospect->assigned_user->name;
+        echo "  Assigned to: {$name}\n";
     }
 
     echo "  Activities: " . count($prospect->activities ?? []) . "\n";
@@ -194,8 +241,13 @@ echo "Prospect: {$prospect->title}\n";
 echo "Contact: {$prospect->first_name} {$prospect->last_name}\n";
 echo "Company: {$prospect->company_name}\n";
 echo "Email: {$prospect->email}\n";
-echo "Status: {$prospect->status->name}\n";
+
+if ($prospect->status) {
+    echo "Status: {$prospect->status->name}\n";
+}
+
 echo "Budget: {$prospect->budget} {$prospect->budget_currency}\n";
+echo "Summary: {$prospect->summary}\n";
 
 if ($prospect->linked_user) {
     echo "Linked to customer: {$prospect->linked_user->id}\n";
@@ -208,8 +260,31 @@ if ($prospect->linked_user) {
 <?php
 
 $prospect = $client->prospects->update('org_pros_xxx', [
-    'budget' => 85000.00,
+    'budget' => '85000',
     'summary' => 'Updated scope: includes mobile app development.',
+]);
+```
+
+### Mark as Won/Lost
+
+```php
+<?php
+
+// Mark as won
+$prospect = $client->prospects->update('org_pros_xxx', [
+    'state_won_at' => date('Y-m-d H:i:s'),
+]);
+
+// Mark as lost with reason
+$prospect = $client->prospects->update('org_pros_xxx', [
+    'state_lost_at' => date('Y-m-d H:i:s'),
+    'state_lost_reason' => 'Budget constraints - competitor offered lower price',
+]);
+
+// Mark as disqualified
+$prospect = $client->prospects->update('org_pros_xxx', [
+    'state_disqualified_at' => date('Y-m-d H:i:s'),
+    'state_disqualified_reason' => 'Not a good fit for our services',
 ]);
 ```
 
@@ -418,6 +493,44 @@ $prospect = $client->prospects->restore('org_pros_xxx');
 echo "Restored: {$prospect->title}\n";
 ```
 
+## Field Reference
+
+### Required Fields
+
+| Field | Description |
+|-------|-------------|
+| `first_name` | First name (required if no `company_name`) |
+| `company_name` | Company name (required if no `first_name`) |
+
+### Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Deal/opportunity title |
+| `last_name` | string | Last name |
+| `email` | string | Email address |
+| `phone_number` | string | Phone number |
+| `phone_number_country_code` | string | Phone country code |
+| `country_code` | string | Country code |
+| `social_profiles` | array | Social media profiles |
+| `budget` | string | Budget amount (as string) |
+| `budget_currency` | string | Budget currency (ISO 4217) |
+| `summary` | string | Deal summary/notes |
+| `source_type` | string | Lead source type |
+| `source_channel` | string | Lead source channel |
+| `source_campaign` | string | Marketing campaign |
+| `source_referrer_organization_user_id` | string | Referrer user ID |
+| `organization_prospect_status_id` | string | Pipeline status ID |
+| `assigned_organization_user_id` | string | Assigned sales rep ID |
+| `assigned_organization_project_id` | string | Assigned project ID |
+| `linked_organization_user_id` | string | Linked customer ID |
+| `state_qualified_at` | datetime | When qualified |
+| `state_disqualified_at` | datetime | When disqualified |
+| `state_disqualified_reason` | string | Disqualification reason |
+| `state_won_at` | datetime | When won |
+| `state_lost_at` | datetime | When lost |
+| `state_lost_reason` | string | Loss reason |
+
 ## Complete Example: Sales Pipeline Workflow
 
 ```php
@@ -443,7 +556,7 @@ try {
         'phone_number' => '555987654',
         'phone_number_country_code' => 'US',
         'country_code' => 'US',
-        'budget' => 120000.00,
+        'budget' => '120000',
         'budget_currency' => 'USD',
         'source_type' => 'inbound',
         'source_channel' => 'website',
@@ -460,13 +573,17 @@ try {
         'description' => 'Sent introduction email with company overview.',
     ]);
 
-    // 3. After discovery call - advance and log
+    // 3. After discovery call - qualify and log
     $client->prospectActivities->create([
         'organization_prospect_id' => $prospect->id,
         'type' => 'call',
         'title' => 'Discovery call',
         'description' => 'Discussed requirements. Timeline: Q3 launch. Budget confirmed.',
         'duration_minutes' => 60,
+    ]);
+
+    $prospect = $client->prospects->update($prospect->id, [
+        'state_qualified_at' => date('Y-m-d H:i:s'),
     ]);
 
     $prospect = $client->prospects->advance($prospect->id, [
@@ -506,9 +623,10 @@ try {
         'organization_user_role_id' => $customerRole->id,
     ]);
 
-    // Link prospect to customer
+    // Link prospect to customer and mark as won
     $prospect = $client->prospects->update($prospect->id, [
         'linked_organization_user_id' => $customer->id,
+        'state_won_at' => date('Y-m-d H:i:s'),
     ]);
 
     echo "Prospect converted to customer: {$customer->id}\n";

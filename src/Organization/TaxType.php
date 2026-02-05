@@ -10,9 +10,12 @@ use Enlivy\ApiResource;
  * Represents a Tax Type in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
  * @property string $organization_id
- * @property string $name
- * @property string $code
+ * @property string|null $alias
+ * @property array|null $name_lang_map
+ * @property array|null $note_lang_map
+ * @property bool $is_active
  * @property string $created_at
  * @property string $updated_at
  */

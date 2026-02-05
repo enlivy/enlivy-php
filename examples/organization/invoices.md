@@ -25,9 +25,33 @@ See [Organization Users](organization-users.md) to create customers first.
 ### Status Flow
 
 ```
-draft → scheduled → sent → paid
-                 ↘ overdue
+draft -> scheduled -> sent -> paid
+                   \-> cancelled/void
 ```
+
+### Available Statuses
+- `draft` - Invoice is being prepared
+- `scheduled` - Invoice will be sent at a future date
+- `sent` - Invoice has been sent to the customer
+- `paid` - Invoice has been paid
+- `cancelled` - Invoice was cancelled before sending
+- `void` - Invoice was voided after sending
+
+### Invoice Types
+- `standard` - Regular invoice
+- `proforma` - Proforma invoice
+- `credit_note` - Credit note
+
+### Payment Methods
+- `bank_transfer` - Bank transfer payment
+- `stripe_card_payment` - Stripe card payment
+- `cash` - Cash payment
+- And others defined in the PaymentMethod helper
+
+### Delivery Methods
+- `email` - Send via email
+- `print` - Print delivery
+- And others defined in InvoiceDeliveryMethods enum
 
 ## Creating an Invoice
 
@@ -44,18 +68,16 @@ $client = new EnlivyClient([
 ]);
 
 $invoice = $client->invoices->create([
-    // Required
+    // Required fields
     'organization_receiver_user_id' => 'org_user_xxx', // Customer ID
     'status' => 'draft',
     'currency' => 'EUR',
-    'source' => 'internal',
-    'direction' => 'outbound',
 
-    // Required for internal invoices
+    // Required for internal source invoices
     'payment_method' => 'bank_transfer',
     'delivery_method' => 'email',
 
-    // Line items
+    // Line items (required for internal source)
     'line_items' => [
         [
             'name_lang_map' => ['en' => 'Web Development Services'],
@@ -65,6 +87,11 @@ $invoice = $client->invoices->create([
             'organization_tax_class_id' => 'org_tax_xxx',
         ],
     ],
+
+    // Optional defaults
+    // 'source' => 'internal',     // defaults to internal
+    // 'direction' => 'outbound',  // defaults to outbound
+    // 'type' => 'standard',       // defaults to standard
 ]);
 
 echo "Invoice created: {$invoice->id}\n";
@@ -94,20 +121,22 @@ $invoice = $client->invoices->create([
     'line_items' => [
         [
             'name_lang_map' => ['en' => 'Website Design', 'ro' => 'Design Website'],
-            'description_lang_map' => ['en' => 'Custom homepage design'],
             'quantity' => 1,
             'price' => 500.00,
             'discount' => 0,
             'type' => 'service',
             'organization_tax_class_id' => 'org_tax_xxx',
+            'order' => 1,
         ],
         [
             'name_lang_map' => ['en' => 'Development Hours'],
+            'unit_lang_map' => ['en' => 'hour'],
             'quantity' => 20,
             'price' => 75.00,
-            'discount' => 10, // 10% discount
+            'discount' => 10, // Percentage discount
             'type' => 'service',
             'organization_tax_class_id' => 'org_tax_xxx',
+            'order' => 2,
         ],
         [
             'name_lang_map' => ['en' => 'Hosting (Annual)'],
@@ -115,13 +144,110 @@ $invoice = $client->invoices->create([
             'price' => 120.00,
             'type' => 'digital',
             'organization_tax_class_id' => 'org_tax_xxx',
+            'order' => 3,
         ],
     ],
 
-    // Notes
+    // Notes (multilingual)
     'note_lang_map' => [
         'en' => 'Thank you for your business!',
-        'ro' => 'Vă mulțumim pentru colaborare!',
+        'ro' => 'Va multumim pentru colaborare!',
+    ],
+]);
+```
+
+### Line Item with Billing Period
+
+```php
+<?php
+
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Monthly Subscription'],
+            'quantity' => 1,
+            'price' => 99.00,
+            'type' => 'service',
+            'organization_tax_class_id' => 'org_tax_xxx',
+
+            // Billing period for subscriptions
+            'has_billing_period' => true,
+            'billing_period_started_at' => '2026-02-01',
+            'billing_period_ended_at' => '2026-02-28',
+        ],
+    ],
+]);
+```
+
+### Line Item with Product Reference
+
+```php
+<?php
+
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+
+    'line_items' => [
+        [
+            // Reference existing product - inherits name, price, tax class
+            'organization_product_id' => 'org_prod_xxx',
+            'quantity' => 5,
+            // Can override price if needed
+            // 'price' => 150.00,
+        ],
+        [
+            // Or define inline item
+            'name_lang_map' => ['en' => 'Custom Work'],
+            'quantity' => 1,
+            'price' => 500.00,
+            'type' => 'service',
+            'organization_tax_class_id' => 'org_tax_xxx',
+        ],
+    ],
+]);
+```
+
+### Line Item with PEPPOL/E-Invoicing Fields
+
+```php
+<?php
+
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+
+    // PEPPOL references
+    'peppol_project_reference' => 'PROJECT-2026-001',
+    'peppol_purchase_order_reference' => 'PO-12345',
+    'peppol_sales_order_reference' => 'SO-67890',
+
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Consulting Services'],
+            'quantity' => 10,
+            'price' => 100.00,
+            'type' => 'service',
+            'organization_tax_class_id' => 'org_tax_xxx',
+
+            // PEPPOL/E-invoicing schema fields
+            'invoice_schema_map' => [
+                'classification_identifier_cpv' => '72000000', // CPV code
+                'peppol_billing_unit_code' => 'HUR', // Hours
+            ],
+        ],
     ],
 ]);
 ```
@@ -145,7 +271,7 @@ $invoice = $client->invoices->create([
     'payment_method' => 'bank_transfer',
     'delivery_method' => 'email',
 
-    // Bank account for payment details
+    // Bank account for payment details on invoice
     'organization_bank_account_id' => 'org_bank_xxx',
 
     'line_items' => [
@@ -155,6 +281,41 @@ $invoice = $client->invoices->create([
             'price' => 200.00,
             'type' => 'service',
             'organization_tax_class_id' => 'org_tax_xxx',
+        ],
+    ],
+]);
+```
+
+### Invoice with Custom Identity Override
+
+```php
+<?php
+
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+
+    // Override receiver identity on invoice
+    'receiver_has_custom_identity' => true,
+    'receiver_custom_identity_is_business' => true,
+    'receiver_custom_identity_name' => 'Acme Corp International',
+    'receiver_custom_identity_organization_type' => 'LLC',
+
+    // Additional receiver info
+    'receiver_information' => [
+        'registration_number' => '12345678',
+    ],
+    'receiver_country_code' => 'US',
+
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Product'],
+            'quantity' => 1,
+            'price' => 100.00,
+            'type' => 'service',
         ],
     ],
 ]);
@@ -187,6 +348,65 @@ $invoice = $client->invoices->create([
 ]);
 
 echo "Invoice number: {$invoice->number}\n"; // e.g., "INV-2026-0001"
+```
+
+### Invoice with Stripe Payment
+
+```php
+<?php
+
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'source' => 'internal',
+    'direction' => 'outbound',
+    'payment_method' => 'stripe_card_payment', // Stripe payment
+    'delivery_method' => 'email',
+
+    // Stripe-specific fields (optional, for linking existing charges)
+    'payment_stripe_account_id' => 'acct_xxx',
+    'payment_stripe_customer_id' => 'cus_xxx',
+    // 'payment_stripe_charge_id' => 'ch_xxx',
+    // 'payment_stripe_intent_id' => 'pi_xxx',
+
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Subscription'],
+            'quantity' => 1,
+            'price' => 99.00,
+            'type' => 'service',
+            'organization_tax_class_id' => 'org_tax_xxx',
+        ],
+    ],
+]);
+```
+
+### Invoice with Bank Transfer QR Codes
+
+```php
+<?php
+
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'organization_bank_account_id' => 'org_bank_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+
+    // QR code types for bank transfer
+    'bank_account_payment_qr_types' => ['epc', 'stuzza'], // European Payment Council, Austrian format
+
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Product'],
+            'quantity' => 1,
+            'price' => 100.00,
+            'type' => 'service',
+        ],
+    ],
+]);
 ```
 
 ## Listing Invoices
@@ -255,7 +475,8 @@ foreach ($invoices as $invoice) {
     echo "{$invoice->number} - {$customerName}\n";
 
     foreach ($invoice->line_items ?? [] as $item) {
-        echo "  - {$item->name}: {$item->quantity} x {$item->price}\n";
+        $name = $item->name_lang_map['en'] ?? array_values($item->name_lang_map)[0] ?? 'Item';
+        echo "  - {$name}: {$item->quantity} x {$item->price}\n";
     }
 }
 ```
@@ -272,8 +493,9 @@ $invoice = $client->invoices->retrieve('org_inv_xxx', [
 echo "Invoice: {$invoice->number}\n";
 echo "Customer: {$invoice->receiver_user->email}\n";
 echo "Status: {$invoice->status}\n";
-echo "Total: {$invoice->total} {$invoice->currency}\n";
+echo "Sub Total: {$invoice->sub_total} {$invoice->currency}\n";
 echo "Tax: {$invoice->tax_total} {$invoice->currency}\n";
+echo "Total: {$invoice->total} {$invoice->currency}\n";
 ```
 
 ## Updating an Invoice
@@ -324,7 +546,7 @@ echo "Email sent successfully\n";
 ```php
 <?php
 
-// Send to Romanian ANAF
+// Send to Romanian ANAF (e-Factura)
 $result = $client->invoices->peppolPush('org_inv_xxx', 'anaf');
 
 // Send to other PEPPOL networks
@@ -396,8 +618,8 @@ $prefixes = $client->invoicePrefixes->list();
 // Create a new prefix
 $prefix = $client->invoicePrefixes->create([
     'name' => 'Standard Invoices',
-    'prefix' => 'INV',
-    'type' => 'standard', // standard, proforma, etc.
+    'alias' => 'INV',
+    'type' => 'standard', // standard, proforma, credit_note
     'next_number' => 1,
     'padding' => 4, // INV-0001
 ]);
@@ -422,11 +644,20 @@ $invoice = $client->invoices->create([
     'issued_at' => '2026-01-15',
     'due_at' => '2026-02-15',
 
-    // Totals (no line items needed for external)
+    // Totals (line_items, payment_method, delivery_method not required for external)
     'sub_total' => 1000.00,
     'tax_total' => 190.00,
     'discount' => 0,
     'total' => 1190.00,
+
+    // External invoices can have tax breakdown
+    'taxes' => [
+        [
+            'organization_tax_class_id' => 'org_tax_xxx',
+            'organization_tax_rate_id' => 'org_tax_rate_xxx',
+            'amount' => 190.00,
+        ],
+    ],
 ]);
 ```
 

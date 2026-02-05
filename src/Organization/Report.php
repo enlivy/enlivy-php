@@ -10,13 +10,18 @@ use Enlivy\ApiResource;
  * Represents a Report in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
  * @property string $organization_id
  * @property string $organization_report_schema_id
- * @property string $name
- * @property array $data
- * @property string|null $created_by_user_id
+ * @property string|null $organization_user_id
+ * @property string|null $organization_user_role_id
+ * @property string|null $organization_project_id
+ * @property array|null $report_map
+ * @property string|null $reported_at
  * @property string $created_at
  * @property string $updated_at
+ * @property string|null $deleted_at
+ * @property string|null $deleted_by_user_id
  */
 class Report extends ApiResource
 {

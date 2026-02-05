@@ -15,7 +15,7 @@ composer require enlivy/enlivy-php
 
 require 'vendor/autoload.php';
 
-// Option 1: Global configuration (Stripe-style)
+// Option 1: Global configuration
 \Enlivy\Enlivy::setApiKey('1|your_api_token');
 \Enlivy\Enlivy::setOrganizationId('org_xxx');
 
@@ -29,6 +29,52 @@ $client = new \Enlivy\EnlivyClient([
 
 // Now use the client
 $invoices = $client->invoices->list();
+
+// Create an invoice
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Consulting Services'],
+            'quantity' => 10,
+            'price' => 100.00,
+            'type' => 'service',
+        ],
+    ],
+]);
+
+echo "Invoice created: {$invoice->id}\n";
+```
+
+## Documentation Structure
+
+```
+examples/
+├── README.md                 # This file
+├── authentication.md         # API keys, OAuth client credentials
+├── oauth.md                  # OAuth server for third-party apps
+├── ai-agents.md              # AI-powered features
+├── integrations.md           # Stripe, ANAF, and other integrations
+│
+└── organization/             # Organization-scoped resources
+    ├── users.md              # Organization users (customers/employees)
+    ├── invoices.md           # Creating and sending invoices
+    ├── receipts.md           # Receipt management
+    ├── contracts.md          # Contract management and e-signatures
+    ├── proposals.md          # Sales proposals
+    ├── prospects.md          # Sales pipeline and CRM
+    ├── products.md           # Product catalog
+    ├── taxes.md              # Tax configuration
+    ├── projects.md           # Projects and team management
+    ├── bank-accounts.md      # Bank accounts and transactions
+    ├── reports.md            # Dynamic reports and schemas
+    ├── files.md              # File uploads and attachments
+    ├── webhooks.md           # Webhook endpoints
+    └── customer-portal.md    # External user access
 ```
 
 ## Documentation by Topic
@@ -36,54 +82,58 @@ $invoices = $client->invoices->list();
 ### Getting Started
 - [Authentication](authentication.md) - API keys, OAuth, configuration
 
-### Customer Management
-- [Organization Users](organization-users.md) - Creating and managing customers/clients
-- [Prospects](prospects.md) - Sales pipeline and CRM
-
-### Billing & Invoicing
-- [Invoices](invoices.md) - Creating and sending invoices
-- [Receipts](receipts.md) - Receipt management
-- [Products](products.md) - Product catalog
-- [Taxes](taxes.md) - Tax configuration
-
-### Contracts & Proposals
-- [Contracts](contracts.md) - Contract management and e-signatures
-- [Proposals](proposals.md) - Sales proposals from offer templates
-
-### Project Management
-- [Projects](projects.md) - Projects and team management
-
-### Banking
-- [Bank Accounts](bank-accounts.md) - Bank accounts and transactions
-
-### Reports & Files
-- [Reports](reports.md) - Dynamic reports and schemas
-- [Files](files.md) - File uploads and attachments
-
-### Integrations
-- [Webhooks](webhooks.md) - Webhook endpoints and event handling
-- [OAuth](oauth.md) - OAuth server for third-party apps
+### Global Services
+- [OAuth Server](oauth.md) - OAuth server for third-party apps
+- [AI Agents](ai-agents.md) - AI-powered features
 - [Integrations](integrations.md) - Stripe, ANAF, and other integrations
 
-### Advanced
-- [Customer Portal](customer-portal.md) - External user access
-- [AI Agents](ai-agents.md) - AI-powered features
+### Organization Resources
+
+#### Customer Management
+- [Organization Users](organization/users.md) - Creating and managing customers/clients
+- [Prospects](organization/prospects.md) - Sales pipeline and CRM
+
+#### Billing & Invoicing
+- [Invoices](organization/invoices.md) - Creating and sending invoices
+- [Receipts](organization/receipts.md) - Receipt management
+- [Products](organization/products.md) - Product catalog
+- [Taxes](organization/taxes.md) - Tax configuration
+
+#### Contracts & Proposals
+- [Contracts](organization/contracts.md) - Contract management and e-signatures
+- [Proposals](organization/proposals.md) - Sales proposals from offer templates
+
+#### Project Management
+- [Projects](organization/projects.md) - Projects and team management
+
+#### Banking
+- [Bank Accounts](organization/bank-accounts.md) - Bank accounts and transactions
+
+#### Reports & Files
+- [Reports](organization/reports.md) - Dynamic reports and schemas
+- [Files](organization/files.md) - File uploads and attachments
+
+#### Webhooks & Portal
+- [Webhooks](organization/webhooks.md) - Webhook endpoints and event handling
+- [Customer Portal](organization/customer-portal.md) - External user access
 
 ## Namespace Structure
 
-The SDK uses a clear separation between global and organization-scoped resources:
+The SDK mirrors this documentation structure in code:
 
 ```php
-// Global resources (accounts, not tied to an organization)
+// Global resources (not organization-scoped)
 use Enlivy\User;              // Global user account
 use Enlivy\Organization;       // Organization
 use Enlivy\AiAgent;           // AI Agent
+use Enlivy\OAuthClient;       // OAuth Client
 
-// Organization-scoped resources (belong to an organization)
+// Organization-scoped resources
 use Enlivy\Organization\Invoice;
 use Enlivy\Organization\Prospect;
-use Enlivy\Organization\User;  // Organization User (customer/employee)
+use Enlivy\Organization\User;      // Organization User (customer/employee)
 use Enlivy\Organization\Contract;
+use Enlivy\Organization\Product;
 ```
 
 When working with typed returns:
@@ -102,6 +152,21 @@ function processInvoice(Invoice $invoice): void {
 
 ## Key Concepts
 
+### Multilingual Fields
+
+Most text fields in Enlivy use `_lang_map` for multilingual support:
+
+```php
+// Multilingual fields use language keys
+'name_lang_map' => [
+    'en' => 'Consulting Services',
+    'ro' => 'Servicii de Consultanta',
+],
+'description_lang_map' => [
+    'en' => 'Professional consulting services',
+],
+```
+
 ### OrganizationUser vs Prospect
 
 | Entity | Purpose | Can Receive Invoices? |
@@ -117,6 +182,23 @@ function processInvoice(Invoice $invoice): void {
 | `internal` + `inbound` | Invoice you create that customer owes you |
 | `external` + `outbound` | Uploaded invoice you sent |
 | `external` + `inbound` | Uploaded invoice you received |
+
+### ID Prefixes
+
+All IDs use prefixes to identify the resource type:
+
+| Prefix | Resource |
+|--------|----------|
+| `org_` | Organization |
+| `org_user_` | Organization User |
+| `org_inv_` | Invoice |
+| `org_cont_` | Contract |
+| `org_pros_` | Prospect |
+| `org_proj_` | Project |
+| `org_prod_` | Product |
+| `org_prop_` | Proposal |
+| `oac_` | OAuth Client |
+| `ai_agent_` | AI Agent |
 
 ## Error Handling
 

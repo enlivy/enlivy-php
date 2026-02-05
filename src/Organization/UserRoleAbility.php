@@ -10,6 +10,8 @@ use Enlivy\ApiResource;
  * Represents a User Role Ability in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
+ * @property string $organization_id
  * @property string $organization_user_role_id
  * @property string $ability
  * @property string $created_at

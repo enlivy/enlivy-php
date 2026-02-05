@@ -269,6 +269,104 @@ $config = Enlivy::toArray();
 print_r($config);
 ```
 
+## API Token Management
+
+The SDK provides methods for managing API tokens programmatically.
+
+### List Tokens
+
+```php
+<?php
+
+use Enlivy\EnlivyClient;
+
+$client = new EnlivyClient([
+    'api_key' => '1|your_api_token',
+]);
+
+$tokens = $client->userTokens->list('user_xxx');
+
+foreach ($tokens as $token) {
+    echo "{$token->name}: {$token->token}\n";
+    echo "  Description: {$token->description}\n";
+    echo "  Last used: {$token->last_used_at}\n";
+}
+```
+
+### Create Token
+
+```php
+<?php
+
+$token = $client->userTokens->create('user_xxx', [
+    // Required
+    'name' => 'Production API Key',
+
+    // Optional
+    'description' => 'Key for production server',
+    'abilities' => ['read', 'write'],           // Token abilities/permissions
+    'organizations' => ['org_xxx', 'org_yyy'],  // Restrict to specific orgs
+    'custom_data' => [                          // Custom metadata
+        'environment' => 'production',
+        'server' => 'web-01',
+    ],
+]);
+
+// IMPORTANT: The full token is only returned on creation
+echo "Token created: {$token->plainTextToken}\n";
+echo "Store this securely - it cannot be retrieved later.\n";
+```
+
+### Update Token
+
+```php
+<?php
+
+$token = $client->userTokens->update('user_xxx', 'pat_xxx', [
+    'name' => 'Updated Token Name',
+    'description' => 'Updated description',
+]);
+
+echo "Token updated: {$token->name}\n";
+```
+
+### Delete Token
+
+```php
+<?php
+
+$client->userTokens->delete('user_xxx', 'pat_xxx');
+
+echo "Token deleted\n";
+```
+
+### Token Field Reference
+
+#### Create Token Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Token name (max 255 chars) |
+| `description` | string | No | Token description (max 255 chars) |
+| `abilities` | array | No | Array of token abilities |
+| `organizations` | array | No | Array of organization IDs to restrict access |
+| `custom_data` | object | No | Custom metadata object |
+
+#### Token Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Token ID (pat_xxx) |
+| `name` | string | Token name |
+| `description` | string | Token description |
+| `token` | string | Masked token (last 5 chars visible) |
+| `abilities` | array | Token abilities |
+| `custom_data` | object | Custom metadata |
+| `user_agent` | string | Last used user agent |
+| `last_used_at` | datetime | Last usage timestamp |
+| `created_at` | datetime | Creation timestamp |
+| `updated_at` | datetime | Last update timestamp |
+
 ## Security Best Practices
 
 1. **Never commit API keys** - Use environment variables
@@ -276,3 +374,4 @@ print_r($config);
 3. **Use minimal permissions** - Create keys with only needed scopes
 4. **Monitor usage** - Review API logs for suspicious activity
 5. **Use OAuth for user actions** - API keys are for server-to-server
+6. **Restrict to organizations** - Use the `organizations` field to limit token scope

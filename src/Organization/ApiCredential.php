@@ -10,11 +10,12 @@ use Enlivy\ApiResource;
  * Represents an API Credential in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
  * @property string $organization_id
  * @property string $name
  * @property string $type
- * @property array $credentials
- * @property bool $is_active
+ * @property array|null $credentials
+ * @property array|null $settings
  * @property string $created_at
  * @property string $updated_at
  */

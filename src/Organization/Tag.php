@@ -10,12 +10,15 @@ use Enlivy\ApiResource;
  * Represents a Tag in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
  * @property string $organization_id
- * @property string $name
- * @property string $color
- * @property string $type
+ * @property string $alias
+ * @property string|null $description
+ * @property string $rgba_color_code
  * @property string $created_at
  * @property string $updated_at
+ * @property string|null $deleted_at
+ * @property string|null $deleted_by_user_id
  */
 class Tag extends ApiResource
 {
