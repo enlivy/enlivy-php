@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Enlivy;
+
+/**
+ * Represents a Webhook in the Enlivy API.
+ *
+ * @property string $id
+ * @property string $organization_id
+ * @property string $url
+ * @property array $events
+ * @property string $secret
+ * @property bool $is_active
+ * @property string|null $last_triggered_at
+ * @property string $created_at
+ * @property string $updated_at
+ */
+class Webhook extends ApiResource
+{
+    public const ?string OBJECT_NAME = 'webhook';
+}

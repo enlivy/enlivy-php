@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Enlivy\Service;
+
+use Enlivy\Collection;
+use Enlivy\EnlivyObject;
+use Enlivy\Util\RequestOptions;
+
+class EmailPreviewService extends AbstractService
+{
+    protected const string RESOURCE = 'email-preview';
+
+    public function list(array $params = [], ?RequestOptions $opts = null): Collection
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
+    }
+
+    public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+}
