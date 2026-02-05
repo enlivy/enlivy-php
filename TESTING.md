@@ -4,15 +4,21 @@ This document explains how to run tests for the Enlivy PHP SDK.
 
 ## Test Suites
 
-| Suite | Purpose | Requires API | Safe for Production |
-|-------|---------|--------------|---------------------|
-| **Unit** | Tests SDK logic with mocked HTTP | No | Yes |
-| **Integration (Read-Only)** | Tests GET operations against real API | Yes | Yes |
-| **Integration (CRUD)** | Tests full CRUD operations | Yes | **No** - creates/deletes data |
+| Suite | Purpose | Requires API | Config |
+|-------|---------|--------------|--------|
+| **Unit** | Tests SDK logic with mocked HTTP | No | `phpunit.xml` |
+| **Integration** | Tests against real API (read-only) | Yes | `phpunit.integration.xml` |
 
-## Quick Start (Recommended)
+## Quick Start
 
-The easiest way to configure integration tests is with a `.env.testing` file:
+### Unit Tests (No API Required)
+
+```bash
+composer install
+./vendor/bin/phpunit
+```
+
+### Integration Tests
 
 ```bash
 # 1. Copy the example config
@@ -31,82 +37,48 @@ Your `.env.testing` file should look like:
 ENLIVY_API_KEY="1|your_actual_token"
 ENLIVY_ORGANIZATION_ID="org_xxx"
 ENLIVY_API_BASE="http://enlivy_api.test"
-# ENLIVY_ALLOW_WRITES="true"  # Uncomment to enable CRUD tests
 ```
 
 > **Note**: `.env.testing` is gitignored - your credentials stay local.
 
-## Running Tests
+## Integration Test Structure
 
-### Unit Tests (Default)
+Integration tests are organized by domain in `tests/Integration/View/`:
 
-Unit tests use mocked HTTP responses and don't require API credentials:
-
-```bash
-# Run all unit tests
-./vendor/bin/phpunit
-
-# Run with coverage
-./vendor/bin/phpunit --coverage-html coverage
+```
+tests/Integration/
+├── IntegrationTestCase.php     # Base class with helpers
+└── View/                       # Read-only tests (list + retrieve)
+    ├── InvoiceTest.php         # Invoices, prefixes
+    ├── UserTest.php            # Organization users, roles
+    ├── ProspectTest.php        # Prospects, statuses, activities
+    ├── ContractTest.php        # Contracts, prefixes, statuses
+    ├── ProductTest.php         # Products
+    ├── TaxTest.php             # Tax classes, rates, types
+    ├── ProjectTest.php         # Projects
+    ├── ReceiptTest.php         # Receipts, prefixes
+    ├── BankAccountTest.php     # Bank accounts, transactions
+    ├── ReportTest.php          # Reports, schemas
+    ├── ContentTest.php         # Guidelines, playbooks, files
+    ├── ProposalTest.php        # Proposals, offers
+    ├── WebhookTest.php         # Webhooks, tags
+    └── TaskTest.php            # Tasks, task statuses
 ```
 
-### Integration Tests
-
-Integration tests run against a real Enlivy API instance.
-
-#### Option 1: Using .env.testing (Recommended)
+### Running Specific Tests
 
 ```bash
-# Just run - credentials loaded from .env.testing
+# All integration tests
 ./vendor/bin/phpunit -c phpunit.integration.xml
 
-# Run only read-only tests
-./vendor/bin/phpunit -c phpunit.integration.xml tests/Integration/ReadOnlyTest.php
+# Single test file
+./vendor/bin/phpunit -c phpunit.integration.xml tests/Integration/View/InvoiceTest.php
 
-# Run CRUD tests (requires ENLIVY_ALLOW_WRITES=true in .env.testing)
-./vendor/bin/phpunit -c phpunit.integration.xml tests/Integration/CrudTest.php
-```
+# Single test method
+./vendor/bin/phpunit -c phpunit.integration.xml --filter testListInvoices
 
-#### Option 2: Using Environment Variables
-
-```bash
-# Pass credentials directly
-ENLIVY_API_KEY="1|your_token" \
-ENLIVY_ORGANIZATION_ID="org_xxx" \
-ENLIVY_API_BASE="http://enlivy_api.test" \
-./vendor/bin/phpunit -c phpunit.integration.xml
-```
-
-#### Read-Only Tests (Safe)
-
-These only perform GET operations - safe to run against any environment:
-
-```bash
-./vendor/bin/phpunit -c phpunit.integration.xml tests/Integration/ReadOnlyTest.php
-```
-
-#### CRUD Tests (Modifies Data)
-
-**WARNING**: These tests CREATE, UPDATE, and DELETE real data.
-
-Only run against a dedicated test organization:
-
-```bash
-# Enable writes in .env.testing:
-# ENLIVY_ALLOW_WRITES="true"
-
-# Then run:
-./vendor/bin/phpunit -c phpunit.integration.xml tests/Integration/CrudTest.php
-```
-
-### All Integration Tests
-
-```bash
-# Read-only tests pass, CRUD tests skip (safe default)
-./vendor/bin/phpunit -c phpunit.integration.xml
-
-# All tests including CRUD (set ENLIVY_ALLOW_WRITES=true first)
-./vendor/bin/phpunit -c phpunit.integration.xml
+# Tests matching a pattern
+./vendor/bin/phpunit -c phpunit.integration.xml --filter Prospect
 ```
 
 ## Environment Variables
@@ -114,19 +86,48 @@ Only run against a dedicated test organization:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `ENLIVY_API_KEY` | Yes | API key (format: `1\|token_string`) |
-| `ENLIVY_ORGANIZATION_ID` | Yes | Organization ID (`org_xxx`) |
+| `ENLIVY_ORGANIZATION_ID` | Yes | Organization ID (`org_xxx` or numeric) |
 | `ENLIVY_API_BASE` | No | API base URL (default: `https://api.enlivy.com`) |
-| `ENLIVY_ALLOW_WRITES` | No | Set to `true` to enable CRUD tests |
 
-## Setting Up a Test Organization
+## Test Assertions
 
-For CRUD tests, we recommend creating a dedicated test organization:
+The `IntegrationTestCase` provides custom assertions:
 
-1. Create a new organization in the Enlivy dashboard
-2. Generate an API key for that organization
-3. Use that organization's credentials for CRUD tests
+```php
+use Enlivy\Tests\Integration\IntegrationTestCase;
 
-This ensures tests don't interfere with real data.
+class MyTest extends IntegrationTestCase
+{
+    public function testExample(): void
+    {
+        $invoice = $this->getClient()->invoices->retrieve('org_inv_xxx');
+
+        // Assert ID has correct prefix
+        $this->assertIdPrefix('org_inv_', $invoice->id);
+
+        // Standard PHPUnit assertions work too
+        $this->assertNotNull($invoice->organization_id);
+    }
+}
+```
+
+## Running All Tests
+
+```bash
+# Unit tests only (fast, no API)
+./vendor/bin/phpunit
+
+# Integration tests only (requires API)
+./vendor/bin/phpunit -c phpunit.integration.xml
+
+# Static analysis
+./vendor/bin/phpstan analyse
+
+# All checks
+composer install && \
+./vendor/bin/phpunit && \
+./vendor/bin/phpstan analyse
+```
 
 ## Continuous Integration
 
@@ -147,10 +148,10 @@ jobs:
           php-version: '8.3'
       - run: composer install
       - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpstan analyse
 
   integration-tests:
     runs-on: ubuntu-latest
-    # Only run on main branch or PRs from maintainers
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
@@ -158,11 +159,12 @@ jobs:
         with:
           php-version: '8.3'
       - run: composer install
-      - name: Run read-only integration tests
+      - name: Run integration tests
         env:
           ENLIVY_API_KEY: ${{ secrets.ENLIVY_TEST_API_KEY }}
           ENLIVY_ORGANIZATION_ID: ${{ secrets.ENLIVY_TEST_ORG_ID }}
-        run: ./vendor/bin/phpunit -c phpunit.integration.xml tests/Integration/ReadOnlyTest.php
+          ENLIVY_API_BASE: ${{ secrets.ENLIVY_API_BASE }}
+        run: ./vendor/bin/phpunit -c phpunit.integration.xml
 ```
 
 ## Writing New Tests
@@ -170,16 +172,24 @@ jobs:
 ### Unit Tests
 
 ```php
-use Enlivy\Tests\Unit\TestCase;
+namespace Enlivy\Tests\Unit;
+
+use PHPUnit\Framework\TestCase;
+use Enlivy\EnlivyClient;
+use Enlivy\Tests\Mock\MockHttpClient;
 
 class MyServiceTest extends TestCase
 {
     public function testSomething(): void
     {
-        // Uses MockHttpClient automatically
-        $client = $this->createMockClient([
-            'object' => 'invoice',
+        $mockHttp = new MockHttpClient([
             'id' => 'org_inv_xxx',
+            'total' => 1000,
+        ]);
+
+        $client = new EnlivyClient([
+            'api_key' => 'test',
+            'http_client' => $mockHttp,
         ]);
 
         $invoice = $client->invoices->retrieve('org_inv_xxx');
@@ -192,18 +202,38 @@ class MyServiceTest extends TestCase
 ### Integration Tests
 
 ```php
+namespace Enlivy\Tests\Integration\View;
+
+use Enlivy\Collection;
+use Enlivy\Organization\Invoice;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
 class MyIntegrationTest extends IntegrationTestCase
 {
-    public function testSomething(): void
+    public function testListItems(): void
     {
-        $client = $this->getClient();
+        $items = $this->getClient()->invoices->list();
 
-        // Real API call
-        $invoices = $client->invoices->list();
+        $this->assertInstanceOf(Collection::class, $items);
+        $this->assertIsArray($items->data);
 
-        $this->assertInstanceOf(Collection::class, $invoices);
+        if (count($items->data) > 0) {
+            $this->assertInstanceOf(Invoice::class, $items->data[0]);
+            $this->assertIdPrefix('org_inv_', $items->data[0]->id);
+        }
+    }
+
+    public function testRetrieveItem(): void
+    {
+        $items = $this->getClient()->invoices->list(['per_page' => 1]);
+
+        if (count($items->data) === 0) {
+            $this->markTestSkipped('No invoices available for testing');
+        }
+
+        $invoice = $this->getClient()->invoices->retrieve($items->data[0]->id);
+
+        $this->assertInstanceOf(Invoice::class, $invoice);
     }
 }
 ```
@@ -220,17 +250,16 @@ XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-html coverage
 
 ## Troubleshooting
 
-### Tests skip with "Environment variable required"
+### Tests skip with "ENLIVY_API_KEY environment variable required"
 
-Create a `.env.testing` file with your credentials:
+Create a `.env.testing` file:
 
 ```bash
 cp .env.testing.example .env.testing
-# Edit .env.testing with your actual credentials
-./vendor/bin/phpunit -c phpunit.integration.xml
+# Edit with your credentials
 ```
 
-Or set environment variables directly:
+Or set environment variables:
 
 ```bash
 export ENLIVY_API_KEY="1|your_token"
@@ -240,25 +269,22 @@ export ENLIVY_ORGANIZATION_ID="org_xxx"
 
 ### SSL certificate errors with local API
 
-For local development without valid SSL:
+Use HTTP instead of HTTPS for local development:
 
-```php
-$client = new EnlivyClient([
-    'api_key' => '...',
-    'api_base' => 'http://enlivy_api.test', // Use HTTP, not HTTPS
-]);
+```env
+ENLIVY_API_BASE="http://enlivy_api.test"
 ```
 
-Or configure SSL verification:
+### Tests fail with "Invalid include parameter"
 
-```php
-Enlivy::setVerifySslCerts(false);
+The API validates include parameters. Check the error message for valid options:
+
+```
+Valid options are: organization, contract_parties, deleted_by_user
 ```
 
-### CRUD tests skip with "ENLIVY_ALLOW_WRITES required"
+Update your test to use a valid include parameter.
 
-This is intentional. CRUD tests modify data, so explicit opt-in is required:
+### Many tests skipped
 
-```bash
-ENLIVY_ALLOW_WRITES=true ./vendor/bin/phpunit tests/Integration/CrudTest.php
-```
+Tests skip when no data exists (e.g., no invoices in the test organization). This is expected for a fresh organization. Create some test data or run against a populated organization.
