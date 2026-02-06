@@ -7,6 +7,7 @@ namespace Enlivy\Service;
 use Enlivy\Collection;
 use Enlivy\UserToken;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -14,11 +15,16 @@ use Enlivy\Util\RequestOptions;
  */
 class UserTokenService extends AbstractService
 {
+    use HasFilters;
+
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<UserToken>
      */
     public function list(string $userId, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateFilters($params);
         return $this->requestCollection('GET', "/users/{$userId}/api-tokens", $params, $opts);
     }
 

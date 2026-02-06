@@ -7,6 +7,7 @@ namespace Enlivy\Service;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\AiAgent;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -18,10 +19,13 @@ use Enlivy\Util\RequestOptions;
 class AiAgentService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
 
     public const array AVAILABLE_INCLUDES = [
         'deleted_by_user',
     ];
+
+    public const array AVAILABLE_FILTERS = [];
 
     /**
      * @return Collection<AiAgent>
@@ -29,6 +33,7 @@ class AiAgentService extends AbstractService
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
 
         return $this->requestCollection('GET', '/ai-agents', $params, $opts);
     }

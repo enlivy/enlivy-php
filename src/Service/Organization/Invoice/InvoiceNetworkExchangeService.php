@@ -10,6 +10,7 @@ use Enlivy\Organization\InvoiceNetworkExchange;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -23,6 +24,7 @@ class InvoiceNetworkExchangeService extends AbstractService
     use HasRestore;
     use HasTagging;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'invoices/network-exchanges';
     protected const ?string RESOURCE_CLASS = InvoiceNetworkExchange::class;
@@ -34,12 +36,26 @@ class InvoiceNetworkExchangeService extends AbstractService
         'tag_ids',
     ];
 
+    public const array AVAILABLE_FILTERS = [
+        'organization_invoice_id',
+        'invoice_state',
+    ];
+
     /**
+     * List all invoice network exchanges.
+     *
+     * Resource-specific filters:
+     * - `organization_invoice_id` (string) - Filter by invoice
+     * - `invoice_state` (string: any|attached|unattached) - Filter by attachment state
+     *
      * @return Collection<InvoiceNetworkExchange>
+     *
+     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\ExportData;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasDownload;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -16,15 +17,19 @@ use Enlivy\Util\RequestOptions;
 class ExportDataService extends AbstractService
 {
     use HasDownload;
+    use HasFilters;
 
     protected const string RESOURCE = 'export-data';
     protected const ?string RESOURCE_CLASS = ExportData::class;
+
+    public const array AVAILABLE_FILTERS = [];
 
     /**
      * @return Collection<ExportData>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\ReportSchema;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -20,6 +21,7 @@ class ReportSchemaService extends AbstractService
 {
     use HasRestore;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'report-schemas';
     protected const ?string RESOURCE_CLASS = ReportSchema::class;
@@ -30,12 +32,15 @@ class ReportSchemaService extends AbstractService
         'deleted_by_user',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<ReportSchema>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

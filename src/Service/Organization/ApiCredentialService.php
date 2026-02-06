@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization;
 use Enlivy\Collection;
 use Enlivy\Organization\ApiCredential;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -16,6 +17,7 @@ use Enlivy\Util\RequestOptions;
 class ApiCredentialService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
     protected const string RESOURCE = 'api-credentials';
     protected const ?string RESOURCE_CLASS = ApiCredential::class;
 
@@ -23,12 +25,15 @@ class ApiCredentialService extends AbstractService
         'organization',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<ApiCredential>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\OAuthAuthorization;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -15,11 +16,16 @@ use Enlivy\Util\RequestOptions;
  */
 class OAuthAuthorizationService extends AbstractService
 {
+    use HasFilters;
+
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<OAuthAuthorization>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateFilters($params);
         return $this->requestCollection('GET', '/oauth/authorizations', $params, $opts);
     }
 

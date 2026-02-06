@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Webhook;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -17,6 +18,7 @@ use Enlivy\Util\RequestOptions;
 class WebhookService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
     protected const string RESOURCE = 'webhooks';
     protected const ?string RESOURCE_CLASS = Webhook::class;
 
@@ -27,12 +29,15 @@ class WebhookService extends AbstractService
         'notifications',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<Webhook>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

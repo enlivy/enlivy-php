@@ -9,6 +9,7 @@ use Enlivy\EnlivyObject;
 use Enlivy\Organization\Prospect;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasImports;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Util\RequestOptions;
@@ -23,6 +24,7 @@ class ProspectService extends AbstractService
     use HasRestore;
     use HasImports;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'prospects';
     protected const ?string RESOURCE_CLASS = Prospect::class;
@@ -38,22 +40,48 @@ class ProspectService extends AbstractService
         'deleted_by_user',
     ];
 
+    public const array AVAILABLE_FILTERS = [
+        'organization_prospect_status_id',
+        'assigned_organization_user_id',
+        'source_type',
+        'email',
+        'state_qualified_at_from',
+        'state_qualified_at_to',
+        'state_disqualified_at_from',
+        'state_disqualified_at_to',
+        'state_won_at_from',
+        'state_won_at_to',
+        'state_lost_at_from',
+        'state_lost_at_to',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
+    ];
+
     /**
      * List all prospects.
      *
-     * @param array{
-     *     organization_id?: string,
-     *     page?: int,
-     *     per_page?: int,
-     *     include?: string[],
-     *     filter?: array,
-     *     sort?: string,
-     * } $params
+     * Resource-specific filters:
+     * - `organization_prospect_status_id` (string) - Filter by prospect status
+     * - `assigned_organization_user_id` (string) - Filter by assigned user
+     * - `source_type` (string: inbound|outbound) - Lead source type
+     * - `email` (string) - Filter by email address
+     * - `state_qualified_at_from` / `state_qualified_at_to` (datetime) - Qualified date range
+     * - `state_disqualified_at_from` / `state_disqualified_at_to` (datetime) - Disqualified date range
+     * - `state_won_at_from` / `state_won_at_to` (datetime) - Won date range
+     * - `state_lost_at_from` / `state_lost_at_to` (datetime) - Lost date range
+     * - `created_at_from` / `created_at_to` (datetime) - Created date range
+     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
+     *
      * @return Collection<Prospect>
+     *
+     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

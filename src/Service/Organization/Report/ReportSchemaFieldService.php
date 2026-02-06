@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Report;
 use Enlivy\Collection;
 use Enlivy\Organization\ReportSchemaField;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -16,11 +17,14 @@ use Enlivy\Util\RequestOptions;
 class ReportSchemaFieldService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
 
     public const array AVAILABLE_INCLUDES = [
         'report_schema',
         'deleted_by_user',
     ];
+
+    public const array AVAILABLE_FILTERS = [];
 
     /**
      * @return Collection<ReportSchemaField>
@@ -28,6 +32,7 @@ class ReportSchemaFieldService extends AbstractService
     public function list(string $schemaId, array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "report-schemas/{$schemaId}/fields"), $params, $opts);

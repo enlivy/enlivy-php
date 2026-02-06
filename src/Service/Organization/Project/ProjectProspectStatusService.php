@@ -7,12 +7,14 @@ namespace Enlivy\Service\Organization\Project;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class ProjectProspectStatusService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
@@ -20,9 +22,12 @@ class ProjectProspectStatusService extends AbstractService
         'organization_prospect_status',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses"), $params, $opts);

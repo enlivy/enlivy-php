@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Tax;
 use Enlivy\Collection;
 use Enlivy\Organization\TaxType;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -16,6 +17,7 @@ use Enlivy\Util\RequestOptions;
 class TaxTypeService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
     protected const string RESOURCE = 'tax-types';
     protected const ?string RESOURCE_CLASS = TaxType::class;
 
@@ -23,12 +25,15 @@ class TaxTypeService extends AbstractService
         'organization',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<TaxType>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

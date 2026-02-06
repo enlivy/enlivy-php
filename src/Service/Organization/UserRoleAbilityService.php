@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization;
 use Enlivy\Collection;
 use Enlivy\Organization\UserRoleAbility;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -14,11 +15,16 @@ use Enlivy\Util\RequestOptions;
  */
 class UserRoleAbilityService extends AbstractService
 {
+    use HasFilters;
+
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<UserRoleAbility>
      */
     public function list(string $roleId, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "user-roles/{$roleId}/abilities"), $params, $opts);

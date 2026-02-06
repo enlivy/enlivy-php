@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\Report;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -20,6 +21,7 @@ class ReportService extends AbstractService
 {
     use HasRestore;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'reports';
     protected const ?string RESOURCE_CLASS = Report::class;
@@ -34,12 +36,25 @@ class ReportService extends AbstractService
         'report_schema.report_schema_fields',
     ];
 
+    public const array AVAILABLE_FILTERS = [
+        'reported_at_from',
+        'reported_at_to',
+    ];
+
     /**
+     * List all reports.
+     *
+     * Resource-specific filters:
+     * - `reported_at_from` / `reported_at_to` (datetime) - Reported date range
+     *
      * @return Collection<Report>
+     *
+     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

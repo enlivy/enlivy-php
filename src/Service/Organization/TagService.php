@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\Tag;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -20,6 +21,7 @@ class TagService extends AbstractService
 {
     use HasRestore;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'tags';
     protected const ?string RESOURCE_CLASS = Tag::class;
@@ -29,12 +31,21 @@ class TagService extends AbstractService
         'deleted_by_user',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
+     * List all tags.
+     *
+     * Supports global filters only (q, ids, page, per_page, order_by, order, deleted, tag_ids).
+     *
      * @return Collection<Tag>
+     *
+     * @see HasFilters::GLOBAL_FILTERS for global filters
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

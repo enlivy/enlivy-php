@@ -7,6 +7,7 @@ namespace Enlivy\Service;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -16,6 +17,7 @@ use Enlivy\Util\RequestOptions;
 class OrganizationService extends AbstractService
 {
     use HasIncludes;
+    use HasFilters;
 
     public const array AVAILABLE_INCLUDES = [
         'schema',
@@ -29,12 +31,15 @@ class OrganizationService extends AbstractService
         'membership_features',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<Organization>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
 
         return $this->requestCollection('GET', '/organizations', $params, $opts);
     }

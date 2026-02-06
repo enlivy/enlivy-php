@@ -9,6 +9,7 @@ use Enlivy\Organization\Product;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -22,6 +23,7 @@ class ProductService extends AbstractService
     use HasRestore;
     use HasTagging;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'products';
     protected const ?string RESOURCE_CLASS = Product::class;
@@ -33,12 +35,15 @@ class ProductService extends AbstractService
         'tax_class',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<Product>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

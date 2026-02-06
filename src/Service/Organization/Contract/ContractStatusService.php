@@ -9,6 +9,7 @@ use Enlivy\Organization\ContractStatus;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasReorder;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -22,6 +23,7 @@ class ContractStatusService extends AbstractService
     use HasRestore;
     use HasReorder;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'contract-statuses';
     protected const ?string RESOURCE_CLASS = ContractStatus::class;
@@ -31,12 +33,15 @@ class ContractStatusService extends AbstractService
         'deleted_by_user',
     ];
 
+    public const array AVAILABLE_FILTERS = [];
+
     /**
      * @return Collection<ContractStatus>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);

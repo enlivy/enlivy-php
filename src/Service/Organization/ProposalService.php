@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\Proposal;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
@@ -20,6 +21,7 @@ class ProposalService extends AbstractService
 {
     use HasRestore;
     use HasIncludes;
+    use HasFilters;
 
     protected const string RESOURCE = 'proposals';
     protected const ?string RESOURCE_CLASS = Proposal::class;
@@ -40,12 +42,34 @@ class ProposalService extends AbstractService
         'expired_by_user',
     ];
 
+    public const array AVAILABLE_FILTERS = [
+        'status',
+        'currency',
+        'organization_project_id',
+        'organization_offer_id',
+        'organization_prospect_id',
+        'organization_receiver_user_id',
+    ];
+
     /**
+     * List all proposals.
+     *
+     * Resource-specific filters:
+     * - `status` (string: draft|sent|viewed|accepted|rejected|expired)
+     * - `currency` (string) - Filter by currency code (3 chars, e.g. EUR)
+     * - `organization_project_id` (string) - Filter by project
+     * - `organization_offer_id` (string) - Filter by offer
+     * - `organization_prospect_id` (string) - Filter by prospect
+     * - `organization_receiver_user_id` (string) - Filter by receiver user
+     *
      * @return Collection<Proposal>
+     *
+     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateIncludes($params);
+        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
