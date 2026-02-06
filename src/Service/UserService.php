@@ -7,6 +7,7 @@ namespace Enlivy\Service;
 use Enlivy\EnlivyObject;
 use Enlivy\User;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -14,14 +15,24 @@ use Enlivy\Util\RequestOptions;
  */
 class UserService extends AbstractService
 {
+    use HasIncludes;
+
+    public const array AVAILABLE_INCLUDES = [
+        'organizations',
+    ];
+
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): User
     {
+        $this->validateIncludes($params);
+
         /** @var User */
         return $this->request('GET', "/users/{$id}", $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): User
     {
+        $this->validateIncludes($params);
+
         /** @var User */
         return $this->request('PUT', "/users/{$id}", $params, $opts);
     }

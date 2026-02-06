@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization;
 use Enlivy\Collection;
 use Enlivy\Organization\UserAddress;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -14,11 +15,20 @@ use Enlivy\Util\RequestOptions;
  */
 class UserAddressService extends AbstractService
 {
+    use HasIncludes;
+
+    public const array AVAILABLE_INCLUDES = [
+        'organization',
+        'organization_user',
+        'deleted_by_user',
+    ];
+
     /**
      * @return Collection<UserAddress>
      */
     public function list(string $userId, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "users/{$userId}/addresses"), $params, $opts);
@@ -26,6 +36,7 @@ class UserAddressService extends AbstractService
 
     public function create(string $userId, array $params, ?RequestOptions $opts = null): UserAddress
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var UserAddress */
@@ -34,6 +45,7 @@ class UserAddressService extends AbstractService
 
     public function retrieve(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): UserAddress
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var UserAddress */
@@ -42,6 +54,7 @@ class UserAddressService extends AbstractService
 
     public function update(string $userId, string $addressId, array $params, ?RequestOptions $opts = null): UserAddress
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var UserAddress */
@@ -50,6 +63,7 @@ class UserAddressService extends AbstractService
 
     public function delete(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): UserAddress
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var UserAddress */
@@ -58,6 +72,7 @@ class UserAddressService extends AbstractService
 
     public function restore(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): UserAddress
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var UserAddress */

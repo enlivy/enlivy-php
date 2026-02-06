@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Project;
 use Enlivy\Collection;
 use Enlivy\Organization\ProjectMember;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -14,11 +15,21 @@ use Enlivy\Util\RequestOptions;
  */
 class ProjectMemberService extends AbstractService
 {
+    use HasIncludes;
+
+    public const array AVAILABLE_INCLUDES = [
+        'deleted_by_user',
+        'organization',
+        'organization_project',
+        'organization_user',
+    ];
+
     /**
      * @return Collection<ProjectMember>
      */
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "projects/{$projectId}/members"), $params, $opts);
@@ -26,6 +37,7 @@ class ProjectMemberService extends AbstractService
 
     public function create(string $projectId, array $params, ?RequestOptions $opts = null): ProjectMember
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ProjectMember */
@@ -34,6 +46,7 @@ class ProjectMemberService extends AbstractService
 
     public function retrieve(string $projectId, string $memberId, array $params = [], ?RequestOptions $opts = null): ProjectMember
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ProjectMember */
@@ -42,6 +55,7 @@ class ProjectMemberService extends AbstractService
 
     public function update(string $projectId, string $memberId, array $params, ?RequestOptions $opts = null): ProjectMember
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ProjectMember */
@@ -50,6 +64,7 @@ class ProjectMemberService extends AbstractService
 
     public function delete(string $projectId, string $memberId, array $params = [], ?RequestOptions $opts = null): ProjectMember
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ProjectMember */

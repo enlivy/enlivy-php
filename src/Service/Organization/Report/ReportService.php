@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\Report;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -18,15 +19,27 @@ use Enlivy\Util\RequestOptions;
 class ReportService extends AbstractService
 {
     use HasRestore;
+    use HasIncludes;
 
     protected const string RESOURCE = 'reports';
     protected const ?string RESOURCE_CLASS = Report::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'organization',
+        'report_schema',
+        'organization_user',
+        'organization_user_role',
+        'deleted_by_user',
+        'organization_project',
+        'report_schema.report_schema_fields',
+    ];
 
     /**
      * @return Collection<Report>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
@@ -34,24 +47,28 @@ class ReportService extends AbstractService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }

@@ -7,14 +7,22 @@ namespace Enlivy\Service\Organization;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class UserClientPortalSessionService extends AbstractService
 {
+    use HasIncludes;
     protected const string RESOURCE = 'user-client-portal-sessions';
+
+    public const array AVAILABLE_INCLUDES = [
+        'organization',
+        'organization_user',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
@@ -22,6 +30,7 @@ class UserClientPortalSessionService extends AbstractService
 
     public function create(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
@@ -29,6 +38,7 @@ class UserClientPortalSessionService extends AbstractService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
@@ -36,6 +46,7 @@ class UserClientPortalSessionService extends AbstractService
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
@@ -43,6 +54,7 @@ class UserClientPortalSessionService extends AbstractService
 
     public function confirmVerificationCode(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/confirm-verification-code"), $params, $opts);
@@ -50,6 +62,7 @@ class UserClientPortalSessionService extends AbstractService
 
     public function resendVerificationCode(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/resend-verification-code"), $params, $opts);
@@ -57,6 +70,7 @@ class UserClientPortalSessionService extends AbstractService
 
     public function expire(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/expire"), $params, $opts);

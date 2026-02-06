@@ -9,6 +9,7 @@ use Enlivy\Organization\Task;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasReorder;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -20,15 +21,30 @@ class TaskService extends AbstractService
 {
     use HasRestore;
     use HasReorder;
+    use HasIncludes;
 
     protected const string RESOURCE = 'tasks';
     protected const ?string RESOURCE_CLASS = Task::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'assigned_by_organization_user',
+        'assigned_to_organization_user',
+        'completed_by_organization_user',
+        'deleted_by_user',
+        'organization',
+        'parent_organization_task',
+        'organization_project',
+        'organization_task_status',
+        'organization_report_schema',
+        'organization_report',
+    ];
 
     /**
      * @return Collection<Task>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
@@ -36,24 +52,28 @@ class TaskService extends AbstractService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Task
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Task
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Task
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Task
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }

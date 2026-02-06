@@ -53,7 +53,7 @@ final class CurlClient implements HttpClientInterface
 
         $method = strtoupper($method);
 
-        $curlHeaders = [];
+        $curlHeaders = ['Accept: application/json'];
         foreach ($headers as $key => $value) {
             $curlHeaders[] = "{$key}: {$value}";
         }
@@ -76,14 +76,11 @@ final class CurlClient implements HttpClientInterface
             CURLOPT_HEADER => true,
         ]);
 
-        $curlHeaders[] = 'Accept: application/json';
-
         $response = curl_exec($ch);
 
         if ($response === false) {
             $error = curl_error($ch);
             $errno = curl_errno($ch);
-            curl_close($ch);
 
             throw new ApiConnectionException(
                 "Could not connect to Enlivy API: {$error} (errno {$errno})",
@@ -92,7 +89,6 @@ final class CurlClient implements HttpClientInterface
 
         $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        curl_close($ch);
 
         $rawHeaders = substr((string) $response, 0, $headerSize);
         $body = substr((string) $response, $headerSize);

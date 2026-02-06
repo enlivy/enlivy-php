@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Report;
 use Enlivy\Collection;
 use Enlivy\Organization\ReportSchemaField;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -14,11 +15,19 @@ use Enlivy\Util\RequestOptions;
  */
 class ReportSchemaFieldService extends AbstractService
 {
+    use HasIncludes;
+
+    public const array AVAILABLE_INCLUDES = [
+        'report_schema',
+        'deleted_by_user',
+    ];
+
     /**
      * @return Collection<ReportSchemaField>
      */
     public function list(string $schemaId, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "report-schemas/{$schemaId}/fields"), $params, $opts);
@@ -26,6 +35,7 @@ class ReportSchemaFieldService extends AbstractService
 
     public function create(string $schemaId, array $params, ?RequestOptions $opts = null): ReportSchemaField
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ReportSchemaField */
@@ -34,6 +44,7 @@ class ReportSchemaFieldService extends AbstractService
 
     public function retrieve(string $schemaId, string $fieldId, array $params = [], ?RequestOptions $opts = null): ReportSchemaField
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ReportSchemaField */
@@ -42,6 +53,7 @@ class ReportSchemaFieldService extends AbstractService
 
     public function update(string $schemaId, string $fieldId, array $params, ?RequestOptions $opts = null): ReportSchemaField
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ReportSchemaField */
@@ -50,6 +62,7 @@ class ReportSchemaFieldService extends AbstractService
 
     public function delete(string $schemaId, string $fieldId, array $params = [], ?RequestOptions $opts = null): ReportSchemaField
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ReportSchemaField */
@@ -58,6 +71,7 @@ class ReportSchemaFieldService extends AbstractService
 
     public function restore(string $schemaId, string $fieldId, array $params = [], ?RequestOptions $opts = null): ReportSchemaField
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var ReportSchemaField */

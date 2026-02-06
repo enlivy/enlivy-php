@@ -6,6 +6,7 @@ namespace Enlivy\Service;
 
 use Enlivy\Collection;
 use Enlivy\InvitationCode;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -13,40 +14,58 @@ use Enlivy\Util\RequestOptions;
  */
 class InvitationCodeService extends AbstractService
 {
+    use HasIncludes;
+
+    public const array AVAILABLE_INCLUDES = [
+        'deleted_by_user',
+    ];
+
     /**
      * @return Collection<InvitationCode>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
+
         return $this->requestCollection('GET', '/invitation-codes', $params, $opts);
     }
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): InvitationCode
     {
+        $this->validateIncludes($params);
+
         /** @var InvitationCode */
         return $this->request('GET', "/invitation-codes/{$id}", $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): InvitationCode
     {
+        $this->validateIncludes($params);
+
         /** @var InvitationCode */
         return $this->request('POST', '/invitation-codes', $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): InvitationCode
     {
+        $this->validateIncludes($params);
+
         /** @var InvitationCode */
         return $this->request('PUT', "/invitation-codes/{$id}", $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): InvitationCode
     {
+        $this->validateIncludes($params);
+
         /** @var InvitationCode */
         return $this->request('DELETE', "/invitation-codes/{$id}", $params, $opts);
     }
 
     public function restore(string $id, array $params = [], ?RequestOptions $opts = null): InvitationCode
     {
+        $this->validateIncludes($params);
+
         /** @var InvitationCode */
         return $this->request('POST', "/invitation-codes/restore/{$id}", $params, $opts);
     }
@@ -56,6 +75,8 @@ class InvitationCodeService extends AbstractService
      */
     public function referrals(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
+
         return $this->requestCollection('GET', '/invitation-codes/referrals', $params, $opts);
     }
 
@@ -64,6 +85,8 @@ class InvitationCodeService extends AbstractService
      */
     public function referralsForCode(string $id, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
+
         return $this->requestCollection('GET', "/invitation-codes/{$id}/referrals", $params, $opts);
     }
 }

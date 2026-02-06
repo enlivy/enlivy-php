@@ -259,28 +259,41 @@ Each `examples/*.md` file should include:
 ```php
 class EntityService extends AbstractService
 {
+    use HasIncludes;
+
     protected const string RESOURCE = 'entities';
+    protected const ?string RESOURCE_CLASS = Entity::class;
+
+    protected const array AVAILABLE_INCLUDES = [
+        'relation_a',
+        'relation_b',
+        'deleted_by_user',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Entity
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): Entity
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Entity
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
@@ -302,6 +315,7 @@ class EntityService extends AbstractService
 | `HasDownload` | `download()` | Entity has PDF/file download |
 | `HasImports` | `import()`, `importProgress()` | Entity supports bulk import |
 | `HasReorder` | `reorder()` | Entity supports manual ordering |
+| `HasIncludes` | `validateIncludes()` | Entity supports `?include=` query param |
 
 ---
 
@@ -341,7 +355,8 @@ find src -type f -name "*.php" | wc -l  # Should be ~173
 - **46** Organization-scoped resource classes (at `src/Organization/`)
 - **~65** Service classes
 - **9** Exception classes
-- **~173** Total PHP files in src/
+- **6** Concern traits (`HasRestore`, `HasTagging`, `HasDownload`, `HasImports`, `HasReorder`, `HasIncludes`)
+- **~174** Total PHP files in src/
 
 ---
 
@@ -361,3 +376,5 @@ When making changes, update this section:
 - 2026-02-05: Added global Enlivy config singleton
 - 2026-02-05: Created examples/ documentation directory
 - 2026-02-05: Restructured namespaces - organization-scoped resources moved to `Enlivy\Organization\`, services to `Service\Organization\`
+- 2026-02-06: Added HasIncludes concern trait with AVAILABLE_INCLUDES constants and validation on all 56 services
+- 2026-02-06: Removed deprecated `curl_close()` calls and fixed Accept header placement in CurlClient

@@ -10,6 +10,7 @@ use Enlivy\Organization\InvoiceNetworkExchange;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -21,15 +22,24 @@ class InvoiceNetworkExchangeService extends AbstractService
 {
     use HasRestore;
     use HasTagging;
+    use HasIncludes;
 
     protected const string RESOURCE = 'invoices/network-exchanges';
     protected const ?string RESOURCE_CLASS = InvoiceNetworkExchange::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'organization',
+        'parsed_data',
+        'invoice',
+        'tag_ids',
+    ];
 
     /**
      * @return Collection<InvoiceNetworkExchange>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
@@ -37,30 +47,35 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): InvoiceNetworkExchange
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): InvoiceNetworkExchange
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): InvoiceNetworkExchange
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): InvoiceNetworkExchange
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function pull(string $institutionId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$institutionId}/pull"), $params, $opts);
@@ -68,6 +83,7 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public function download(string $id, array $params = [], ?RequestOptions $opts = null): string
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/download"), $params, $opts);
@@ -75,6 +91,7 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public function downloadPdf(string $id, array $params = [], ?RequestOptions $opts = null): string
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/download-pdf"), $params, $opts);
@@ -82,6 +99,7 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public function downloadSignature(string $id, array $params = [], ?RequestOptions $opts = null): string
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/download-signature"), $params, $opts);
@@ -89,6 +107,7 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public function information(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/information"), $params, $opts);

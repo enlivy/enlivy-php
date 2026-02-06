@@ -7,12 +7,22 @@ namespace Enlivy\Service\Organization\Project;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class ProjectPermissionPlaybookService extends AbstractService
 {
+    use HasIncludes;
+
+    public const array AVAILABLE_INCLUDES = [
+        'organization',
+        'organizationProject',
+        'organizationPlaybook',
+    ];
+
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, "projects/{$projectId}/permission-playbooks"), $params, $opts);
@@ -20,6 +30,7 @@ class ProjectPermissionPlaybookService extends AbstractService
 
     public function create(string $projectId, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/permission-playbooks"), $params, $opts);
@@ -27,6 +38,7 @@ class ProjectPermissionPlaybookService extends AbstractService
 
     public function retrieve(string $projectId, string $permissionId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, "projects/{$projectId}/permission-playbooks/{$permissionId}"), $params, $opts);
@@ -34,6 +46,7 @@ class ProjectPermissionPlaybookService extends AbstractService
 
     public function update(string $projectId, string $permissionId, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('PUT', $this->orgPath($orgId, "projects/{$projectId}/permission-playbooks/{$permissionId}"), $params, $opts);
@@ -41,6 +54,7 @@ class ProjectPermissionPlaybookService extends AbstractService
 
     public function delete(string $projectId, string $permissionId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('DELETE', $this->orgPath($orgId, "projects/{$projectId}/permission-playbooks/{$permissionId}"), $params, $opts);
@@ -48,6 +62,7 @@ class ProjectPermissionPlaybookService extends AbstractService
 
     public function storeBody(string $projectId, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/permission-playbooks"), $params, $opts);
