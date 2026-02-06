@@ -39,9 +39,18 @@ class TaskService extends AbstractService
         'organization_task_status',
         'organization_report_schema',
         'organization_report',
+        'tag_ids',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'parent_organization_task_id',
+        'organization_project_id',
+        'assigned_by_organization_user_id',
+        'assigned_to_organization_user_id',
+        'title',
+        'content',
+        'has_lang_map',
+    ];
 
     /**
      * @return Collection<Task>

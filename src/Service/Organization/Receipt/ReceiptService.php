@@ -39,13 +39,21 @@ class ReceiptService extends AbstractService
         'deleted_by_user',
         'tag_ids',
         'taxes',
-        'contract',
+        'receipt_prefix',
     ];
 
     public const array AVAILABLE_FILTERS = [
+        'bank_account_id',
+        'currency',
         'direction',
-        'status',
+        'has_receiver_user',
+        'has_sender_user',
         'organization_invoice_id',
+        'organization_receiver_user_id',
+        'organization_sender_user_id',
+        'organization_user_id',
+        'status',
+        'total',
         'paid_at_from',
         'paid_at_to',
         'issued_at_from',

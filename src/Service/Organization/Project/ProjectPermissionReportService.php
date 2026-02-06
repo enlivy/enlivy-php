@@ -18,11 +18,13 @@ class ProjectPermissionReportService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
-        'organizationProject',
-        'organizationReportSchema',
+        'organization_project',
+        'organization_report_schema',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_project_id',
+    ];
 
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {

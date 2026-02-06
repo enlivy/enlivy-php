@@ -23,7 +23,11 @@ class OAuthClientService extends AbstractService
         'user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'user_id',
+        'is_active',
+        'is_verified',
+    ];
 
     /**
      * @return Collection<OAuthClient>

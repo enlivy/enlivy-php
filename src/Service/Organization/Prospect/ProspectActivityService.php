@@ -36,7 +36,11 @@ class ProspectActivityService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_prospect_id',
+        'organization_report_id',
+        'performed_by_organization_user_id',
+    ];
 
     /**
      * @return Collection<ProspectActivity>

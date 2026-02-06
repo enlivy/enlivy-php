@@ -22,7 +22,11 @@ class ProjectPermissionGuidelineService extends AbstractService
         'organization_guideline',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_project_id',
+        'organization_guideline_id',
+        'member_role',
+    ];
 
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {

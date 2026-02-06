@@ -38,7 +38,9 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'organization_invoice_id',
+        'organization_user_id',
         'invoice_state',
+        'status',
     ];
 
     /**

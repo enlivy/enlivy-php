@@ -36,15 +36,13 @@ class GuidelineService extends AbstractService
         'organization',
         'organization_owner_user',
         'organization_project',
+        'project_permission_guidelines',
+        'resource_bundle_permission_guidelines',
         'tag_ids',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'organization_project_id',
-        'created_at_from',
-        'created_at_to',
-        'updated_at_from',
-        'updated_at_to',
     ];
 
     /**
@@ -52,8 +50,6 @@ class GuidelineService extends AbstractService
      *
      * Resource-specific filters:
      * - `organization_project_id` (string) - Filter by project
-     * - `created_at_from` / `created_at_to` (date: Y-m-d) - Created date range
-     * - `updated_at_from` / `updated_at_to` (date: Y-m-d) - Updated date range
      *
      * @return Collection<Guideline>
      *

@@ -33,7 +33,6 @@ class BankAccountService extends AbstractService
         'organization',
         'deleted_by_user',
         'tag_ids',
-        'bank_account_data_account_detail',
     ];
 
     public const array AVAILABLE_FILTERS = [];

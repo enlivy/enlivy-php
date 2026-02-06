@@ -33,10 +33,13 @@ class ReportService extends AbstractService
         'organization_user_role',
         'deleted_by_user',
         'organization_project',
-        'report_schema.report_schema_fields',
     ];
 
     public const array AVAILABLE_FILTERS = [
+        'organization_report_schema_id',
+        'organization_user_id',
+        'organization_user_role_id',
+        'organization_project_id',
         'reported_at_from',
         'reported_at_to',
     ];

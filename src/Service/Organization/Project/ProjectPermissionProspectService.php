@@ -23,7 +23,11 @@ class ProjectPermissionProspectService extends AbstractService
         'organization_prospect_status',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_project_id',
+        'organization_prospect_status_id',
+        'organization_user_id',
+    ];
 
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {

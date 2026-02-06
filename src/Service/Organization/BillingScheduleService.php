@@ -38,20 +38,6 @@ class BillingScheduleService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'status',
-        'type',
-        'direction',
-        'organization_sender_user_id',
-        'organization_receiver_user_id',
-        'organization_contract_id',
-        'organization_bank_account_id',
-        'starts_at_from',
-        'starts_at_to',
-        'ends_at_from',
-        'ends_at_to',
-        'created_at_from',
-        'created_at_to',
-        'updated_at_from',
-        'updated_at_to',
     ];
 
     /**
@@ -67,8 +53,6 @@ class BillingScheduleService extends AbstractService
      * - `organization_bank_account_id` (string) - Filter by bank account
      * - `starts_at_from` / `starts_at_to` (datetime) - Start date range
      * - `ends_at_from` / `ends_at_to` (datetime) - End date range
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<BillingSchedule>
      *

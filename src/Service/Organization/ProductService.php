@@ -35,7 +35,9 @@ class ProductService extends AbstractService
         'tax_class',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'is_sold',
+    ];
 
     /**
      * @return Collection<Product>

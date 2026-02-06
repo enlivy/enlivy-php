@@ -37,18 +37,16 @@ class UserService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'created_at_from',
-        'created_at_to',
-        'updated_at_from',
-        'updated_at_to',
+        'can_be_invoiced',
+        'can_be_invoicing',
+        'can_be_payrolled',
+        'can_use_backoffice',
+        'email',
+        'organization_user_role_id',
     ];
 
     /**
      * List all organization users.
-     *
-     * Resource-specific filters:
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<User>
      *

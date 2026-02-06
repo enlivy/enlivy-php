@@ -38,17 +38,11 @@ class PlaybookService extends AbstractService
         'organization_project',
         'parent_organization_playbook',
         'tag_ids',
-        'procedure_process_steps_files',
-        'procedure_files',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'parent_organization_playbook_id',
         'organization_project_id',
-        'created_at_from',
-        'created_at_to',
-        'updated_at_from',
-        'updated_at_to',
     ];
 
     /**
@@ -57,8 +51,6 @@ class PlaybookService extends AbstractService
      * Resource-specific filters:
      * - `parent_organization_playbook_id` (string) - Filter by parent playbook
      * - `organization_project_id` (string) - Filter by project
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<Playbook>
      *

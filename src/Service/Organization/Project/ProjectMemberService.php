@@ -28,6 +28,7 @@ class ProjectMemberService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'member_role',
+        'organization_project_id',
     ];
 
     /**

@@ -36,12 +36,15 @@ class BankTransactionService extends AbstractService
         'connection_entities',
         'cost_type',
         'deleted_by_user',
+        'receiver_user',
+        'sender_user',
         'tag_ids',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'state',
-        'direction',
+        'bank_account_id',
+        'organization_bank_transaction_cost_type_id',
         'connection_entity_type',
         'connection_entity_id',
         'created_at_from',

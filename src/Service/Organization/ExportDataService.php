@@ -9,6 +9,7 @@ use Enlivy\Organization\ExportData;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasFilters;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
@@ -18,9 +19,14 @@ class ExportDataService extends AbstractService
 {
     use HasDownload;
     use HasFilters;
+    use HasIncludes;
 
     protected const string RESOURCE = 'export-data';
     protected const ?string RESOURCE_CLASS = ExportData::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'organization',
+    ];
 
     public const array AVAILABLE_FILTERS = [];
 
@@ -29,6 +35,7 @@ class ExportDataService extends AbstractService
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
@@ -37,24 +44,28 @@ class ExportDataService extends AbstractService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): ExportData
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function create(array $params, ?RequestOptions $opts = null): ExportData
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): ExportData
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function retry(string $id, array $params = [], ?RequestOptions $opts = null): ExportData
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/retry"), $params, $opts);
     }

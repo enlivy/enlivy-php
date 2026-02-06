@@ -37,19 +37,10 @@ class ProjectService extends AbstractService
         'resource_bundles',
     ];
 
-    public const array AVAILABLE_FILTERS = [
-        'created_at_from',
-        'created_at_to',
-        'updated_at_from',
-        'updated_at_to',
-    ];
+    public const array AVAILABLE_FILTERS = [];
 
     /**
      * List all projects.
-     *
-     * Resource-specific filters:
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<Project>
      *

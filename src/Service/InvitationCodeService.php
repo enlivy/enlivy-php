@@ -22,7 +22,9 @@ class InvitationCodeService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'user_id',
+    ];
 
     /**
      * @return Collection<InvitationCode>

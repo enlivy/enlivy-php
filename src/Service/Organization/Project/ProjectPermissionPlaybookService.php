@@ -18,11 +18,15 @@ class ProjectPermissionPlaybookService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
-        'organizationProject',
-        'organizationPlaybook',
+        'organization_project',
+        'organization_playbook',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_project_id',
+        'organization_playbook_id',
+        'member_role',
+    ];
 
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {

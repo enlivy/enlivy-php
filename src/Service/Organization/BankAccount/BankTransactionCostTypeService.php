@@ -29,6 +29,7 @@ class BankTransactionCostTypeService extends AbstractService
     protected const ?string RESOURCE_CLASS = BankTransactionCostType::class;
 
     public const array AVAILABLE_INCLUDES = [
+        'organization',
         'deleted_by_user',
         'tag_ids',
     ];

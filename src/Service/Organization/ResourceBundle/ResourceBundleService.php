@@ -23,6 +23,9 @@ class ResourceBundleService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
+        'project_resource_bundles',
+        'resource_bundle_permission_reports',
+        'resource_bundle_permission_guidelines',
     ];
 
     public const array AVAILABLE_FILTERS = [];

@@ -30,13 +30,11 @@ class ContractSignatureService extends AbstractService
         'deleted_by_user',
         'organization',
         'organization_contract',
-        'evidence_authentication',
-        'evidence_consent',
-        'evidence_signature_biometrics',
-        'sign_session_url',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_contract_id',
+    ];
 
     /**
      * @return Collection<ContractSignature>

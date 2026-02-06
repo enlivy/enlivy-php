@@ -45,15 +45,12 @@ class ContractService extends AbstractService
         'organization_contract_status_id',
         'organization_receiver_user_id',
         'organization_sender_user_id',
+        'organization_user_id',
         'parent_organization_contract_id',
         'category',
         'source',
         'issued_at_from',
         'issued_at_to',
-        'created_at_from',
-        'created_at_to',
-        'updated_at_from',
-        'updated_at_to',
     ];
 
     /**
@@ -67,8 +64,6 @@ class ContractService extends AbstractService
      * - `category` (string: core|amendment|addenda|supplement) - Contract category
      * - `source` (string: uploaded|internal) - Contract source
      * - `issued_at_from` / `issued_at_to` (datetime) - Issued date range
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<Contract>
      *

@@ -32,7 +32,10 @@ class TaxRateService extends AbstractService
         'locations',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_tax_class_id',
+        'has_eu_vat_properties',
+    ];
 
     /**
      * @return Collection<TaxRate>
