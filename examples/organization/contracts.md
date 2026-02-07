@@ -64,7 +64,8 @@ $contract = $client->contracts->create([
     'source' => 'uploaded',
     'number' => 'CONTRACT-2026-001',
 
-    // Optional dates
+    // Optional
+    'locale' => 'en', // Defaults to organization locale if omitted
     'ends_at' => '2027-02-04',
     'renewed_at' => null,
 ]);
@@ -311,37 +312,37 @@ foreach ($contracts as $contract) {
 
 // Active contracts
 $active = $client->contracts->list([
-    'filter' => [
-        'organization_contract_status_id' => 'org_cont_status_active_xxx',
-    ],
+    'organization_contract_status_id' => 'org_cont_status_active_xxx',
 ]);
 
 // Contracts for specific party
 $partyContracts = $client->contracts->list([
-    'filter' => [
-        'organization_receiver_user_id' => 'org_user_xxx',
-    ],
+    'organization_receiver_user_id' => 'org_user_xxx',
 ]);
 
 // Contracts by category
 $coreContracts = $client->contracts->list([
-    'filter' => [
-        'category' => 'core',
-    ],
+    'category' => 'core',
+]);
+
+// Contracts by source
+$uploadedContracts = $client->contracts->list([
+    'source' => 'uploaded',
 ]);
 
 // Contracts expiring soon
 $expiringSoon = $client->contracts->list([
-    'filter' => [
-        'ends_at_to' => date('Y-m-d', strtotime('+30 days')),
-    ],
+    'ends_at_to' => date('Y-m-d', strtotime('+30 days')),
 ]);
 
 // Outbound contracts
 $outbound = $client->contracts->list([
-    'filter' => [
-        'direction' => 'outbound',
-    ],
+    'direction' => 'outbound',
+]);
+
+// Contracts by locale
+$romanianContracts = $client->contracts->list([
+    'locale' => 'ro',
 ]);
 ```
 
@@ -522,9 +523,7 @@ $companySig = $client->contractSignatures->create([
 <?php
 
 $signatures = $client->contractSignatures->list([
-    'filter' => [
-        'organization_contract_id' => 'org_cont_xxx',
-    ],
+    'organization_contract_id' => 'org_cont_xxx',
 ]);
 
 foreach ($signatures as $sig) {
@@ -625,6 +624,12 @@ echo "Contract restored: {$contract->title}\n";
 | `category` | core, amendment, addenda, supplement |
 | `direction` | inbound or outbound |
 | `issued_at` | Issue date |
+
+### Optional Fields
+
+| Field | Description |
+|-------|-------------|
+| `locale` | Contract locale (defaults to organization locale). Must be an active locale in the organization. |
 
 ### Conditional Required Fields
 
@@ -779,7 +784,7 @@ try {
 
     // 6. Later: Check signature status and activate
     $signatures = $client->contractSignatures->list([
-        'filter' => ['organization_contract_id' => $contract->id],
+        'organization_contract_id' => $contract->id,
     ]);
 
     $allSigned = true;

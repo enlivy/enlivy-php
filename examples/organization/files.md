@@ -133,9 +133,7 @@ foreach ($files as $file) {
 <?php
 
 $files = $client->files->list([
-    'filter' => [
-        'context' => 'contracts',
-    ],
+    'context' => 'contracts',
 ]);
 ```
 
@@ -348,9 +346,7 @@ try {
 
     // List all files in the folder
     $files = $client->files->list([
-        'filter' => [
-            'parent_organization_files_id' => $contractsFolder->id,
-        ],
+        'parent_organization_files_id' => $contractsFolder->id,
     ]);
 
     echo "\nFiles in {$contractsFolder->name}:\n";

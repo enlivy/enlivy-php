@@ -41,10 +41,8 @@ $client = new EnlivyClient([
 
 // Find existing customer role
 $roles = $client->userRoles->list([
-    'filter' => [
-        'can_be_invoiced' => true,
-        'is_business_entity' => false, // for individuals
-    ],
+    'can_be_invoiced' => true,
+    'is_business_entity' => false, // for individuals
 ]);
 
 $customerRole = $roles->data[0] ?? null;
@@ -109,10 +107,8 @@ echo "Full name: {$customer->first_name} {$customer->last_name}\n";
 
 // First, get or create a business role
 $businessRoles = $client->userRoles->list([
-    'filter' => [
-        'can_be_invoiced' => true,
-        'is_business_entity' => true,
-    ],
+    'can_be_invoiced' => true,
+    'is_business_entity' => true,
 ]);
 
 $businessRole = $businessRoles->data[0] ?? $client->userRoles->create([
@@ -256,30 +252,22 @@ while ($users->hasMore()) {
 
 // Customers only (can be invoiced)
 $customers = $client->organizationUsers->list([
-    'filter' => [
-        'role.can_be_invoiced' => true,
-    ],
+    'role.can_be_invoiced' => true,
 ]);
 
 // Search by email
 $users = $client->organizationUsers->list([
-    'filter' => [
-        'email' => 'john@example.com',
-    ],
+    'email' => 'john@example.com',
 ]);
 
 // Business entities only
 $companies = $client->organizationUsers->list([
-    'filter' => [
-        'role.is_business_entity' => true,
-    ],
+    'role.is_business_entity' => true,
 ]);
 
 // By country
 $romanianUsers = $client->organizationUsers->list([
-    'filter' => [
-        'country_code' => 'RO',
-    ],
+    'country_code' => 'RO',
 ]);
 ```
 
@@ -430,7 +418,7 @@ $address = $client->userAddresses->create([
 
 // List addresses
 $addresses = $client->userAddresses->list([
-    'filter' => ['organization_user_id' => 'org_user_xxx'],
+    'organization_user_id' => 'org_user_xxx',
 ]);
 ```
 
@@ -492,7 +480,8 @@ $client = new EnlivyClient();
 try {
     // 1. Get customer role
     $roles = $client->userRoles->list([
-        'filter' => ['can_be_invoiced' => true, 'is_business_entity' => false],
+        'can_be_invoiced' => true,
+        'is_business_entity' => false,
     ]);
     $customerRole = $roles->data[0];
 

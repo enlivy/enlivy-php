@@ -48,9 +48,17 @@ class ContractService extends AbstractService
         'organization_user_id',
         'parent_organization_contract_id',
         'category',
+        'locale',
         'source',
+        'direction',
         'issued_at_from',
         'issued_at_to',
+        'ends_at_from',
+        'ends_at_to',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
     ];
 
     /**
@@ -62,8 +70,13 @@ class ContractService extends AbstractService
      * - `organization_sender_user_id` (string) - Filter by sender user
      * - `parent_organization_contract_id` (string) - Filter by parent contract
      * - `category` (string: core|amendment|addenda|supplement) - Contract category
+     * - `locale` (string: en|ro|de|fr|nl|da) - Contract locale
      * - `source` (string: uploaded|internal) - Contract source
+     * - `direction` (string: inbound|outbound) - Contract direction
      * - `issued_at_from` / `issued_at_to` (datetime) - Issued date range
+     * - `ends_at_from` / `ends_at_to` (datetime) - End date range
+     * - `created_at_from` / `created_at_to` (datetime) - Created date range
+     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<Contract>
      *

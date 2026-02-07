@@ -236,9 +236,7 @@ echo "Added member: {$member->id}\n";
 <?php
 
 $members = $client->projectMembers->list([
-    'filter' => [
-        'organization_project_id' => 'org_proj_xxx',
-    ],
+    'organization_project_id' => 'org_proj_xxx',
     'include' => ['organization_user'],
 ]);
 
@@ -276,7 +274,7 @@ $permission = $client->projectPermissionGuidelines->create([
 
 // List guidelines accessible in project
 $permissions = $client->projectPermissionGuidelines->list([
-    'filter' => ['organization_project_id' => 'org_proj_xxx'],
+    'organization_project_id' => 'org_proj_xxx',
 ]);
 
 foreach ($permissions as $p) {
@@ -297,7 +295,7 @@ $permission = $client->projectPermissionPlaybooks->create([
 
 // List playbooks accessible in project
 $permissions = $client->projectPermissionPlaybooks->list([
-    'filter' => ['organization_project_id' => 'org_proj_xxx'],
+    'organization_project_id' => 'org_proj_xxx',
 ]);
 ```
 
@@ -314,7 +312,7 @@ $permission = $client->projectPermissionReports->create([
 
 // List reports accessible in project
 $permissions = $client->projectPermissionReports->list([
-    'filter' => ['organization_project_id' => 'org_proj_xxx'],
+    'organization_project_id' => 'org_proj_xxx',
 ]);
 ```
 

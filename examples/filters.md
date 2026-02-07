@@ -136,7 +136,7 @@ $invoices = $client->invoices->list([
 
 | Service | Filters |
 |---------|---------|
-| `contracts` | `organization_contract_status_id`, `organization_receiver_user_id`, `organization_sender_user_id`, `parent_organization_contract_id`, `category` (core\|amendment\|addenda\|supplement), `source` (uploaded\|internal), `issued_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
+| `contracts` | `organization_contract_status_id`, `organization_receiver_user_id`, `organization_sender_user_id`, `organization_user_id`, `parent_organization_contract_id`, `category` (core\|amendment\|addenda\|supplement), `locale` (en\|ro\|de\|fr\|nl\|da), `source` (uploaded\|internal), `direction` (inbound\|outbound), `issued_at_from/to`, `ends_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
 
 ### Banking
 

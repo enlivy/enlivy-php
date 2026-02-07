@@ -234,23 +234,17 @@ foreach ($receipts as $receipt) {
 
 // Filter by receiver
 $receipts = $client->receipts->list([
-    'filter' => [
-        'organization_receiver_user_id' => 'org_user_xxx',
-    ],
+    'organization_receiver_user_id' => 'org_user_xxx',
 ]);
 
 // Filter by status
 $paidReceipts = $client->receipts->list([
-    'filter' => [
-        'status' => 'paid',
-    ],
+    'status' => 'paid',
 ]);
 
 // Filter by direction
 $inboundReceipts = $client->receipts->list([
-    'filter' => [
-        'direction' => 'inbound',
-    ],
+    'direction' => 'inbound',
 ]);
 ```
 
@@ -493,13 +487,13 @@ try {
 
     // 2. Get bank account
     $bankAccounts = $client->bankAccounts->list([
-        'filter' => ['currency' => 'EUR'],
+        'currency' => 'EUR',
     ]);
     $bankAccount = $bankAccounts->data[0];
 
     // 3. Get customer
     $customers = $client->organizationUsers->list([
-        'filter' => ['role.can_be_invoiced' => true],
+        'role.can_be_invoiced' => true,
     ]);
     $customer = $customers->data[0];
 

@@ -231,9 +231,7 @@ foreach ($reports as $report) {
 <?php
 
 $reports = $client->reports->list([
-    'filter' => [
-        'organization_report_schema_id' => 'org_schema_xxx',
-    ],
+    'organization_report_schema_id' => 'org_schema_xxx',
     'include' => ['schema', 'organization_user'],
 ]);
 
@@ -250,9 +248,7 @@ foreach ($reports as $report) {
 <?php
 
 $reports = $client->reports->list([
-    'filter' => [
-        'organization_user_id' => 'org_user_xxx',
-    ],
+    'organization_user_id' => 'org_user_xxx',
 ]);
 
 foreach ($reports as $report) {
@@ -269,9 +265,7 @@ foreach ($reports as $report) {
 <?php
 
 $reports = $client->reports->list([
-    'filter' => [
-        'organization_project_id' => 'org_proj_xxx',
-    ],
+    'organization_project_id' => 'org_proj_xxx',
 ]);
 ```
 

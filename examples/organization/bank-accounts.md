@@ -142,16 +142,12 @@ foreach ($accounts as $account) {
 
 // Filter by currency
 $eurAccounts = $client->bankAccounts->list([
-    'filter' => [
-        'currency' => 'EUR',
-    ],
+    'currency' => 'EUR',
 ]);
 
 // Filter by type
 $standardAccounts = $client->bankAccounts->list([
-    'filter' => [
-        'type' => 'standard',
-    ],
+    'type' => 'standard',
 ]);
 ```
 

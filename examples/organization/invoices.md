@@ -430,32 +430,24 @@ foreach ($invoices as $invoice) {
 
 // Unpaid invoices
 $unpaid = $client->invoices->list([
-    'filter' => [
-        'status' => ['draft', 'sent'],
-    ],
+    'status' => ['draft', 'sent'],
 ]);
 
 // Invoices for specific customer
 $customerInvoices = $client->invoices->list([
-    'filter' => [
-        'organization_receiver_user_id' => 'org_user_xxx',
-    ],
+    'organization_receiver_user_id' => 'org_user_xxx',
 ]);
 
 // Invoices from date range
 $thisMonth = $client->invoices->list([
-    'filter' => [
-        'issued_at_from' => '2026-02-01',
-        'issued_at_to' => '2026-02-28',
-    ],
+    'issued_at_from' => '2026-02-01',
+    'issued_at_to' => '2026-02-28',
 ]);
 
 // Overdue invoices
 $overdue = $client->invoices->list([
-    'filter' => [
-        'status' => 'sent',
-        'due_at_to' => date('Y-m-d'), // Due before today
-    ],
+    'status' => 'sent',
+    'due_at_to' => date('Y-m-d'), // Due before today
 ]);
 ```
 

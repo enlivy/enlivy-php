@@ -23,6 +23,7 @@ use Enlivy\ApiResource;
  * @property string $title
  * @property string|null $sub_title
  * @property string|null $category
+ * @property string $locale
  * @property string|null $source
  * @property string $direction
  * @property string|null $layout

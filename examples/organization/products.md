@@ -219,16 +219,12 @@ foreach ($products as $product) {
 
 // Filter by type
 $services = $client->products->list([
-    'filter' => [
-        'type' => 'service',
-    ],
+    'type' => 'service',
 ]);
 
 // Filter by sale status
 $activeProducts = $client->products->list([
-    'filter' => [
-        'is_sold' => true,
-    ],
+    'is_sold' => true,
 ]);
 
 // Include related data
@@ -425,7 +421,7 @@ $client = new EnlivyClient();
 
 try {
     // 1. Create tax class first (see taxes.md)
-    $taxClass = $client->taxClasses->list(['filter' => ['type' => 'standard']])->data[0];
+    $taxClass = $client->taxClasses->list(['type' => 'standard'])->data[0];
 
     // 2. Create service product
     $consulting = $client->products->create([

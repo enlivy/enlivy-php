@@ -138,9 +138,7 @@ Track PEPPOL/e-invoice submissions and their status.
 <?php
 
 $exchanges = $client->invoiceNetworkExchanges->list([
-    'filter' => [
-        'organization_invoice_id' => 'org_inv_xxx',
-    ],
+    'organization_invoice_id' => 'org_inv_xxx',
 ]);
 
 foreach ($exchanges as $exchange) {
@@ -272,9 +270,7 @@ try {
 
     // 3. Check network exchange status
     $exchanges = $client->invoiceNetworkExchanges->list([
-        'filter' => [
-            'organization_invoice_id' => $invoice->id,
-        ],
+        'organization_invoice_id' => $invoice->id,
     ]);
 
     foreach ($exchanges as $exchange) {

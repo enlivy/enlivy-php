@@ -157,9 +157,7 @@ foreach ($sessions as $session) {
 <?php
 
 $sessions = $client->userClientPortalSessions->list([
-    'filter' => [
-        'organization_user_id' => 'org_user_xxx',
-    ],
+    'organization_user_id' => 'org_user_xxx',
     'include' => ['organization_user'],
 ]);
 ```

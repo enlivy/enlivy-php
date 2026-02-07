@@ -337,9 +337,7 @@ foreach ($proposals as $proposal) {
 <?php
 
 $proposals = $client->proposals->list([
-    'filter' => [
-        'organization_prospect_id' => 'org_pros_xxx',
-    ],
+    'organization_prospect_id' => 'org_pros_xxx',
 ]);
 ```
 
@@ -350,16 +348,12 @@ $proposals = $client->proposals->list([
 
 // Accepted proposals
 $accepted = $client->proposals->list([
-    'filter' => [
-        'status' => 'accepted',
-    ],
+    'status' => 'accepted',
 ]);
 
 // Pending proposals
 $pending = $client->proposals->list([
-    'filter' => [
-        'status' => 'pending',
-    ],
+    'status' => 'pending',
 ]);
 ```
 

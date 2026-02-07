@@ -151,37 +151,27 @@ echo "Total prospects: {$prospects->getTotalCount()}\n";
 
 // By status
 $qualified = $client->prospects->list([
-    'filter' => [
-        'organization_prospect_status_id' => 'org_pros_status_qualified_xxx',
-    ],
+    'organization_prospect_status_id' => 'org_pros_status_qualified_xxx',
 ]);
 
 // By assigned user
 $myProspects = $client->prospects->list([
-    'filter' => [
-        'assigned_organization_user_id' => 'org_user_xxx',
-    ],
+    'assigned_organization_user_id' => 'org_user_xxx',
 ]);
 
 // By project
 $projectProspects = $client->prospects->list([
-    'filter' => [
-        'assigned_organization_project_id' => 'org_proj_xxx',
-    ],
+    'assigned_organization_project_id' => 'org_proj_xxx',
 ]);
 
 // By source
 $inboundLeads = $client->prospects->list([
-    'filter' => [
-        'source_type' => 'inbound',
-    ],
+    'source_type' => 'inbound',
 ]);
 
 // By linked customer
 $linkedProspects = $client->prospects->list([
-    'filter' => [
-        'linked_organization_user_id' => 'org_user_xxx',
-    ],
+    'linked_organization_user_id' => 'org_user_xxx',
 ]);
 ```
 
@@ -425,9 +415,7 @@ $client->prospectActivities->create([
 <?php
 
 $activities = $client->prospectActivities->list([
-    'filter' => [
-        'organization_prospect_id' => 'org_pros_xxx',
-    ],
+    'organization_prospect_id' => 'org_pros_xxx',
     'sort' => '-occurred_at',
 ]);
 
@@ -609,7 +597,8 @@ try {
 
     // Get customer role
     $roles = $client->userRoles->list([
-        'filter' => ['can_be_invoiced' => true, 'is_business_entity' => true],
+        'can_be_invoiced' => true,
+        'is_business_entity' => true,
     ]);
     $customerRole = $roles->data[0];
 
