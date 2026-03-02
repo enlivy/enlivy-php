@@ -40,8 +40,11 @@ class InvoiceService extends AbstractService
         'line_items',
         'receipts',
         'deleted_by_user',
+        'party_locales',
         'tag_ids',
         'taxes',
+        'last_peppol_exchange',
+        'contract',
     ];
 
     public const array AVAILABLE_FILTERS = [

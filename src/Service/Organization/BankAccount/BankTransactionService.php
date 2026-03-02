@@ -36,8 +36,6 @@ class BankTransactionService extends AbstractService
         'connection_entities',
         'cost_type',
         'deleted_by_user',
-        'receiver_user',
-        'sender_user',
         'tag_ids',
     ];
 

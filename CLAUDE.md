@@ -85,6 +85,13 @@ Service/Organization/Prospect/ProspectService.php
 Service/Organization/UserService.php  # For organization users
 ```
 
+**Client Portal services** at `Service/ClientPortal/`:
+```
+Service/ClientPortal/InvoiceService.php     # Portal invoice access
+Service/ClientPortal/ProposalService.php    # Portal proposal acceptance/payment
+Service/ClientPortal/ProfileService.php     # Portal user profile
+```
+
 ### 4. Global Config Pattern
 
 ```php
@@ -96,6 +103,12 @@ $client = new \Enlivy\EnlivyClient();
 // Or per-client
 $client = new \Enlivy\EnlivyClient([
     'api_key' => '1|token',
+    'organization_id' => 'org_xxx',
+]);
+
+// Client Portal (separate entry point)
+$portal = new \Enlivy\EnlivyPortalClient([
+    'portal_token' => 'session-uuid-token',
     'organization_id' => 'org_xxx',
 ]);
 ```
@@ -139,7 +152,8 @@ All IDs use format `{prefix}_{ksuid}`:
 enlivy-php/
 ├── src/
 │   ├── Enlivy.php                        # Global config singleton
-│   ├── EnlivyClient.php                  # Main client
+│   ├── EnlivyClient.php                  # Main API client
+│   ├── EnlivyPortalClient.php            # Client Portal client
 │   ├── BaseEnlivyClient.php              # Client implementation
 │   ├── ApiRequestor.php                  # HTTP requests
 │   ├── Collection.php                    # Paginated results
@@ -159,6 +173,7 @@ enlivy-php/
 │   │   │   ├── Invoice/InvoiceService.php
 │   │   │   ├── Prospect/ProspectService.php
 │   │   │   └── ...
+│   │   ├── ClientPortal/                # Client portal services (13)
 │   │   └── Concern/                      # Shared traits
 │   ├── Util/                             # Utilities
 │   └── Webhook/                          # Webhook handling
@@ -457,7 +472,7 @@ php -l src/NewFile.php
 composer dump-autoload
 
 # Verify structure
-find src -type f -name "*.php" | wc -l  # Should be ~175
+find src -type f -name "*.php" | wc -l  # Should be ~192
 ```
 
 ---
@@ -466,10 +481,13 @@ find src -type f -name "*.php" | wc -l  # Should be ~175
 
 - **10** Global resource classes (at `src/`)
 - **46** Organization-scoped resource classes (at `src/Organization/`)
-- **~65** Service classes
+- **~65** Organization/global service classes
+- **13** Client Portal service classes (at `Service/ClientPortal/`)
+- **3** Auth handlers (`ApiKeyAuth`, `OAuthAuth`, `ClientPortalAuth`)
+- **2** Client entry points (`EnlivyClient`, `EnlivyPortalClient`)
 - **9** Exception classes
 - **7** Concern traits (`HasRestore`, `HasTagging`, `HasDownload`, `HasImports`, `HasReorder`, `HasIncludes`, `HasFilters`)
-- **~175** Total PHP files in src/
+- **~192** Total PHP files in src/
 
 ---
 
@@ -496,3 +514,12 @@ When making changes, update this section:
 - 2026-02-06: Audited all includes and filters across entire SDK against API — fixed 32 include and 42 filter mismatches
 - 2026-02-06: Cleaned stale PHPDoc referencing date range filters on services that don't support them
 - 2026-02-06: Rewrote CLAUDE.md — removed internal API implementation details, kept SDK-relevant standards only
+- 2026-03-02: Full SDK revision — synced includes/filters across 7 services (Proposal, Offer, Invoice, Receipt, BillingSchedule, Prospect, Analytics)
+- 2026-03-02: ProposalService — added `email()`, `attachContract()`, `detachContract()` methods; updated includes (added proposal_contracts, billing_schedule, invoice, proforma_invoice; removed stale contract, contract_default_sender_user)
+- 2026-03-02: OfferService — fixed `contract_template` → `contract_templates` (plural); removed stale `contract_default_sender_user`
+- 2026-03-02: InvoiceService — added `party_locales`, `last_peppol_exchange`, `contract` includes
+- 2026-03-02: ReceiptService — replaced stale `receipt_prefix` include with `contract`
+- 2026-03-02: BillingScheduleService — added `phases`, `tag_ids` includes; added 13 missing filters; added HasTagging trait
+- 2026-03-02: ProspectService — added `source_type` filter
+- 2026-03-02: AnalyticsService — added `billingDocuments()` and `billingDocumentsByType()` methods
+- 2026-03-02: Added Client Portal support — new `EnlivyPortalClient`, `ClientPortalAuth`, and 13 portal services for customer-facing endpoints

@@ -93,4 +93,18 @@ class AnalyticsService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, "receipts/analytics/{$type}"), $params, $opts);
     }
+
+    public function billingDocuments(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, 'analytics/billing-documents'), $params, $opts);
+    }
+
+    public function billingDocumentsByType(string $type, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, "analytics/billing-documents/{$type}"), $params, $opts);
+    }
 }

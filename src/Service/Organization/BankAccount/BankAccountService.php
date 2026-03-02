@@ -31,6 +31,7 @@ class BankAccountService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
+        'bank_account_data_account_detail',
         'deleted_by_user',
         'tag_ids',
     ];

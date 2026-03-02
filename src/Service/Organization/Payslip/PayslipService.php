@@ -35,6 +35,7 @@ class PayslipService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
+        'status',
         'organization_payslip_schema_id',
         'organization_receiver_user_id',
         'organization_sender_user_id',

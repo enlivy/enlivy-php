@@ -82,6 +82,11 @@ final class Enlivy
     private static int $timeout = 30;
 
     /**
+     * Client portal session token.
+     */
+    private static ?string $portalToken = null;
+
+    /**
      * Callback for token refresh events.
      *
      * @var callable|null
@@ -182,6 +187,22 @@ final class Enlivy
     public static function setOrganizationId(?string $organizationId): void
     {
         self::$organizationId = $organizationId;
+    }
+
+    /**
+     * Get the client portal session token.
+     */
+    public static function getPortalToken(): ?string
+    {
+        return self::$portalToken;
+    }
+
+    /**
+     * Set the client portal session token.
+     */
+    public static function setPortalToken(?string $portalToken): void
+    {
+        self::$portalToken = $portalToken;
     }
 
     /**
@@ -294,6 +315,7 @@ final class Enlivy
      *     client_secret?: string|null,
      *     access_token?: string|null,
      *     refresh_token?: string|null,
+     *     portal_token?: string|null,
      *     organization_id?: string|null,
      *     api_base?: string,
      *     verify_ssl_certs?: bool,
@@ -319,6 +341,9 @@ final class Enlivy
         }
         if (isset($config['refresh_token'])) {
             self::setRefreshToken($config['refresh_token']);
+        }
+        if (isset($config['portal_token'])) {
+            self::setPortalToken($config['portal_token']);
         }
         if (isset($config['organization_id'])) {
             self::setOrganizationId($config['organization_id']);
@@ -355,6 +380,7 @@ final class Enlivy
         self::$clientSecret = null;
         self::$accessToken = null;
         self::$refreshToken = null;
+        self::$portalToken = null;
         self::$organizationId = null;
         self::$apiBase = self::DEFAULT_API_BASE;
         self::$verifySslCerts = true;
@@ -377,6 +403,7 @@ final class Enlivy
             'client_secret' => self::$clientSecret,
             'access_token' => self::$accessToken,
             'refresh_token' => self::$refreshToken,
+            'portal_token' => self::$portalToken,
             'organization_id' => self::$organizationId,
             'api_base' => self::$apiBase,
             'verify_ssl_certs' => self::$verifySslCerts,

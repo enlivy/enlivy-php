@@ -39,7 +39,7 @@ class ReceiptService extends AbstractService
         'deleted_by_user',
         'tag_ids',
         'taxes',
-        'receipt_prefix',
+        'contract',
     ];
 
     public const array AVAILABLE_FILTERS = [

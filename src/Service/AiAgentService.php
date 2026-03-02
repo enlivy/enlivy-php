@@ -12,9 +12,7 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * AI Agent service (read-only for non-admin users).
- *
- * Note: create/update/delete operations require administrator privileges.
+ * AI Agent service (read-only).
  */
 class AiAgentService extends AbstractService
 {

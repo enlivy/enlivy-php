@@ -9,6 +9,7 @@ use Enlivy\Organization\BillingSchedule;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasImports;
 use Enlivy\Service\Concern\HasRestore;
+use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
@@ -22,6 +23,7 @@ class BillingScheduleService extends AbstractService
 {
     use HasRestore;
     use HasImports;
+    use HasTagging;
     use HasIncludes;
     use HasFilters;
 
@@ -34,10 +36,25 @@ class BillingScheduleService extends AbstractService
         'contract',
         'deleted_by_user',
         'payments',
+        'phases',
+        'tag_ids',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'status',
+        'direction',
+        'organization_sender_user_id',
+        'organization_receiver_user_id',
+        'organization_contract_id',
+        'organization_bank_account_id',
+        'starts_at_from',
+        'starts_at_to',
+        'ends_at_from',
+        'ends_at_to',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
     ];
 
     /**
@@ -45,7 +62,6 @@ class BillingScheduleService extends AbstractService
      *
      * Resource-specific filters:
      * - `status` (string: pending|active|cancelled)
-     * - `type` (string: payment_plan|subscription)
      * - `direction` (string: inbound|outbound)
      * - `organization_sender_user_id` (string) - Filter by sender user
      * - `organization_receiver_user_id` (string) - Filter by receiver user
@@ -53,6 +69,8 @@ class BillingScheduleService extends AbstractService
      * - `organization_bank_account_id` (string) - Filter by bank account
      * - `starts_at_from` / `starts_at_to` (datetime) - Start date range
      * - `ends_at_from` / `ends_at_to` (datetime) - End date range
+     * - `created_at_from` / `created_at_to` (datetime) - Created date range
+     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
      *
      * @return Collection<BillingSchedule>
      *

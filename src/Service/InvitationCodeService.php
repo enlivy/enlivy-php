@@ -37,14 +37,6 @@ class InvitationCodeService extends AbstractService
         return $this->requestCollection('GET', '/invitation-codes', $params, $opts);
     }
 
-    public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): InvitationCode
-    {
-        $this->validateIncludes($params);
-
-        /** @var InvitationCode */
-        return $this->request('GET', "/invitation-codes/{$id}", $params, $opts);
-    }
-
     public function create(array $params, ?RequestOptions $opts = null): InvitationCode
     {
         $this->validateIncludes($params);

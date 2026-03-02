@@ -30,11 +30,10 @@ class OfferService extends AbstractService
         'organization',
         'project',
         'payment_plans',
-        'contract_template',
+        'contract_templates',
         'created_by_user',
         'deleted_by_user',
         'expired_by_user',
-        'contract_default_sender_user',
     ];
 
     public const array AVAILABLE_FILTERS = [

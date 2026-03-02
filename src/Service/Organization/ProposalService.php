@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\Proposal;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
@@ -32,11 +33,13 @@ class ProposalService extends AbstractService
         'offer',
         'offer_payment_plan',
         'payments',
+        'proposal_contracts',
+        'billing_schedule',
+        'invoice',
+        'proforma_invoice',
         'prospect',
         'receiver_user',
         'sender_user',
-        'contract',
-        'contract_default_sender_user',
         'created_by_user',
         'deleted_by_user',
         'expired_by_user',
@@ -136,5 +139,25 @@ class ProposalService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/expire"), $params, $opts);
+    }
+
+    public function email(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/email"), $params, $opts);
+    }
+
+    public function attachContract(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/attach-contract"), $params, $opts);
+    }
+
+    public function detachContract(string $id, string $contractId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}/contracts/{$contractId}"), $params, $opts);
     }
 }

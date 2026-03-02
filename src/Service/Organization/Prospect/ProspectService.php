@@ -44,6 +44,7 @@ class ProspectService extends AbstractService
         'organization_prospect_status_id',
         'assigned_organization_user_id',
         'assigned_organization_project_id',
+        'source_type',
         'email',
         'state_qualified_at_from',
         'state_qualified_at_to',
