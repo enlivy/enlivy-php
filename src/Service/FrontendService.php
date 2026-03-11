@@ -14,16 +14,6 @@ class FrontendService extends AbstractService
         return $this->request('GET', '/frontend', null, $opts);
     }
 
-    public function langMap(?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('GET', '/frontend/lang-map', null, $opts);
-    }
-
-    public function langMapByKey(string $key, ?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('GET', "/frontend/lang-map/{$key}", null, $opts);
-    }
-
     public function countries(?RequestOptions $opts = null): EnlivyObject
     {
         return $this->request('GET', '/frontend/countries', null, $opts);

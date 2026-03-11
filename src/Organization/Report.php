@@ -17,7 +17,8 @@ use Enlivy\ApiResource;
  * @property string|null $organization_user_role_id
  * @property string|null $organization_project_id
  * @property array|null $report_map
- * @property string|null $reported_at
+ * @property string|null $report_date
+ * @property string|null $locale
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

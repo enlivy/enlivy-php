@@ -617,9 +617,20 @@ $prefix = $client->invoicePrefixes->create([
 ]);
 ```
 
-## External Invoices (Uploads)
+## External Invoices
 
-For invoices created outside Enlivy:
+External invoices represent documents created **outside** Enlivy — vendor invoices you received,
+invoices sent through another system, etc. They differ from internal invoices in several ways:
+
+| | Internal | External |
+|---|---|---|
+| **Line items** | Required | Not required |
+| **Payment method** | Required | Not required |
+| **Delivery method** | Required | Not required |
+| **Totals** | Auto-calculated from line items | Manually specified |
+| **File attachment** | Not applicable | Optional (PDF, image, document) |
+
+### Create an External Invoice
 
 ```php
 <?php
@@ -650,6 +661,44 @@ $invoice = $client->invoices->create([
             'amount' => 190.00,
         ],
     ],
+]);
+```
+
+### Attach a File to an External Invoice
+
+File uploads are only supported for **external** invoices (`source = 'external'`).
+Internal invoices generate their own PDF — they don't accept file attachments.
+
+Accepted file types: PDF, PNG, JPEG, DOC, DOCX, TXT.
+
+```php
+<?php
+
+// Upload file when creating an external invoice
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'sent',
+    'currency' => 'EUR',
+    'source' => 'external',
+    'direction' => 'inbound',
+    'number' => 'VENDOR-2026-456',
+    'issued_at' => '2026-03-01',
+    'due_at' => '2026-04-01',
+    'sub_total' => 500.00,
+    'tax_total' => 95.00,
+    'total' => 595.00,
+
+    // Attach the original document
+    'file' => new \CURLFile('/path/to/vendor-invoice.pdf', 'application/pdf', 'vendor-invoice.pdf'),
+]);
+```
+
+```php
+<?php
+
+// Attach or replace a file on an existing external invoice
+$invoice = $client->invoices->update('org_inv_xxx', [
+    'file' => new \CURLFile('/path/to/scan.jpg', 'image/jpeg', 'scan.jpg'),
 ]);
 ```
 

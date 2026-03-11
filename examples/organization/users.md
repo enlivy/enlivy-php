@@ -23,7 +23,73 @@ User roles determine what an organization user can do:
 |-----------|---------|
 | `can_be_invoiced` | User can receive invoices (customer) |
 | `can_be_invoicing` | User can send invoices (sender identity) |
+| `can_use_backoffice` | User can access the backoffice |
+| `can_be_payrolled` | User can receive payslips |
 | `is_business_entity` | User is a company (vs individual) |
+
+### Business Entity vs Individual
+
+The `is_business_entity` flag on a user role controls how the user is treated across the system. It is **not** a field on the user itself — it is set on the `OrganizationUserRole` and exposed as a read-only `is_business_entity` boolean on each user response.
+
+This affects:
+
+1. **Required billing fields** — the API validates different fields depending on `is_business_entity`:
+
+   | Field | Individual (`false`) | Business (`true`) |
+   |-------|---------------------|-------------------|
+   | `first_name` | Required | Optional |
+   | `last_name` | Required | Optional |
+   | `name` | Optional | Required |
+   | `organization_type` | Not needed | Required |
+   | `organization_information` | Not needed | Required |
+
+2. **UI display** — use `is_business_entity` to decide what to show:
+
+```php
+if ($user->is_business_entity) {
+    echo "Company: {$user->name}\n";
+    echo "Type: {$user->organization_type}\n";
+} else {
+    echo "Name: {$user->first_name} {$user->last_name}\n";
+}
+```
+
+### Avatar
+
+Each user has an `avatar_url` in the API response. The URL is resolved in this order:
+
+1. **Uploaded avatar** — if the user has a custom avatar (512×512 JPEG)
+2. **Gravatar** — if the user has an email, falls back to `gravatar.com` with the `mp` (mystery person) default
+3. **`null`** — no email and no uploaded avatar
+
+To upload an avatar, pass a `CURLFile` in the create or update params:
+
+```php
+// Upload avatar on create
+$user = $client->organizationUsers->create([
+    'organization_user_role_id' => $roleId,
+    'first_name' => 'John',
+    'last_name' => 'Doe',
+    'country_code' => 'RO',
+    'avatar' => new \CURLFile('/path/to/photo.jpg', 'image/jpeg', 'avatar.jpg'),
+]);
+
+echo $user->avatar_url; // https://storage.enlivy.com/.../org_user_xxx.jpg
+
+// Upload avatar on update
+$user = $client->organizationUsers->update('org_user_xxx', [
+    'avatar' => new \CURLFile('/path/to/new-photo.png', 'image/png', 'avatar.png'),
+]);
+
+// Remove avatar (set to null — reverts to Gravatar fallback)
+$user = $client->organizationUsers->update('org_user_xxx', [
+    'avatar' => null,
+]);
+```
+
+Accepted formats: JPEG, PNG, GIF, WebP. Max size: 10 MB. The API processes the image to 512×512 JPEG.
+
+> **Note:** When sending a `CURLFile`, the SDK automatically switches from JSON to multipart form data. All other fields in the same request are sent as form fields.
 
 ## Creating a Customer
 
@@ -434,10 +500,18 @@ $addresses = $client->userAddresses->list([
 | `last_name` | Yes | No | Last name (non-business) |
 | `name` | No | Yes | Company name (business) |
 
+### Read-Only Response Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `is_business_entity` | bool | Whether the user's role is a business entity. Derived from the assigned `OrganizationUserRole` |
+| `avatar_url` | string\|null | Avatar URL (uploaded image, Gravatar fallback, or null) |
+
 ### Optional Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `avatar` | file (CURLFile) | Avatar image (JPEG/PNG/GIF/WebP, max 10 MB). Set to `null` to remove |
 | `email` | string | Email address (unique per org) |
 | `phone_number` | string | Phone number |
 | `phone_number_country_code` | string | Phone country code |

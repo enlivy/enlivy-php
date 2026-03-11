@@ -386,14 +386,15 @@ foreach ($prefixes as $prefix) {
 }
 ```
 
-## Upload Receipt File
+## File Attachment
 
-Attach a file (PDF, image) to a receipt:
+Receipts represent externally received/sent payment documents, so they always support
+optional file attachments. Accepted file types: PDF, PNG, JPEG, DOC, DOCX, TXT.
 
 ```php
 <?php
 
-// When creating
+// Attach a file when creating a receipt
 $receipt = $client->receipts->create([
     'organization_bank_account_id' => 'org_bank_xxx',
     'organization_receiver_user_id' => 'org_user_xxx',
@@ -403,7 +404,16 @@ $receipt = $client->receipts->create([
     'tax_total' => 19.00,
     'total' => 119.00,
     'is_tax_charged' => true,
-    'file' => fopen('/path/to/receipt.pdf', 'r'),
+    'file' => new \CURLFile('/path/to/receipt.pdf', 'application/pdf', 'receipt.pdf'),
+]);
+```
+
+```php
+<?php
+
+// Attach or replace a file on an existing receipt
+$receipt = $client->receipts->update('org_rcpt_xxx', [
+    'file' => new \CURLFile('/path/to/scan.jpg', 'image/jpeg', 'scan.jpg'),
 ]);
 ```
 
@@ -438,7 +448,7 @@ $receipt = $client->receipts->create([
 | `due_at` | datetime | Due date |
 | `paid_at` | datetime | Payment date |
 | `taxes` | array | Tax breakdown |
-| `file` | file | Receipt file (PDF, image) |
+| `file` | `\CURLFile` | Receipt file (PDF, PNG, JPEG, DOC, DOCX, TXT) |
 
 ### Tax Object Fields
 

@@ -532,6 +532,28 @@ foreach ($signatures as $sig) {
 }
 ```
 
+### Send Signing Invitation
+
+Send an email or SMS invitation to the signer:
+
+```php
+<?php
+
+// Send via email (default)
+$client->contractSignatures->send('org_cont_sig_xxx');
+
+// Send via specific channel
+$client->contractSignatures->send('org_cont_sig_xxx', [
+    'method' => 'email', // 'email' or 'sms'
+    'message' => 'Please sign the attached contract at your earliest convenience.',
+]);
+
+// Let the API auto-detect the best channel (email if available, then SMS)
+$client->contractSignatures->send('org_cont_sig_xxx', [
+    'message' => 'Custom message for the signer.',
+]);
+```
+
 ### Check Signature Status
 
 ```php

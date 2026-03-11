@@ -118,72 +118,218 @@ $invoices = $client->invoices->list([
 
 ### Invoicing
 
-| Service | Filters |
-|---------|---------|
-| `invoices` | `direction` (inbound\|outbound), `status` (approval_required\|draft\|scheduled\|pending\|sent_email\|sent_physical\|payment_partial\|paid\|solved\|overdue\|cancelled), `is_downloadable` (bool), `is_tax_charged` (bool), `paid_at_from/to`, `issued_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
-| `receipts` | `direction` (inbound\|outbound), `status` (same as invoices), `organization_invoice_id` (string[]), `paid_at_from/to`, `issued_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
-| `invoicePrefixes` | `type` (standard\|reversal\|proforma) |
-| `invoiceNotificationLogs` | `organization_invoice_id` |
-| `invoiceNetworkExchanges` | `organization_invoice_id`, `invoice_state` (any\|attached\|unattached) |
+**`invoices`**
+
+| Filter | Type |
+|--------|------|
+| `direction` | `inbound`, `outbound` |
+| `status` | `approval_required`, `draft`, `scheduled`, `pending`, `sent_email`, `sent_physical`, `payment_partial`, `paid`, `solved`, `overdue`, `cancelled` |
+| `is_downloadable` | bool |
+| `is_tax_charged` | bool |
+| `paid_at_from`, `paid_at_to` | datetime |
+| `issued_at_from`, `issued_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**`receipts`**
+
+| Filter | Type |
+|--------|------|
+| `direction` | `inbound`, `outbound` |
+| `status` | Same as invoices |
+| `organization_invoice_id` | string[] |
+| `paid_at_from`, `paid_at_to` | datetime |
+| `issued_at_from`, `issued_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**`invoicePrefixes`**
+
+| Filter | Type |
+|--------|------|
+| `type` | `standard`, `reversal`, `proforma` |
+
+**`invoiceNotificationLogs`**
+
+| Filter | Type |
+|--------|------|
+| `organization_invoice_id` | string |
+
+**`invoiceNetworkExchanges`**
+
+| Filter | Type |
+|--------|------|
+| `organization_invoice_id` | string |
+| `invoice_state` | `any`, `attached`, `unattached` |
 
 ### CRM
 
-| Service | Filters |
-|---------|---------|
-| `prospects` | `organization_prospect_status_id`, `assigned_organization_user_id`, `source_type` (inbound\|outbound), `email`, `state_qualified_at_from/to`, `state_disqualified_at_from/to`, `state_won_at_from/to`, `state_lost_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
+**`prospects`**
+
+| Filter | Type |
+|--------|------|
+| `organization_prospect_status_id` | string |
+| `assigned_organization_user_id` | string |
+| `source_type` | `inbound`, `outbound` |
+| `email` | string |
+| `state_qualified_at_from`, `state_qualified_at_to` | datetime |
+| `state_disqualified_at_from`, `state_disqualified_at_to` | datetime |
+| `state_won_at_from`, `state_won_at_to` | datetime |
+| `state_lost_at_from`, `state_lost_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
 
 ### Contracts
 
-| Service | Filters |
-|---------|---------|
-| `contracts` | `organization_contract_status_id`, `organization_receiver_user_id`, `organization_sender_user_id`, `organization_user_id`, `parent_organization_contract_id`, `category` (core\|amendment\|addenda\|supplement), `locale` (en\|ro\|de\|fr\|nl\|da), `source` (uploaded\|internal), `direction` (inbound\|outbound), `issued_at_from/to`, `ends_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
+**`contracts`**
+
+| Filter | Type |
+|--------|------|
+| `organization_contract_status_id` | string |
+| `organization_receiver_user_id` | string |
+| `organization_sender_user_id` | string |
+| `organization_user_id` | string |
+| `parent_organization_contract_id` | string |
+| `category` | `core`, `amendment`, `addenda`, `supplement` |
+| `locale` | `en`, `ro`, `de`, `fr`, `nl`, `da` |
+| `source` | `uploaded`, `internal` |
+| `direction` | `inbound`, `outbound` |
+| `issued_at_from`, `issued_at_to` | datetime |
+| `ends_at_from`, `ends_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
 
 ### Banking
 
-| Service | Filters |
-|---------|---------|
-| `bankTransactions` | `state` (backlog\|classified\|connected\|connected_partially\|danger\|trashed), `direction` (inbound\|outbound), `connection_entity_type` (invoice\|receipt\|bank_transaction\|user\|payslip), `connection_entity_id`, `created_at_from/to`, `updated_at_from/to` |
+**`bankTransactions`**
+
+| Filter | Type |
+|--------|------|
+| `state` | `backlog`, `classified`, `connected`, `connected_partially`, `danger`, `trashed` |
+| `direction` | `inbound`, `outbound` |
+| `connection_entity_type` | `invoice`, `receipt`, `bank_transaction`, `user`, `payslip` |
+| `connection_entity_id` | string |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
 
 ### Billing & Offers
 
-| Service | Filters |
-|---------|---------|
-| `billingSchedules` | `status` (pending\|active\|cancelled), `type` (payment_plan\|subscription), `direction` (inbound\|outbound), `organization_sender_user_id`, `organization_receiver_user_id`, `organization_contract_id`, `organization_bank_account_id`, `starts_at_from/to`, `ends_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
-| `offers` | `is_public` (bool), `is_active` (bool), `currency` (3-char code), `organization_project_id`, `only_available` (bool) |
-| `proposals` | `status` (draft\|sent\|viewed\|accepted\|rejected\|expired), `currency` (3-char code), `organization_project_id`, `organization_offer_id`, `organization_prospect_id`, `organization_receiver_user_id` |
+**`billingSchedules`**
+
+| Filter | Type |
+|--------|------|
+| `status` | `pending`, `active`, `cancelled` |
+| `type` | `payment_plan`, `subscription` |
+| `direction` | `inbound`, `outbound` |
+| `organization_sender_user_id` | string |
+| `organization_receiver_user_id` | string |
+| `organization_contract_id` | string |
+| `organization_bank_account_id` | string |
+| `starts_at_from`, `starts_at_to` | datetime |
+| `ends_at_from`, `ends_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**`offers`**
+
+| Filter | Type |
+|--------|------|
+| `is_public` | bool |
+| `is_active` | bool |
+| `currency` | string (3-char ISO code) |
+| `organization_project_id` | string |
+| `only_available` | bool |
+
+**`proposals`**
+
+| Filter | Type |
+|--------|------|
+| `status` | `draft`, `sent`, `viewed`, `accepted`, `rejected`, `expired` |
+| `currency` | string (3-char ISO code) |
+| `organization_project_id` | string |
+| `organization_offer_id` | string |
+| `organization_prospect_id` | string |
+| `organization_receiver_user_id` | string |
 
 ### Payroll
 
-| Service | Filters |
-|---------|---------|
-| `payslips` | `status` (pending\|approval_required\|rejected\|approved\|paid), `paid_at_from/to`, `issued_at_from/to`, `created_at_from/to`, `updated_at_from/to` |
+**`payslips`**
+
+| Filter | Type |
+|--------|------|
+| `status` | `pending`, `approval_required`, `rejected`, `approved`, `paid` |
+| `paid_at_from`, `paid_at_to` | datetime |
+| `issued_at_from`, `issued_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
 
 ### Reports
 
-| Service | Filters |
-|---------|---------|
-| `reports` | `reported_at_from/to` |
+**`reports`**
+
+| Filter | Type |
+|--------|------|
+| `organization_report_schema_id` | string |
+| `organization_user_id` | string |
+| `organization_user_role_id` | string |
+| `organization_project_id` | string |
+| `report_date_from`, `report_date_to` | date (Y-m-d) |
 
 ### Content
 
-| Service | Filters |
-|---------|---------|
-| `guidelines` | `organization_project_id`, `created_at_from/to`, `updated_at_from/to` |
-| `playbooks` | `parent_organization_playbook_id`, `organization_project_id`, `created_at_from/to`, `updated_at_from/to` |
-| `reusableContent` | `scope`, `entity_type` (contract\|playbook), `created_at_from/to`, `updated_at_from/to` |
+**`guidelines`**
+
+| Filter | Type |
+|--------|------|
+| `organization_project_id` | string |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**`playbooks`**
+
+| Filter | Type |
+|--------|------|
+| `parent_organization_playbook_id` | string |
+| `organization_project_id` | string |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**`reusableContent`**
+
+| Filter | Type |
+|--------|------|
+| `scope` | string |
+| `entity_type` | `contract`, `playbook` |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
 
 ### Projects
 
-| Service | Filters |
-|---------|---------|
-| `projects` | `created_at_from/to`, `updated_at_from/to` |
-| `projectMembers` | `member_role` (team_member\|contractor\|client\|prospect) |
+**`projects`**
+
+| Filter | Type |
+|--------|------|
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**`projectMembers`**
+
+| Filter | Type |
+|--------|------|
+| `member_role` | `team_member`, `contractor`, `client`, `prospect` |
 
 ### Users
 
-| Service | Filters |
-|---------|---------|
-| `organizationUsers` | `created_at_from/to`, `updated_at_from/to` |
+**`organizationUsers`**
+
+| Filter | Type |
+|--------|------|
+| `can_be_invoiced` | bool |
+| `can_be_invoicing` | bool |
+| `can_be_payrolled` | bool |
+| `can_use_backoffice` | bool |
+| `email` | string |
+| `organization_user_role_id` | string |
 
 ### Services with Global Filters Only
 

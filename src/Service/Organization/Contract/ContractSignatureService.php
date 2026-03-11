@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization\Contract;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\ContractSignature;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
@@ -74,6 +75,20 @@ class ContractSignatureService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+
+    /**
+     * Send a signing invitation to the signer.
+     *
+     * @param array{message?: string|null, method?: 'email'|'sms'|null} $params
+     *   - `message` (optional): Custom message to include in the signing invitation
+     *   - `method` (optional): Notification channel — `'email'`, `'sms'`, or `null` (auto-detect)
+     */
+    public function send(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/send"), $params, $opts);
     }
 
     public function downloadEvidence(string $id, array $params = [], ?RequestOptions $opts = null): string

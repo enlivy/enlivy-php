@@ -14,6 +14,8 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property string|null $user_id
  * @property string|null $organization_user_role_id
+ * @property bool $is_business_entity Whether the user's role is a business entity (company) vs individual. Derived from the assigned OrganizationUserRole. Determines required billing fields: businesses need name + organization_type + organization_information, individuals need first_name + last_name.
+ * @property string|null $avatar_url URL to user's avatar image (uploaded 512x512 JPEG, or Gravatar fallback from email, or null)
  * @property string $name
  * @property string $first_name
  * @property string $last_name

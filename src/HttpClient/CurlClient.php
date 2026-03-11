@@ -59,9 +59,14 @@ final class CurlClient implements HttpClientInterface
         }
 
         if (in_array($method, ['POST', 'PUT', 'PATCH'], true) && $params !== null) {
-            $body = json_encode($params, JSON_THROW_ON_ERROR);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-            $curlHeaders[] = 'Content-Type: application/json';
+            if ($this->hasFileUpload($params)) {
+                // Multipart form data — cURL sets Content-Type automatically with boundary
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $this->buildMultipartFields($params));
+            } else {
+                $body = json_encode($params, JSON_THROW_ON_ERROR);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+                $curlHeaders[] = 'Content-Type: application/json';
+            }
         } elseif ($method === 'GET' && $params !== null && $params !== []) {
             $url .= '?' . http_build_query($params);
         }
@@ -96,6 +101,51 @@ final class CurlClient implements HttpClientInterface
         $parsedHeaders = $this->parseHeaders($rawHeaders);
 
         return [$body, $parsedHeaders, $statusCode];
+    }
+
+    /**
+     * Check if any param value is a CURLFile (file upload).
+     */
+    private function hasFileUpload(array $params): bool
+    {
+        foreach ($params as $value) {
+            if ($value instanceof \CURLFile) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Build a flat array suitable for cURL multipart POST.
+     * Non-file values are cast to string. Null values are omitted.
+     *
+     * @return array<string, string|\CURLFile>
+     */
+    private function buildMultipartFields(array $params): array
+    {
+        $fields = [];
+
+        foreach ($params as $key => $value) {
+            if ($value === null) {
+                continue;
+            }
+
+            if ($value instanceof \CURLFile) {
+                $fields[$key] = $value;
+            } elseif (is_array($value)) {
+                foreach ($value as $i => $item) {
+                    $fields[$key . '[' . $i . ']'] = is_bool($item) ? ($item ? '1' : '0') : (string) $item;
+                }
+            } elseif (is_bool($value)) {
+                $fields[$key] = $value ? '1' : '0';
+            } else {
+                $fields[$key] = (string) $value;
+            }
+        }
+
+        return $fields;
     }
 
     /**

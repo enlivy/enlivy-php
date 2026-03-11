@@ -197,7 +197,7 @@ $report = $client->reports->create([
 
     // Optional metadata
     'locale' => 'en',
-    'reported_at' => '2026-02-08 17:30:00', // When the report period ends
+    'report_date' => '2026-02-08', // Date of the report (Y-m-d)
 
     'report_map' => [
         'summary' => 'Weekly performance summary.',
@@ -253,8 +253,8 @@ $reports = $client->reports->list([
 
 foreach ($reports as $report) {
     echo "Report: {$report->id}\n";
-    if ($report->reported_at) {
-        echo "  Reported: {$report->reported_at}\n";
+    if ($report->report_date) {
+        echo "  Reported: {$report->report_date}\n";
     }
 }
 ```
@@ -342,7 +342,7 @@ echo "Restored: {$report->id}\n";
 | `report_map` | object | No | Field values (matches schema fields) |
 | `organization_project_id` | string | No | Link to project |
 | `locale` | string | No | Report locale |
-| `reported_at` | datetime | No | Reporting period timestamp |
+| `report_date` | date (Y-m-d) | No | Date of the report |
 
 ### Include Options
 
@@ -404,7 +404,7 @@ try {
     $report = $client->reports->create([
         'organization_report_schema_id' => $schema->id,
         'organization_user_id' => $user->id,
-        'reported_at' => '2026-01-31 23:59:59',
+        'report_date' => '2026-01-31',
         'report_map' => [
             'month' => '2026-01-01',
             'new_customers' => 47,

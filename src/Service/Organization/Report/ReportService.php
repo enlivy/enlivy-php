@@ -40,15 +40,15 @@ class ReportService extends AbstractService
         'organization_user_id',
         'organization_user_role_id',
         'organization_project_id',
-        'reported_at_from',
-        'reported_at_to',
+        'report_date_from',
+        'report_date_to',
     ];
 
     /**
      * List all reports.
      *
      * Resource-specific filters:
-     * - `reported_at_from` / `reported_at_to` (datetime) - Reported date range
+     * - `report_date_from` / `report_date_to` (date, Y-m-d) - Report date range
      *
      * @return Collection<Report>
      *
