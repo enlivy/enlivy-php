@@ -10,4 +10,8 @@
 .DS_Store
 
 # Test credentials - never commit!
+.env
 .env.testing
+
+# Project instructions - not part of the SDK
+CLAUDE.md

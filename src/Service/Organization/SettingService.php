@@ -7,23 +7,23 @@ namespace Enlivy\Service\Organization;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Service\AbstractService;
-use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
 class SettingService extends AbstractService
 {
-    use HasFilters;
-
     protected const string RESOURCE = 'settings';
 
-    public const array AVAILABLE_FILTERS = [];
-
-    public function list(array $params = [], ?RequestOptions $opts = null): Collection
+    /**
+     * Get all organization settings as a key-value object.
+     *
+     * Unlike most list endpoints, settings returns a flat key-value structure
+     * (not a paginated collection).
+     */
+    public function list(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
-        $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
     public function retrieve(string $key, array $params = [], ?RequestOptions $opts = null): EnlivyObject
