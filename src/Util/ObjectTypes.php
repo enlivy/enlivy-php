@@ -19,6 +19,7 @@ use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\Contract;
 use Enlivy\Organization\ContractPrefix;
 use Enlivy\Organization\ContractSignature;
+use Enlivy\Organization\ContractSignatureNotificationLog;
 use Enlivy\Organization\ContractStatus;
 use Enlivy\Organization\ExportData;
 use Enlivy\Organization\File;
@@ -28,7 +29,7 @@ use Enlivy\Organization\InvoiceNetworkExchange;
 use Enlivy\Organization\InvoiceNotificationLog;
 use Enlivy\Organization\InvoicePrefix;
 use Enlivy\Organization\Notification;
-use Enlivy\Organization\Offer;
+use Enlivy\Organization\BillingPackage;
 use Enlivy\Organization\Payslip;
 use Enlivy\Organization\PayslipSchema;
 use Enlivy\Organization\Playbook;
@@ -115,6 +116,7 @@ final class ObjectTypes
         'contract_prefix' => ContractPrefix::class,
         'contract_status' => ContractStatus::class,
         'contract_signature' => ContractSignature::class,
+        'contract_signature_notification_log' => ContractSignatureNotificationLog::class,
 
         // Organization-scoped: Tax
         'tax_class' => TaxClass::class,
@@ -150,7 +152,7 @@ final class ObjectTypes
         'export_data' => ExportData::class,
 
         // Organization-scoped: Membership & Billing
-        'offer' => Offer::class,
+        'billing_package' => BillingPackage::class,
         'proposal' => Proposal::class,
 
         // Organization-scoped: API & Integrations

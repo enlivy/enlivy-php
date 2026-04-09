@@ -15,9 +15,7 @@ final class WebhookSignatureTest extends TestCase
     public function testValidSignatureReturnsTrue(): void
     {
         $payload = '{"id":"evt_xxx","type":"invoice.created"}';
-        $timestamp = time();
-        $expectedSig = hash_hmac('sha256', "{$timestamp}.{$payload}", self::SECRET);
-        $signature = "t={$timestamp},v1={$expectedSig}";
+        $signature = hash_hmac('sha256', $payload, self::SECRET);
 
         $result = WebhookSignature::verify($payload, $signature, self::SECRET);
 
@@ -30,67 +28,42 @@ final class WebhookSignatureTest extends TestCase
         $this->expectExceptionMessage('verification failed');
 
         $payload = '{"id":"evt_xxx"}';
-        $timestamp = time();
-        $signature = "t={$timestamp},v1=invalid_signature";
 
-        WebhookSignature::verify($payload, $signature, self::SECRET);
+        WebhookSignature::verify($payload, 'invalid_signature', self::SECRET);
     }
 
-    public function testExpiredTimestampThrowsException(): void
+    public function testEmptySignatureThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('tolerance zone');
+        $this->expectExceptionMessage('empty');
 
-        $payload = '{"id":"evt_xxx"}';
-        $timestamp = time() - 600; // 10 minutes ago
-        $expectedSig = hash_hmac('sha256', "{$timestamp}.{$payload}", self::SECRET);
-        $signature = "t={$timestamp},v1={$expectedSig}";
-
-        WebhookSignature::verify($payload, $signature, self::SECRET, 300); // 5 min tolerance
+        WebhookSignature::verify('{}', '', self::SECRET);
     }
 
-    public function testMissingTimestampThrowsException(): void
+    public function testWrongSecretFails(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('format');
+        $this->expectExceptionMessage('verification failed');
 
-        $signature = 'v1=some_signature';
+        $payload = '{"id":"evt_xxx"}';
+        $signature = hash_hmac('sha256', $payload, self::SECRET);
 
-        WebhookSignature::verify('{}', $signature, self::SECRET);
+        WebhookSignature::verify($payload, $signature, 'wrong_secret');
     }
 
-    public function testMissingSignatureThrowsException(): void
+    public function testTamperedPayloadFails(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('format');
+        $this->expectExceptionMessage('verification failed');
 
-        $signature = 't=12345678';
+        $payload = '{"id":"evt_xxx"}';
+        $signature = hash_hmac('sha256', $payload, self::SECRET);
 
-        WebhookSignature::verify('{}', $signature, self::SECRET);
+        WebhookSignature::verify('{"id":"evt_tampered"}', $signature, self::SECRET);
     }
 
-    public function testMultipleSignaturesOneValidPasses(): void
+    public function testHeaderNameConstant(): void
     {
-        $payload = '{"id":"evt_xxx"}';
-        $timestamp = time();
-        $validSig = hash_hmac('sha256', "{$timestamp}.{$payload}", self::SECRET);
-        $signature = "t={$timestamp},v1=invalid_one,v1={$validSig}";
-
-        $result = WebhookSignature::verify($payload, $signature, self::SECRET);
-
-        $this->assertTrue($result);
-    }
-
-    public function testZeroToleranceSkipsTimestampCheck(): void
-    {
-        $payload = '{"id":"evt_xxx"}';
-        $timestamp = time() - 86400; // 24 hours ago
-        $expectedSig = hash_hmac('sha256', "{$timestamp}.{$payload}", self::SECRET);
-        $signature = "t={$timestamp},v1={$expectedSig}";
-
-        // With tolerance = 0, timestamp check is skipped
-        $result = WebhookSignature::verify($payload, $signature, self::SECRET, 0);
-
-        $this->assertTrue($result);
+        $this->assertSame('Signature', WebhookSignature::HEADER_NAME);
     }
 }

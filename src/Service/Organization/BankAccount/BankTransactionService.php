@@ -41,6 +41,7 @@ class BankTransactionService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'state',
+        'direction',
         'bank_account_id',
         'organization_bank_transaction_cost_type_id',
         'connection_entity_type',

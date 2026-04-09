@@ -118,7 +118,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `bankAccounts` | `organization`, `deleted_by_user`, `tag_ids`, `bank_account_data_account_detail` |
 | `bankTransactions` | `organization`, `bank_account`, `connection_entities`, `cost_type`, `deleted_by_user`, `tag_ids` |
 | `bankTransactionCostTypes` | `organization`, `deleted_by_user`, `tag_ids` |
-| `billingSchedules` | `sender_user`, `receiver_user`, `contract`, `deleted_by_user`, `payments` |
+| `billingSchedules` | `sender_user`, `receiver_user`, `contract`, `billing_package`, `deleted_by_user`, `payments`, `phases` |
 
 ### Tax
 
@@ -137,6 +137,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `payslipSchemas` | `organization` |
 | `reports` | `organization`, `report_schema`, `organization_user`, `organization_user_role`, `deleted_by_user`, `organization_project`, `report_schema.report_schema_fields` |
 | `reportSchemas` | `organization`, `report_schema_fields`, `deleted_by_user` |
+| `resourceBundles` | `organization` |
 | `reportSchemaFields` | `report_schema`, `deleted_by_user` |
 
 ### Content & Tasks
@@ -145,6 +146,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 |---------|----------|
 | `files` | `organization`, `deleted_by_user`, `uploaded_by_user`, `tag_ids` |
 | `guidelines` | `deleted_by_user`, `organization`, `organization_owner_user`, `organization_project`, `tag_ids` |
+| `playbooks` | `organization`, `procedure_organization_owner_user`, `deleted_by_user`, `organization_project`, `parent_organization_playbook`, `tag_ids` |
 | `playbooks` | `organization`, `procedure_organization_owner_user`, `deleted_by_user`, `organization_project`, `parent_organization_playbook`, `tag_ids`, `procedure_process_steps_files`, `procedure_files` |
 | `tasks` | `assigned_by_organization_user`, `assigned_to_organization_user`, `completed_by_organization_user`, `deleted_by_user`, `organization`, `parent_organization_task`, `organization_project`, `organization_task_status`, `organization_report_schema`, `organization_report` |
 | `taskStatuses` | `organization`, `deleted_by_user` |
@@ -155,8 +157,8 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 |---------|----------|
 | `tags` | `organization`, `deleted_by_user` |
 | `webhooks` | `organization`, `deleted_by_user`, `events`, `notifications` |
-| `offers` | `organization`, `project`, `payment_plans`, `contract_template`, `created_by_user`, `deleted_by_user`, `expired_by_user`, `contract_default_sender_user` |
-| `proposals` | `organization`, `project`, `offer`, `offer_payment_plan`, `payments`, `prospect`, `receiver_user`, `sender_user`, `contract`, `contract_default_sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
+| `billingPackages` | `organization`, `project`, `groups`, `payment_plans`, `contract_templates`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
+| `proposals` | `organization`, `project`, `billing_package`, `billing_package_payment_plan`, `payments`, `proposal_contracts`, `billing_schedule`, `invoice`, `proforma_invoice`, `prospect`, `receiver_user`, `sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
 | `notifications` | `organization`, `sent_to_organization_user` |
 
 ### Global Services
@@ -164,6 +166,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | Service | Includes |
 |---------|----------|
 | `organizations` | `schema`, `user_abilities`, `settings`, `deleted_by_user`, `remaining_credits`, `credits`, `branding_icon`, `branding_logo`, `membership_features` |
+| `exportData` | (no includes) |
 | `users` (global) | `organizations` |
 | `aiAgents` | `deleted_by_user` |
 | `oauthClients` | `user` |

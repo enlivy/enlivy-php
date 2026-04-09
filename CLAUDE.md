@@ -1,6 +1,6 @@
 # Enlivy PHP SDK - Claude Agent Instructions
 
-> **Self-Maintaining Documentation**: This file and the `examples/` directory must be kept in sync with the Enlivy API. When new features are added to the API, corresponding SDK methods and documentation must be added here.
+> **Self-Maintaining Documentation**: This file and the `docs/` directory must be kept in sync with the Enlivy API. When new features are added to the API, corresponding SDK methods and documentation must be added here.
 
 ---
 
@@ -178,7 +178,7 @@ enlivy-php/
 │   ├── Util/                             # Utilities
 │   └── Webhook/                          # Webhook handling
 ├── tests/
-├── examples/                             # Usage documentation
+├── docs/                                 # Usage documentation
 ├── CLAUDE.md                             # This file
 ├── README.md                             # User-facing readme
 ├── LICENSE                               # MIT License
@@ -305,7 +305,7 @@ Only filters the API actually supports for a given entity should be declared in 
    @property Service\Organization\NewEntity\NewEntityService $newEntities
    ```
 
-6. **Add/Update Documentation** in `examples/`:
+6. **Add/Update Documentation** in `docs/`:
    - Create new file if new domain
    - Update existing file if extending feature
 
@@ -319,7 +319,7 @@ Only filters the API actually supports for a given entity should be declared in 
 
 1. Update relevant Service class (includes, filters, methods)
 2. Update Resource class if fields changed
-3. Update corresponding `examples/*.md` file
+3. Update corresponding `docs/*.md` file
 4. Remove any stale PHPDoc comments that reference removed includes/filters
 5. Run tests: `./vendor/bin/phpunit`
 6. Run PHPStan: `./vendor/bin/phpstan analyse -l 3 src/`
@@ -342,7 +342,7 @@ composer dump-autoload
 
 ### Documentation Standards
 
-Each `examples/*.md` file should include:
+Each `docs/*.md` file should include:
 - Overview of the feature
 - Prerequisites (what must exist first)
 - Code examples with comments
@@ -481,7 +481,7 @@ find src -type f -name "*.php" | wc -l  # Should be ~192
 
 - **10** Global resource classes (at `src/`)
 - **46** Organization-scoped resource classes (at `src/Organization/`)
-- **~65** Organization/global service classes
+- **~66** Organization/global service classes
 - **13** Client Portal service classes (at `Service/ClientPortal/`)
 - **3** Auth handlers (`ApiKeyAuth`, `OAuthAuth`, `ClientPortalAuth`)
 - **2** Client entry points (`EnlivyClient`, `EnlivyPortalClient`)
@@ -494,7 +494,7 @@ find src -type f -name "*.php" | wc -l  # Should be ~192
 ## Related Documentation
 
 - **API Reference**: https://docs.enlivy.com/api
-- **Examples**: See `examples/` directory
+- **Documentation**: See `docs/` directory
 
 ---
 
@@ -505,7 +505,7 @@ When making changes, update this section:
 ### Recent Changes
 - 2026-02-05: Initial SDK structure with resources and services
 - 2026-02-05: Added global Enlivy config singleton
-- 2026-02-05: Created examples/ documentation directory
+- 2026-02-05: Created docs/ documentation directory
 - 2026-02-05: Restructured namespaces - organization-scoped resources moved to `Enlivy\Organization\`, services to `Service\Organization\`
 - 2026-02-06: Added HasIncludes concern trait with AVAILABLE_INCLUDES constants and validation on all 56 services
 - 2026-02-06: Removed deprecated `curl_close()` calls and fixed Accept header placement in CurlClient
@@ -523,3 +523,10 @@ When making changes, update this section:
 - 2026-03-02: ProspectService — added `source_type` filter
 - 2026-03-02: AnalyticsService — added `billingDocuments()` and `billingDocumentsByType()` methods
 - 2026-03-02: Added Client Portal support — new `EnlivyPortalClient`, `ClientPortalAuth`, and 13 portal services for customer-facing endpoints
+- 2026-04-09: **Breaking**: Renamed Offers → Billing Packages — new `BillingPackage` resource, `BillingPackageService`, portal `BillingPackageService`; deleted `Offer.php`, `OfferService.php`
+- 2026-04-09: ProposalService — renamed includes (`offer` → `billing_package`, `offer_payment_plan` → `billing_package_payment_plan`), filter (`organization_offer_id` → `organization_billing_package_id`), method (`fromOffer()` → `fromBillingPackage()`)
+- 2026-04-09: Added `DiscoveryService` for API resource discovery (`GET /discovery`)
+- 2026-04-09: **Fix**: WebhookSignature — header changed from `X-Enlivy-Signature` to `Signature`, signature format changed from `t=<ts>,v1=<hash>` to plain HMAC-SHA256
+- 2026-04-09: Full sanity audit — fixed includes on 9 services (ContractSignature +4, Guideline -2, Task -1, Webhook +1, ExportData -1, ResourceBundle -3, ReportSchema +1, Organization +5, BillingSchedule +1/-1)
+- 2026-04-09: Fixed filters on 4 services (BankTransaction +direction, Project +date ranges, Guideline +date ranges, Playbook +date ranges)
+- 2026-04-09: Added missing `ContractSignatureNotificationLogService` with resource class and registration

@@ -7,7 +7,7 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents an Offer in the Enlivy API.
+ * Represents a Billing Package in the Enlivy API.
  *
  * @property string $id
  * @property string $object
@@ -20,6 +20,7 @@ use Enlivy\ApiResource;
  * @property array|null $description_lang_map
  * @property string|null $locale
  * @property array|null $locale_list
+ * @property string|null $type
  * @property bool $is_active
  * @property bool $is_expired
  * @property bool $is_available
@@ -35,7 +36,7 @@ use Enlivy\ApiResource;
  * @property string|null $deleted_at
  * @property string|null $deleted_by_user_id
  */
-class Offer extends ApiResource
+class BillingPackage extends ApiResource
 {
-    public const ?string OBJECT_NAME = 'offer';
+    public const ?string OBJECT_NAME = 'billing_package';
 }

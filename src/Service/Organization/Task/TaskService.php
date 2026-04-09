@@ -39,7 +39,6 @@ class TaskService extends AbstractService
         'organization_task_status',
         'organization_report_schema',
         'organization_report',
-        'tag_ids',
     ];
 
     public const array AVAILABLE_FILTERS = [

@@ -282,7 +282,7 @@ use Enlivy\Webhook\WebhookEvent;
 
 // Get the raw payload
 $payload = file_get_contents('php://input');
-$signature = $_SERVER['HTTP_X_ENLIVY_SIGNATURE'] ?? '';
+$signature = $_SERVER['HTTP_SIGNATURE'] ?? '';
 $secret = 'your_webhook_secret'; // From webhook creation
 
 try {
@@ -359,7 +359,7 @@ use Enlivy\Webhook\WebhookEvent;
 
 Route::post('/webhooks/enlivy', function (Request $request) {
     $payload = $request->getContent();
-    $signature = $request->header('X-Enlivy-Signature');
+    $signature = $request->header('Signature');
 
     try {
         WebhookSignature::verify($payload, $signature, config('enlivy.webhook_secret'));

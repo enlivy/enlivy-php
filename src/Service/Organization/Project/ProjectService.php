@@ -37,7 +37,12 @@ class ProjectService extends AbstractService
         'resource_bundles',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
+    ];
 
     /**
      * List all projects.

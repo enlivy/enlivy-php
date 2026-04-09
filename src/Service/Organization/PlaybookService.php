@@ -43,6 +43,10 @@ class PlaybookService extends AbstractService
     public const array AVAILABLE_FILTERS = [
         'parent_organization_playbook_id',
         'organization_project_id',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
     ];
 
     /**

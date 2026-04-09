@@ -2,33 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Enlivy\Service\Organization;
+namespace Enlivy\Service\Organization\BillingPackage;
 
 use Enlivy\Collection;
-use Enlivy\Organization\Offer;
+use Enlivy\Organization\BillingPackage;
 use Enlivy\Service\AbstractService;
-use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
+use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing offers.
+ * Service for managing billing packages.
  *
- * @method Offer restore(string $id, array $params = [], ?RequestOptions $opts = null)
+ * @method BillingPackage restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
-class OfferService extends AbstractService
+class BillingPackageService extends AbstractService
 {
     use HasRestore;
     use HasIncludes;
     use HasFilters;
 
-    protected const string RESOURCE = 'offers';
-    protected const ?string RESOURCE_CLASS = Offer::class;
+    protected const string RESOURCE = 'billing-packages';
+    protected const ?string RESOURCE_CLASS = BillingPackage::class;
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'project',
+        'groups',
         'payment_plans',
         'contract_templates',
         'created_by_user',
@@ -37,24 +38,22 @@ class OfferService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'is_public',
         'is_active',
-        'currency',
+        'type',
         'organization_project_id',
         'only_available',
     ];
 
     /**
-     * List all offers.
+     * List all billing packages.
      *
      * Resource-specific filters:
-     * - `is_public` (bool) - Filter by public offers
-     * - `is_active` (bool) - Filter by active offers
-     * - `currency` (string) - Filter by currency code (3 chars, e.g. EUR)
+     * - `is_active` (bool) - Filter by active packages
+     * - `type` (string) - Filter by package type
      * - `organization_project_id` (string) - Filter by project
-     * - `only_available` (bool) - Show only available offers
+     * - `only_available` (bool) - Show only available packages
      *
-     * @return Collection<Offer>
+     * @return Collection<BillingPackage>
      *
      * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
@@ -67,35 +66,35 @@ class OfferService extends AbstractService
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
-    public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Offer
+    public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): BillingPackage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function create(array $params, ?RequestOptions $opts = null): Offer
+    public function create(array $params, ?RequestOptions $opts = null): BillingPackage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
-    public function update(string $id, array $params, ?RequestOptions $opts = null): Offer
+    public function update(string $id, array $params, ?RequestOptions $opts = null): BillingPackage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Offer
+    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): BillingPackage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function expire(string $id, array $params = [], ?RequestOptions $opts = null): Offer
+    public function expire(string $id, array $params = [], ?RequestOptions $opts = null): BillingPackage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);

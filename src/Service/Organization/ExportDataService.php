@@ -24,9 +24,7 @@ class ExportDataService extends AbstractService
     protected const string RESOURCE = 'export-data';
     protected const ?string RESOURCE_CLASS = ExportData::class;
 
-    public const array AVAILABLE_INCLUDES = [
-        'organization',
-    ];
+    public const array AVAILABLE_INCLUDES = [];
 
     public const array AVAILABLE_FILTERS = [];
 

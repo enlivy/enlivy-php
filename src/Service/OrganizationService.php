@@ -20,9 +20,14 @@ class OrganizationService extends AbstractService
     use HasFilters;
 
     public const array AVAILABLE_INCLUDES = [
+        'schema',
+        'user_abilities',
+        'settings',
         'deleted_by_user',
         'remaining_credits',
         'credits',
+        'branding_icon',
+        'branding_logo',
         'membership_features',
     ];
 

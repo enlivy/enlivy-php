@@ -16,46 +16,123 @@ composer require enlivy/enlivy-php
 ## Quick Start
 
 ```php
-$enlivy = new \Enlivy\EnlivyClient([
+$client = new \Enlivy\EnlivyClient([
     'api_key' => '1|your_api_token',
     'organization_id' => 'org_xxx',
 ]);
 
-// List prospects
-$prospects = $enlivy->prospects->list();
+// List invoices
+$invoices = $client->invoices->list(['per_page' => 25]);
 
-foreach ($prospects as $prospect) {
-    echo $prospect->title . "\n";
+foreach ($invoices as $invoice) {
+    echo $invoice->id . "\n";
 }
 
 // Create
-$prospect = $enlivy->prospects->create([
-    'title' => 'New Lead',
-    'email' => 'lead@example.com',
+$invoice = $client->invoices->create([
+    'organization_receiver_user_id' => 'org_user_xxx',
+    'status' => 'draft',
+    'currency' => 'EUR',
+    'payment_method' => 'bank_transfer',
+    'delivery_method' => 'email',
+    'line_items' => [
+        [
+            'name_lang_map' => ['en' => 'Consulting Services'],
+            'quantity' => 10,
+            'price' => 100.00,
+            'type' => 'service',
+        ],
+    ],
 ]);
 
-// Retrieve
-$prospect = $enlivy->prospects->retrieve('org_pros_xxx');
+// Retrieve with related data
+$invoice = $client->invoices->retrieve('org_inv_xxx', [
+    'include' => ['sender_user', 'receiver_user', 'line_items'],
+]);
 
 // Update
-$enlivy->prospects->update('org_pros_xxx', ['title' => 'Updated']);
+$client->invoices->update('org_inv_xxx', ['status' => 'pending']);
 
 // Delete
-$enlivy->prospects->delete('org_pros_xxx');
+$client->invoices->delete('org_inv_xxx');
 ```
 
 ## Configuration
 
 ```php
-$enlivy = new \Enlivy\EnlivyClient([
-    'api_key' => '1|your_token',       // Required (or use OAuth)
-    'organization_id' => 'org_xxx',    // Default org for requests
-    'api_base' => 'https://api.enlivy.com', // Optional
-    'timeout' => 30,                   // Optional (seconds)
+// Per-client configuration
+$client = new \Enlivy\EnlivyClient([
+    'api_key' => '1|your_token',
+    'organization_id' => 'org_xxx',
+    'api_base' => 'https://api.enlivy.com',
+    'timeout' => 30,
 ]);
+
+// Or global configuration
+\Enlivy\Enlivy::setApiKey('1|your_token');
+\Enlivy\Enlivy::setOrganizationId('org_xxx');
+$client = new \Enlivy\EnlivyClient();
 ```
 
-For OAuth authentication, see [examples/oauth.md](examples/oauth.md).
+## Documentation
+
+Detailed guides with code examples for every feature:
+
+### Getting Started
+
+| Guide | Description |
+|-------|-------------|
+| [Authentication](docs/authentication.md) | API keys, OAuth client credentials, global config |
+| [OAuth Server](docs/oauth.md) | OAuth 2.0 server for third-party app integrations |
+| [Includes (Eager Loading)](docs/includes.md) | Load related resources in a single request |
+| [Filters](docs/filters.md) | Search, sort, paginate, and filter list endpoints |
+
+### Billing & Invoicing
+
+| Guide | Description |
+|-------|-------------|
+| [Invoices](docs/organization/invoices.md) | Create, send, and manage invoices |
+| [Receipts](docs/organization/receipts.md) | Receipt management and tracking |
+| [Billing Packages](docs/organization/billing-packages.md) | Reusable billing templates with payment plans |
+| [Proposals](docs/organization/proposals.md) | Send proposals to prospects and customers |
+| [Products](docs/organization/products.md) | Product and service catalog |
+| [Taxes](docs/organization/taxes.md) | Tax classes, rates, and filing jurisdictions |
+
+### CRM & Sales
+
+| Guide | Description |
+|-------|-------------|
+| [Prospects](docs/organization/prospects.md) | Sales pipeline, lead tracking, and CRM |
+| [Organization Users](docs/organization/users.md) | Customers, employees, and roles |
+| [Projects](docs/organization/projects.md) | Projects, team members, and permissions |
+
+### Contracts
+
+| Guide | Description |
+|-------|-------------|
+| [Contracts](docs/organization/contracts.md) | Contract management, e-signatures, and templates |
+
+### Banking
+
+| Guide | Description |
+|-------|-------------|
+| [Bank Accounts](docs/organization/bank-accounts.md) | Bank accounts, transactions, and reconciliation |
+
+### Content & Reports
+
+| Guide | Description |
+|-------|-------------|
+| [Reports](docs/organization/reports.md) | Dynamic reports with custom schemas |
+| [Files](docs/organization/files.md) | File uploads and attachments |
+
+### Integrations
+
+| Guide | Description |
+|-------|-------------|
+| [Webhooks](docs/organization/webhooks.md) | Real-time event notifications and signature verification |
+| [Customer Portal](docs/organization/customer-portal.md) | Client-facing portal for invoices, contracts, and proposals |
+| [Integrations](docs/integrations.md) | Stripe, ANAF, and other third-party services |
+| [AI Agents](docs/ai-agents.md) | AI-powered automation |
 
 ## Error Handling
 
@@ -68,13 +145,13 @@ use Enlivy\Exception\{
 };
 
 try {
-    $prospect = $enlivy->prospects->retrieve('invalid_id');
+    $invoice = $client->invoices->retrieve('org_inv_xxx');
 } catch (ValidationException $e) {
     $errors = $e->errors(); // ['field' => ['error message']]
 } catch (NotFoundException $e) {
-    // 404 - Resource not found
+    // 404
 } catch (AuthenticationException $e) {
-    // 401 - Invalid credentials
+    // 401
 } catch (RateLimitException $e) {
     $retryAfter = $e->retryAfter(); // seconds
 }
@@ -83,26 +160,54 @@ try {
 ## Pagination
 
 ```php
-$prospects = $enlivy->prospects->list(['page' => 1, 'per_page' => 25]);
+$invoices = $client->invoices->list(['page' => 1, 'per_page' => 25]);
 
-echo "Page " . $prospects->getCurrentPage() . " of " . $prospects->getTotalPages();
+echo "Page " . $invoices->getCurrentPage() . " of " . $invoices->getTotalPages();
 
-foreach ($prospects as $prospect) {
-    echo $prospect->title;
+foreach ($invoices as $invoice) {
+    echo $invoice->id;
 }
 ```
 
-## Examples
+## API Discovery
 
-See the [examples/](examples/) folder for detailed usage:
+The SDK includes a discovery service for programmatic API introspection:
 
-- [Authentication](examples/authentication.md)
-- [OAuth](examples/oauth.md)
-- [Invoices](examples/organization/invoices.md)
-- [Prospects](examples/organization/prospects.md)
-- [Contracts](examples/organization/contracts.md)
-- [Projects](examples/organization/projects.md)
-- [And more...](examples/README.md)
+```php
+// List all available API resources
+$resources = $client->discovery->list();
+
+// Get detailed metadata for a specific resource
+$invoiceSpec = $client->discovery->resource('organization_invoices');
+```
+
+## Key Concepts
+
+### Multilingual Fields
+
+Most text fields use `_lang_map` for multilingual support:
+
+```php
+'name_lang_map' => [
+    'en' => 'Consulting Services',
+    'ro' => 'Servicii de Consultanta',
+],
+```
+
+### ID Prefixes
+
+All IDs use prefixes to identify the resource type:
+
+| Prefix | Resource |
+|--------|----------|
+| `org_` | Organization |
+| `org_user_` | Organization User |
+| `org_inv_` | Invoice |
+| `org_cont_` | Contract |
+| `org_pros_` | Prospect |
+| `org_proj_` | Project |
+| `org_prod_` | Product |
+| `org_prop_` | Proposal |
 
 ## Testing
 
@@ -111,8 +216,11 @@ See the [examples/](examples/) folder for detailed usage:
 ./vendor/bin/phpstan analyse      # Static analysis
 ```
 
-See [TESTING.md](TESTING.md) for integration tests.
-
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
+
+## Support
+
+- [API Documentation](https://docs.enlivy.com/api)
+- [Issues](https://github.com/enlivy/enlivy-php/issues)

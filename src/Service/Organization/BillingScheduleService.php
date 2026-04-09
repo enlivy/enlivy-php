@@ -34,10 +34,10 @@ class BillingScheduleService extends AbstractService
         'sender_user',
         'receiver_user',
         'contract',
+        'billing_package',
         'deleted_by_user',
         'payments',
         'phases',
-        'tag_ids',
     ];
 
     public const array AVAILABLE_FILTERS = [

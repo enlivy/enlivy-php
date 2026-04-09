@@ -36,15 +36,21 @@ final class WebhookEvent
     /**
      * Construct a verified webhook event.
      *
+     * Verifies the HMAC-SHA256 signature from the `Signature` header,
+     * then parses the payload into a WebhookEvent.
+     *
+     * @param string $payload The raw request body (JSON)
+     * @param string $signature The value of the `Signature` header
+     * @param string $secret The webhook signing secret
+     *
      * @throws \Enlivy\Exception\InvalidArgumentException If signature verification fails
      */
     public static function constructFrom(
         string $payload,
         string $signature,
         string $secret,
-        int $tolerance = 300,
     ): self {
-        WebhookSignature::verify($payload, $signature, $secret, $tolerance);
+        WebhookSignature::verify($payload, $signature, $secret);
 
         return self::fromPayload($payload);
     }

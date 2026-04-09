@@ -212,7 +212,7 @@ $invoices = $client->invoices->list([
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
-### Billing & Offers
+### Billing & Packages
 
 **`billingSchedules`**
 
@@ -230,13 +230,12 @@ $invoices = $client->invoices->list([
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
-**`offers`**
+**`billingPackages`**
 
 | Filter | Type |
 |--------|------|
-| `is_public` | bool |
 | `is_active` | bool |
-| `currency` | string (3-char ISO code) |
+| `type` | string |
 | `organization_project_id` | string |
 | `only_available` | bool |
 
@@ -247,7 +246,7 @@ $invoices = $client->invoices->list([
 | `status` | `draft`, `sent`, `viewed`, `accepted`, `rejected`, `expired` |
 | `currency` | string (3-char ISO code) |
 | `organization_project_id` | string |
-| `organization_offer_id` | string |
+| `organization_billing_package_id` | string |
 | `organization_prospect_id` | string |
 | `organization_receiver_user_id` | string |
 

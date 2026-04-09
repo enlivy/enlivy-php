@@ -30,8 +30,8 @@ class ProposalService extends AbstractService
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'project',
-        'offer',
-        'offer_payment_plan',
+        'billing_package',
+        'billing_package_payment_plan',
         'payments',
         'proposal_contracts',
         'billing_schedule',
@@ -49,7 +49,7 @@ class ProposalService extends AbstractService
         'status',
         'currency',
         'organization_project_id',
-        'organization_offer_id',
+        'organization_billing_package_id',
         'organization_prospect_id',
         'organization_receiver_user_id',
     ];
@@ -61,7 +61,7 @@ class ProposalService extends AbstractService
      * - `status` (string: draft|sent|viewed|accepted|rejected|expired)
      * - `currency` (string) - Filter by currency code (3 chars, e.g. EUR)
      * - `organization_project_id` (string) - Filter by project
-     * - `organization_offer_id` (string) - Filter by offer
+     * - `organization_billing_package_id` (string) - Filter by billing package
      * - `organization_prospect_id` (string) - Filter by prospect
      * - `organization_receiver_user_id` (string) - Filter by receiver user
      *
@@ -106,11 +106,11 @@ class ProposalService extends AbstractService
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function fromOffer(array $params, ?RequestOptions $opts = null): Proposal
+    public function fromBillingPackage(array $params, ?RequestOptions $opts = null): Proposal
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/from-offer'), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/from-billing-package'), $params, $opts);
     }
 
     public function send(string $id, array $params = [], ?RequestOptions $opts = null): Proposal

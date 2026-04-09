@@ -20,7 +20,7 @@ class PortalServiceFactory extends AbstractServiceFactory
             'reportSchemas' => ReportSchemaService::class,
             'guidelines' => GuidelineService::class,
             'playbooks' => PlaybookService::class,
-            'offers' => OfferService::class,
+            'billingPackages' => BillingPackageService::class,
             'proposals' => ProposalService::class,
             'projects' => ProjectService::class,
             'prospects' => ProspectService::class,

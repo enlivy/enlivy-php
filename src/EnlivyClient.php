@@ -17,6 +17,7 @@ use Enlivy\Service;
  * @property Service\AiAgentService $aiAgents
  * @property Service\InvitationCodeService $invitationCodes
  * @property Service\FrontendService $frontend
+ * @property Service\DiscoveryService $discovery
  * @property Service\OAuth\OAuthClientService $oauthClients
  * @property Service\OAuth\OAuthAuthorizationService $oauthAuthorizations
  * @property Service\OAuth\OAuthTokenService $oauthTokens
@@ -59,6 +60,7 @@ use Enlivy\Service;
  * @property Service\Organization\Contract\ContractPrefixService $contractPrefixes
  * @property Service\Organization\Contract\ContractStatusService $contractStatuses
  * @property Service\Organization\Contract\ContractSignatureService $contractSignatures
+ * @property Service\Organization\Contract\ContractSignatureNotificationLogService $contractSignatureNotificationLogs
  *
  * Organization-scoped services - Tax:
  * @property Service\Organization\Tax\TaxClassService $taxClasses
@@ -102,7 +104,7 @@ use Enlivy\Service;
  *
  * Organization-scoped services - Membership & Billing:
  * @property Service\Organization\MembershipService $membership
- * @property Service\Organization\OfferService $offers
+ * @property Service\Organization\BillingPackage\BillingPackageService $billingPackages
  * @property Service\Organization\ProposalService $proposals
  *
  * Organization-scoped services - Search & AI:

@@ -26,6 +26,7 @@ class WebhookService extends AbstractService
         'organization',
         'deleted_by_user',
         'events',
+        'notifications',
     ];
 
     public const array AVAILABLE_FILTERS = [];

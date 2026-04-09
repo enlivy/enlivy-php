@@ -32,7 +32,7 @@ use Enlivy\Service\ClientPortal\PortalServiceFactory;
  * @property Service\ClientPortal\ReportSchemaService $reportSchemas
  * @property Service\ClientPortal\GuidelineService $guidelines
  * @property Service\ClientPortal\PlaybookService $playbooks
- * @property Service\ClientPortal\OfferService $offers
+ * @property Service\ClientPortal\BillingPackageService $billingPackages
  * @property Service\ClientPortal\ProposalService $proposals
  * @property Service\ClientPortal\ProjectService $projects
  * @property Service\ClientPortal\ProspectService $prospects

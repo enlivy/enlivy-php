@@ -16,6 +16,7 @@ use Enlivy\Service\Organization\BankAccount\BankTransactionService;
 use Enlivy\Service\Organization\BillingScheduleService;
 use Enlivy\Service\Organization\Contract\ContractPrefixService;
 use Enlivy\Service\Organization\Contract\ContractService;
+use Enlivy\Service\Organization\Contract\ContractSignatureNotificationLogService;
 use Enlivy\Service\Organization\Contract\ContractSignatureService;
 use Enlivy\Service\Organization\Contract\ContractStatusService;
 use Enlivy\Service\Organization\EmailPreviewService;
@@ -30,7 +31,7 @@ use Enlivy\Service\Organization\MatchService;
 use Enlivy\Service\Organization\MembershipService;
 use Enlivy\Service\Organization\MiscService;
 use Enlivy\Service\Organization\NotificationService;
-use Enlivy\Service\Organization\OfferService;
+use Enlivy\Service\Organization\BillingPackage\BillingPackageService;
 use Enlivy\Service\Organization\Payslip\PayslipSchemaService;
 use Enlivy\Service\Organization\Payslip\PayslipService;
 use Enlivy\Service\Organization\PlaybookService;
@@ -96,6 +97,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'invitationCodes' => InvitationCodeService::class,
             'serviceIntegration' => ServiceIntegrationService::class,
             'frontend' => FrontendService::class,
+            'discovery' => DiscoveryService::class,
             'userOrganizationSettings' => UserOrganizationSettingService::class,
 
             // Org-scoped: CRM
@@ -135,6 +137,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'contractPrefixes' => ContractPrefixService::class,
             'contractStatuses' => ContractStatusService::class,
             'contractSignatures' => ContractSignatureService::class,
+            'contractSignatureNotificationLogs' => ContractSignatureNotificationLogService::class,
 
             // Org-scoped: Tax
             'taxClasses' => TaxClassService::class,
@@ -178,7 +181,7 @@ class CoreServiceFactory extends AbstractServiceFactory
 
             // Org-scoped: Membership & Billing
             'membership' => MembershipService::class,
-            'offers' => OfferService::class,
+            'billingPackages' => BillingPackageService::class,
             'proposals' => ProposalService::class,
 
             // Org-scoped: Search & AI

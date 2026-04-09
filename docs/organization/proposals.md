@@ -1,6 +1,6 @@
 # Proposals
 
-Send professional proposals to prospects or customers. Proposals can be based on offer templates or created with custom payments and line items.
+Send professional proposals to prospects or customers. Proposals can be based on billing package templates or created with custom payments and line items.
 
 ## Key Concepts
 
@@ -28,7 +28,7 @@ Note: Email recipient is mutually exclusive with prospect/user.
 
 ## Creating Proposals
 
-### Basic Proposal from Offer
+### Proposal from Billing Package
 
 ```php
 <?php
@@ -40,17 +40,12 @@ $client = new EnlivyClient([
     'organization_id' => 'org_xxx',
 ]);
 
-$proposal = $client->proposals->create([
-    // Based on offer template
-    'organization_offer_id' => 'org_offr_xxx',
-    'organization_offer_payment_plan_id' => 'org_offr_plan_xxx',
+$proposal = $client->proposals->fromBillingPackage([
+    'organization_billing_package_id' => 'org_bp_xxx',
+    'organization_billing_package_payment_plan_id' => 'org_bp_plan_xxx',
 
     // Recipient
     'organization_prospect_id' => 'org_pros_xxx',
-
-    // Required
-    'currency' => 'EUR',
-    'expires_at' => '2026-03-05',
 ]);
 
 echo "Proposal created: {$proposal->id}\n";
@@ -320,7 +315,7 @@ $proposal = $client->proposals->create([
 <?php
 
 $proposals = $client->proposals->list([
-    'include' => ['offer', 'prospect', 'receiver_user', 'payments'],
+    'include' => ['billing_package', 'prospect', 'receiver_user', 'payments'],
 ]);
 
 foreach ($proposals as $proposal) {
@@ -363,7 +358,7 @@ $pending = $client->proposals->list([
 <?php
 
 $proposal = $client->proposals->retrieve('org_prop_xxx', [
-    'include' => ['offer', 'prospect', 'payments', 'payments.line_items'],
+    'include' => ['billing_package', 'prospect', 'payments', 'payments.line_items'],
 ]);
 
 echo "Proposal: {$proposal->id}\n";
@@ -446,8 +441,8 @@ echo "Deleted at: {$proposal->deleted_at}\n";
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `organization_offer_id` | string | Base offer template |
-| `organization_offer_payment_plan_id` | string | Selected payment plan from offer |
+| `organization_billing_package_id` | string | Base billing package |
+| `organization_billing_package_payment_plan_id` | string | Selected payment plan from billing package |
 | `organization_project_id` | string | Link to project |
 | `organization_sender_user_id` | string | Sender user ID |
 | `note_lang_map` | object | Note by language |
@@ -568,7 +563,7 @@ try {
 
 ## Related
 
-- [Offers](offers.md) - Create offer templates
+- [Billing Packages](billing-packages.md) - Create billing package templates
 - [Prospects](prospects.md) - Send proposals to prospects
 - [Contracts](contracts.md) - Create contracts after acceptance
 - [Invoices](invoices.md) - Invoice based on accepted proposal

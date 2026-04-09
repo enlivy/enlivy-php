@@ -28,6 +28,7 @@ class ReportSchemaService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
+        'report_schema_fields',
         'deleted_by_user',
     ];
 
