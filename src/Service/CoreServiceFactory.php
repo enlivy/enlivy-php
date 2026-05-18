@@ -23,12 +23,12 @@ use Enlivy\Service\Organization\EmailPreviewService;
 use Enlivy\Service\Organization\ExportDataService;
 use Enlivy\Service\Organization\FileService;
 use Enlivy\Service\Organization\GuidelineService;
+use Enlivy\Service\Organization\Invoice\InvoiceChargeLogService;
 use Enlivy\Service\Organization\Invoice\InvoiceNetworkExchangeService;
 use Enlivy\Service\Organization\Invoice\InvoiceNotificationLogService;
 use Enlivy\Service\Organization\Invoice\InvoicePrefixService;
 use Enlivy\Service\Organization\Invoice\InvoiceService;
 use Enlivy\Service\Organization\MatchService;
-use Enlivy\Service\Organization\MembershipService;
 use Enlivy\Service\Organization\MiscService;
 use Enlivy\Service\Organization\NotificationService;
 use Enlivy\Service\Organization\BillingPackage\BillingPackageService;
@@ -67,12 +67,18 @@ use Enlivy\Service\Organization\StripeWebhookCallbackService;
 use Enlivy\Service\Organization\TagService;
 use Enlivy\Service\Organization\Task\TaskService;
 use Enlivy\Service\Organization\Task\TaskStatusService;
+use Enlivy\Service\Organization\TenantBilling\TenantBillingInvoiceService;
+use Enlivy\Service\Organization\TenantBilling\TenantBillingPaymentMethodService;
+use Enlivy\Service\Organization\TenantBilling\TenantBillingService;
+use Enlivy\Service\Organization\TenantBilling\TenantBillingTrialService;
 use Enlivy\Service\Organization\Tax\TaxClassService;
 use Enlivy\Service\Organization\Tax\TaxFilingJurisdictionService;
 use Enlivy\Service\Organization\Tax\TaxRateService;
 use Enlivy\Service\Organization\Tax\TaxTypeService;
 use Enlivy\Service\Organization\UserAddressService;
+use Enlivy\Service\Organization\UserBankAccountService;
 use Enlivy\Service\Organization\UserClientPortalSessionService;
+use Enlivy\Service\Organization\UserPaymentMethodService;
 use Enlivy\Service\Organization\UserOrganizationSettingService;
 use Enlivy\Service\Organization\UserPortalDomainService;
 use Enlivy\Service\Organization\UserRoleAbilityService;
@@ -117,10 +123,13 @@ class CoreServiceFactory extends AbstractServiceFactory
             'userRoles' => UserRoleService::class,
             'userRoleAbilities' => UserRoleAbilityService::class,
             'userAddresses' => UserAddressService::class,
+            'userPaymentMethods' => UserPaymentMethodService::class,
+            'userBankAccounts' => UserBankAccountService::class,
 
             // Org-scoped: Accounting
             'invoices' => InvoiceService::class,
             'invoicePrefixes' => InvoicePrefixService::class,
+            'invoiceChargeLogs' => InvoiceChargeLogService::class,
             'invoiceNotificationLogs' => InvoiceNotificationLogService::class,
             'invoiceNetworkExchanges' => InvoiceNetworkExchangeService::class,
             'receipts' => ReceiptService::class,
@@ -179,10 +188,13 @@ class CoreServiceFactory extends AbstractServiceFactory
             'userClientPortalSessions' => UserClientPortalSessionService::class,
             'userPortalDomain' => UserPortalDomainService::class,
 
-            // Org-scoped: Membership & Billing
-            'membership' => MembershipService::class,
+            // Org-scoped: Billing
             'billingPackages' => BillingPackageService::class,
             'proposals' => ProposalService::class,
+            'tenantBilling' => TenantBillingService::class,
+            'tenantBillingTrial' => TenantBillingTrialService::class,
+            'tenantBillingPaymentMethods' => TenantBillingPaymentMethodService::class,
+            'tenantBillingInvoices' => TenantBillingInvoiceService::class,
 
             // Org-scoped: Search & AI
             'search' => SearchService::class,

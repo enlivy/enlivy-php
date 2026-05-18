@@ -36,7 +36,7 @@ Your `.env.testing` file should look like:
 ```env
 ENLIVY_API_KEY="1|your_actual_token"
 ENLIVY_ORGANIZATION_ID="org_xxx"
-ENLIVY_API_BASE="http://enlivy_api.test"
+ENLIVY_API_BASE="https://api.enlivy.com"
 ```
 
 > **Note**: `.env.testing` is gitignored - your credentials stay local.
@@ -272,7 +272,7 @@ export ENLIVY_ORGANIZATION_ID="org_xxx"
 Use HTTP instead of HTTPS for local development:
 
 ```env
-ENLIVY_API_BASE="http://enlivy_api.test"
+ENLIVY_API_BASE="https://api.enlivy.com"
 ```
 
 ### Tests fail with "Invalid include parameter"

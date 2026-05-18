@@ -8,7 +8,6 @@ use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\InvoiceNetworkExchange;
 use Enlivy\Service\AbstractService;
-use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
@@ -16,12 +15,9 @@ use Enlivy\Util\RequestOptions;
 
 /**
  * Service for managing invoice network exchanges.
- *
- * @method InvoiceNetworkExchange restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class InvoiceNetworkExchangeService extends AbstractService
 {
-    use HasRestore;
     use HasTagging;
     use HasIncludes;
     use HasFilters;
@@ -70,18 +66,11 @@ class InvoiceNetworkExchangeService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function create(array $params, ?RequestOptions $opts = null): InvoiceNetworkExchange
-    {
-        $this->validateIncludes($params);
-        $orgId = $this->resolveOrganizationId($params, $opts);
-        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
-    }
-
     public function update(string $id, array $params, ?RequestOptions $opts = null): InvoiceNetworkExchange
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+        return $this->request('PATCH', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): InvoiceNetworkExchange
@@ -89,6 +78,13 @@ class InvoiceNetworkExchangeService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+
+    public function restore(string $id, array $params = [], ?RequestOptions $opts = null): InvoiceNetworkExchange
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/restore"), $params, $opts);
     }
 
     public function pull(string $institutionId, array $params = [], ?RequestOptions $opts = null): EnlivyObject

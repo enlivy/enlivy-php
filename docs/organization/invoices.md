@@ -781,9 +781,38 @@ try {
 }
 ```
 
+## Charging an Invoice
+
+Charge an invoice off-session against a stored payment method:
+
+```php
+$invoice = $client->invoices->charge('org_inv_xxx');
+```
+
+Every attempt is recorded in an immutable charge log:
+
+```php
+$logs = $client->invoiceChargeLogs->list([
+    'organization_invoice_id' => 'org_inv_xxx',
+    'status' => 'failed,requires_action',
+    'include' => 'payment_method,initiated_by_organization_user',
+]);
+
+$log = $client->invoiceChargeLogs->retrieve('org_inv_cl_xxx');
+```
+
+The invoice itself can expose its charge history:
+
+```php
+$invoice = $client->invoices->retrieve('org_inv_xxx', [
+    'include' => 'charge_logs,latest_charge_log',
+]);
+```
+
 ## Related
 
 - [Organization Users](organization-users.md) - Create customers
 - [Products](products.md) - Manage product catalog
 - [Taxes](taxes.md) - Configure tax classes
 - [Receipts](receipts.md) - Create receipts for payments
+- [Tenant Billing](tenant-billing.md) - Enlivy subscription invoices

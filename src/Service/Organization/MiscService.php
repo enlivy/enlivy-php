@@ -19,6 +19,20 @@ class MiscService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/calculate-tax-total'), $params, $opts);
     }
 
+    public function calculateCurrencyConversion(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/calculate-currency-conversion'), $params, $opts);
+    }
+
+    public function calculateDueDate(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/calculate-due-date'), $params, $opts);
+    }
+
     public function determineTaxRateId(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

@@ -46,6 +46,13 @@ class TaxFilingJurisdictionService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
+    public function create(array $params, ?RequestOptions $opts = null): TaxFilingJurisdiction
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
+    }
+
     public function update(string $id, array $params, ?RequestOptions $opts = null): TaxFilingJurisdiction
     {
         $this->validateIncludes($params);

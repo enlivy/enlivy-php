@@ -603,9 +603,57 @@ try {
 }
 ```
 
+## Payment Methods
+
+Each organization user can have stored payment methods (used for off-session invoice
+charging). All methods are nested under the user ID.
+
+```php
+$methods = $client->userPaymentMethods->list('org_user_xxx', [
+    'provider' => 'stripe',
+    'status' => 'active',
+]);
+
+$method = $client->userPaymentMethods->create('org_user_xxx', [
+    'provider' => 'stripe',
+    'type' => 'card',
+    'origin' => 'manual',
+]);
+
+$client->userPaymentMethods->setAsDefault('org_user_xxx', $method->id);
+$client->userPaymentMethods->syncFromStripe('org_user_xxx', $method->id);
+$client->userPaymentMethods->importFromStripe('org_user_xxx', [
+    'stripe_customer_id' => 'cus_xxx',
+]);
+$client->userPaymentMethods->delete('org_user_xxx', $method->id);
+$client->userPaymentMethods->restore('org_user_xxx', $method->id);
+```
+
+## Bank Accounts
+
+Organization-user bank accounts live in their own table, nested under the user ID.
+
+```php
+$accounts = $client->userBankAccounts->list('org_user_xxx', [
+    'is_primary' => true,
+]);
+
+$account = $client->userBankAccounts->create('org_user_xxx', [
+    'type' => 'iban',
+    'information' => ['iban' => 'RO49AAAA1B31007593840000'],
+    'is_primary' => true,
+]);
+
+$client->userBankAccounts->setPrimary('org_user_xxx', $account->id);
+$client->userBankAccounts->delete('org_user_xxx', $account->id);
+```
+
+Expose them on the user via includes: `primary_bank_account`, `bank_accounts`.
+
 ## Next Steps
 
 Once you have customers (OrganizationUsers), you can:
 - [Create invoices](invoices.md) for them
 - [Create contracts](contracts.md) with them
 - [Send proposals](proposals.md) to them
+- [Manage their payment methods](#payment-methods) for invoice charging

@@ -49,13 +49,6 @@ class UserClientPortalSessionService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
-    {
-        $this->validateIncludes($params);
-        $orgId = $this->resolveOrganizationId($params, $opts);
-
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
-    }
 
     public function confirmVerificationCode(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
     {

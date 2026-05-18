@@ -40,10 +40,10 @@ final class ClientTest extends TestCase
     {
         $client = new EnlivyClient([
             'api_key' => '1|test_token',
-            'api_base' => 'http://enlivy_api.test',
+            'api_base' => 'https://api.example.test',
         ]);
 
-        $this->assertSame('http://enlivy_api.test', $client->getApiBase());
+        $this->assertSame('https://api.example.test', $client->getApiBase());
     }
 
     public function testRequiresAuthCredentials(): void

@@ -28,4 +28,9 @@ class FrontendService extends AbstractService
     {
         return $this->request('GET', "/frontend/iso3166/{$countryCode}", null, $opts);
     }
+
+    public function sockets(?RequestOptions $opts = null): EnlivyObject
+    {
+        return $this->request('GET', '/frontend/sockets', null, $opts);
+    }
 }

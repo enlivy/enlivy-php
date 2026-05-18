@@ -351,7 +351,7 @@ try {
 
 ```php
 <?php
-// routes/api.php
+// routes/api.php (your Laravel app)
 
 use Illuminate\Http\Request;
 use Enlivy\Webhook\WebhookSignature;

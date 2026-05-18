@@ -32,6 +32,7 @@ class BillingPackageService extends AbstractService
         'groups',
         'payment_plans',
         'contract_templates',
+        'subscription_terms',
         'created_by_user',
         'deleted_by_user',
         'expired_by_user',
@@ -99,5 +100,17 @@ class BillingPackageService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/expire"), $params, $opts);
+    }
+
+    /**
+     * Download the billing package as a document.
+     *
+     * Accepts optional `layout` and `locale` query params.
+     */
+    public function download(string $id, array $params = [], ?RequestOptions $opts = null): string
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/download"), $params, $opts);
     }
 }

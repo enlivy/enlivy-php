@@ -34,6 +34,7 @@ use Enlivy\Service\ClientPortal\PortalServiceFactory;
  * @property Service\ClientPortal\PlaybookService $playbooks
  * @property Service\ClientPortal\BillingPackageService $billingPackages
  * @property Service\ClientPortal\ProposalService $proposals
+ * @property Service\ClientPortal\PaymentMethodService $paymentMethods
  * @property Service\ClientPortal\ProjectService $projects
  * @property Service\ClientPortal\ProspectService $prospects
  */

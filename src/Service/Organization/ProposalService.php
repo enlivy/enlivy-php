@@ -152,7 +152,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/attach-contract"), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/contracts"), $params, $opts);
     }
 
     public function detachContract(string $id, string $contractId, array $params = [], ?RequestOptions $opts = null): EnlivyObject

@@ -34,6 +34,8 @@ class UserService extends AbstractService
         'user_role',
         'deleted_by_user',
         'tag_ids',
+        'primary_bank_account',
+        'bank_accounts',
     ];
 
     public const array AVAILABLE_FILTERS = [

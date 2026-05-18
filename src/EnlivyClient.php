@@ -27,6 +27,8 @@ use Enlivy\Service;
  * @property Service\Organization\UserRoleService $userRoles
  * @property Service\Organization\UserRoleAbilityService $userRoleAbilities
  * @property Service\Organization\UserAddressService $userAddresses
+ * @property Service\Organization\UserPaymentMethodService $userPaymentMethods
+ * @property Service\Organization\UserBankAccountService $userBankAccounts
  * @property Service\Organization\UserOrganizationSettingService $userOrganizationSettings
  *
  * Organization-scoped services - CRM:
@@ -44,6 +46,7 @@ use Enlivy\Service;
  * Organization-scoped services - Accounting:
  * @property Service\Organization\Invoice\InvoiceService $invoices
  * @property Service\Organization\Invoice\InvoicePrefixService $invoicePrefixes
+ * @property Service\Organization\Invoice\InvoiceChargeLogService $invoiceChargeLogs
  * @property Service\Organization\Invoice\InvoiceNotificationLogService $invoiceNotificationLogs
  * @property Service\Organization\Invoice\InvoiceNetworkExchangeService $invoiceNetworkExchanges
  * @property Service\Organization\Receipt\ReceiptService $receipts
@@ -102,10 +105,13 @@ use Enlivy\Service;
  * @property Service\Organization\UserClientPortalSessionService $userClientPortalSessions
  * @property Service\Organization\UserPortalDomainService $userPortalDomain
  *
- * Organization-scoped services - Membership & Billing:
- * @property Service\Organization\MembershipService $membership
+ * Organization-scoped services - Billing:
  * @property Service\Organization\BillingPackage\BillingPackageService $billingPackages
  * @property Service\Organization\ProposalService $proposals
+ * @property Service\Organization\TenantBilling\TenantBillingService $tenantBilling
+ * @property Service\Organization\TenantBilling\TenantBillingTrialService $tenantBillingTrial
+ * @property Service\Organization\TenantBilling\TenantBillingPaymentMethodService $tenantBillingPaymentMethods
+ * @property Service\Organization\TenantBilling\TenantBillingInvoiceService $tenantBillingInvoices
  *
  * Organization-scoped services - Search & AI:
  * @property Service\Organization\SearchService $search

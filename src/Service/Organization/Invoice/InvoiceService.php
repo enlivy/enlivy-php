@@ -45,6 +45,8 @@ class InvoiceService extends AbstractService
         'taxes',
         'last_peppol_exchange',
         'contract',
+        'charge_logs',
+        'latest_charge_log',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -147,5 +149,16 @@ class InvoiceService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/peppol/{$institution}"), $params, $opts);
+    }
+
+    /**
+     * Charge the invoice off-session against a stored payment method.
+     */
+    public function charge(string $id, array $params = [], ?RequestOptions $opts = null): Invoice
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/charge"), $params, $opts);
     }
 }

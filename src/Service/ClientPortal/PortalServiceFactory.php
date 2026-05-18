@@ -22,6 +22,7 @@ class PortalServiceFactory extends AbstractServiceFactory
             'playbooks' => PlaybookService::class,
             'billingPackages' => BillingPackageService::class,
             'proposals' => ProposalService::class,
+            'paymentMethods' => PaymentMethodService::class,
             'projects' => ProjectService::class,
             'prospects' => ProspectService::class,
         ];

@@ -13,6 +13,6 @@
 .env
 .env.testing
 
-# Project instructions - not part of the SDK
-CLAUDE.md
+# Internal tooling & process — never commit or expose publicly
 .claude/
+CLAUDE.md

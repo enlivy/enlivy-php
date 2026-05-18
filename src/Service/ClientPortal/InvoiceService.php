@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\ClientPortal;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\Invoice;
 use Enlivy\Util\RequestOptions;
 
@@ -31,5 +32,15 @@ class InvoiceService extends AbstractPortalService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestRaw('GET', $this->portalPath($orgId, "invoices/{$id}/download"), $params, $opts);
+    }
+
+    /**
+     * Charge the invoice off-session against a stored payment method.
+     */
+    public function charge(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "invoices/{$id}/charge"), $params, $opts);
     }
 }

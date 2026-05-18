@@ -59,6 +59,6 @@ class BankAccountDataService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/bridge/{$bridgeId}/requisition"), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/requisition/{$bridgeId}"), $params, $opts);
     }
 }

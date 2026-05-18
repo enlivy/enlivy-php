@@ -25,6 +25,7 @@ use Enlivy\Organization\ExportData;
 use Enlivy\Organization\File;
 use Enlivy\Organization\Guideline;
 use Enlivy\Organization\Invoice;
+use Enlivy\Organization\InvoiceChargeLog;
 use Enlivy\Organization\InvoiceNetworkExchange;
 use Enlivy\Organization\InvoiceNotificationLog;
 use Enlivy\Organization\InvoicePrefix;
@@ -50,12 +51,15 @@ use Enlivy\Organization\ReusableContent;
 use Enlivy\Organization\Tag;
 use Enlivy\Organization\Task;
 use Enlivy\Organization\TaskStatus;
+use Enlivy\Organization\TenantBilling;
 use Enlivy\Organization\TaxClass;
 use Enlivy\Organization\TaxFilingJurisdiction;
 use Enlivy\Organization\TaxRate;
 use Enlivy\Organization\TaxType;
 use Enlivy\Organization\User as OrganizationUser;
 use Enlivy\Organization\UserAddress;
+use Enlivy\Organization\UserBankAccount;
+use Enlivy\Organization\UserPaymentMethod;
 use Enlivy\Organization\UserRole;
 use Enlivy\Organization\UserRoleAbility;
 use Enlivy\Organization\Webhook;
@@ -97,10 +101,13 @@ final class ObjectTypes
         'user_role' => UserRole::class,
         'user_role_ability' => UserRoleAbility::class,
         'user_address' => UserAddress::class,
+        'user_payment_method' => UserPaymentMethod::class,
+        'user_bank_account' => UserBankAccount::class,
 
         // Organization-scoped: Accounting
         'invoice' => Invoice::class,
         'invoice_prefix' => InvoicePrefix::class,
+        'invoice_charge_log' => InvoiceChargeLog::class,
         'invoice_notification_log' => InvoiceNotificationLog::class,
         'invoice_network_exchange' => InvoiceNetworkExchange::class,
         'receipt' => Receipt::class,
@@ -154,6 +161,7 @@ final class ObjectTypes
         // Organization-scoped: Membership & Billing
         'billing_package' => BillingPackage::class,
         'proposal' => Proposal::class,
+        'tenant_billing' => TenantBilling::class,
 
         // Organization-scoped: API & Integrations
         'api_credential' => ApiCredential::class,

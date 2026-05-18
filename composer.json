@@ -44,5 +44,16 @@
         "sort-packages": true
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit",
+        "stan": "phpstan analyse -l 3 src/ --memory-limit=512M",
+        "qa": [
+            "@test",
+            "@stan"
+        ]
+    },
+    "scripts-descriptions": {
+        "qa": "Run the test suite and static analysis"
+    }
 }

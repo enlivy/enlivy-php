@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
  *   ENLIVY_API_KEY="1|xxx" ENLIVY_ORGANIZATION_ID="org_xxx" ./vendor/bin/phpunit tests/Integration
  *
  * For local development:
- *   ENLIVY_API_KEY="1|xxx" ENLIVY_ORGANIZATION_ID="org_xxx" ENLIVY_API_BASE="http://enlivy_api.test" ./vendor/bin/phpunit tests/Integration
+ *   ENLIVY_API_KEY="1|xxx" ENLIVY_ORGANIZATION_ID="org_xxx" ENLIVY_API_BASE="https://api.enlivy.com" ./vendor/bin/phpunit tests/Integration
  */
 abstract class IntegrationTestCase extends TestCase
 {
