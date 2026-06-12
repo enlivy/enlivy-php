@@ -1,8 +1,63 @@
 # Changelog
 
 All notable changes to `enlivy/enlivy-php` are documented here. This project
-adheres to [Semantic Versioning](https://semver.org/) (pre-1.0: minor versions
-may contain breaking changes).
+adheres to [Semantic Versioning](https://semver.org/).
+
+## [1.0.0] - 2026-06-12
+
+First stable release. See [UPGRADING.md](UPGRADING.md) for migration steps from
+the `0.x` series.
+
+### Breaking
+
+- **Webhooks are now Event Destinations.** The webhook management API has been
+  replaced by a unified event-delivery system. `$client->webhooks` becomes
+  `$client->eventDestinations`, and endpoints move from `/webhooks` to
+  `/event-destinations`. A destination has a `type` (`webhook` or `slack`), a
+  `destination_url`, an optional `name`/`config`, and one or more
+  `event_subscriptions`. Webhook delivery payloads and **signature verification
+  are unchanged** — `Enlivy\Webhook\WebhookSignature` and
+  `Enlivy\Webhook\WebhookEvent` still work exactly as before.
+- **Tenant-billing trial.** `tenantBillingTrial->activate()`, `addPack()` and
+  `dropPack()` are replaced by a single
+  `tenantBillingTrial->applyChangeSet($params)` call.
+- **`Enlivy\Enums\Proposal\PaymentMethodKind`** — the `SAVED_CARD` case
+  (`'saved_card'`) is now `CARD` (`'card'`), matching the API wire value.
+
+### Added
+
+- **Event Trails** — read-only audit history exposed on invoices, receipts and
+  billing schedules via `eventTrails()` / `retrieveEventTrail()`, with the
+  `EventTrail` / `EventTrailChange` resources and `EventTrail\{EventType,
+  Origin}` enums.
+- **Event Destinations** — subscriptions and delivery logs through
+  `subscriptions()`, `deliveries()` and `retrieveDelivery()`, plus Slack as a
+  destination type; `EventDestination` / `EventDelivery` / `EventSubscription`
+  resources and `EventDelivery\{DestinationType, DeliveryStatus, TriggerEvent}`
+  enums.
+- **Slack integration** — `serviceIntegrationSlack->connect()`.
+- **Client Portal** — `payslips`, `billingSchedules` (incl.
+  `changePaymentMethod()` / `cancel()`), magic-authentication session selection
+  (`session->candidateUsers()` / `bindUser()`), and proposal
+  `createPaymentIntent()` / `confirmPayment()` (re-introduced).
+- **Tax classes** — `tax_rates_overview` include.
+- **Invoice network exchanges** — `created_at_from`/`created_at_to` and
+  `updated_at_from`/`updated_at_to` filters.
+- **Portal sessions** — list filters `organization_user_id`, `status`,
+  `created_at_from`/`created_at_to`, `updated_at_from`/`updated_at_to`.
+- New resource fields, including `BillingPackage.portal_url` /
+  `portal_discovery_mode`, `BillingSchedule` cancellation and
+  email-notification fields, `Project` inbound-prospect fields, and
+  `TenantBilling` trial-window fields.
+- New enums `Organization\ButtonStyles` and
+  `TenantBilling\{BillingEffects, TrialChangeSetTypes}`.
+
+### Changed
+
+- Added enum cases: `Organization\EntityManifest`
+  (`billing_package`, `proposal`, `file`), `Proposal\Statuses`
+  (`lead_configured`), `TenantBilling\PackStatuses` (`trialing_cancelled`),
+  `UserClientPortal\SessionStatuses` (`awaiting_user_selection`).
 
 ## [0.2.0] - 2026-05-18
 

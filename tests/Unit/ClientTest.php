@@ -104,7 +104,7 @@ final class ClientTest extends TestCase
             'projects',
             'tasks',
             'files',
-            'webhooks',
+            'eventDestinations',
         ];
 
         foreach ($services as $service) {

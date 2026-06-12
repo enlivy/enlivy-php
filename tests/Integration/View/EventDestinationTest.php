@@ -5,46 +5,46 @@ declare(strict_types=1);
 namespace Enlivy\Tests\Integration\View;
 
 use Enlivy\Collection;
-use Enlivy\Organization\Webhook;
+use Enlivy\Organization\EventDestination;
 use Enlivy\Organization\Tag;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
 /**
- * Integration tests for Webhook and Tag-related endpoints.
+ * Integration tests for Event Destination and Tag-related endpoints.
  */
-class WebhookTest extends IntegrationTestCase
+class EventDestinationTest extends IntegrationTestCase
 {
     // -------------------------------------------------------------------------
-    // Webhooks
+    // Event Destinations
     // -------------------------------------------------------------------------
 
-    public function testListWebhooks(): void
+    public function testListEventDestinations(): void
     {
-        $webhooks = $this->getClient()->webhooks->list();
+        $destinations = $this->getClient()->eventDestinations->list();
 
-        $this->assertInstanceOf(Collection::class, $webhooks);
-        $this->assertIsArray($webhooks->data);
+        $this->assertInstanceOf(Collection::class, $destinations);
+        $this->assertIsArray($destinations->data);
 
-        if (count($webhooks->data) > 0) {
-            $webhook = $webhooks->data[0];
-            $this->assertInstanceOf(Webhook::class, $webhook);
-            $this->assertNotNull($webhook->id);
+        if (count($destinations->data) > 0) {
+            $destination = $destinations->data[0];
+            $this->assertInstanceOf(EventDestination::class, $destination);
+            $this->assertNotNull($destination->id);
         }
     }
 
-    public function testRetrieveWebhook(): void
+    public function testRetrieveEventDestination(): void
     {
-        $webhooks = $this->getClient()->webhooks->list(['per_page' => 1]);
+        $destinations = $this->getClient()->eventDestinations->list(['per_page' => 1]);
 
-        if (count($webhooks->data) === 0) {
-            $this->markTestSkipped('No webhooks available for testing');
+        if (count($destinations->data) === 0) {
+            $this->markTestSkipped('No event destinations available for testing');
         }
 
-        $webhookId = $webhooks->data[0]->id;
-        $webhook = $this->getClient()->webhooks->retrieve($webhookId);
+        $destinationId = $destinations->data[0]->id;
+        $destination = $this->getClient()->eventDestinations->retrieve($destinationId);
 
-        $this->assertInstanceOf(Webhook::class, $webhook);
-        $this->assertEquals($webhookId, $webhook->id);
+        $this->assertInstanceOf(EventDestination::class, $destination);
+        $this->assertEquals($destinationId, $destination->id);
     }
 
     // -------------------------------------------------------------------------

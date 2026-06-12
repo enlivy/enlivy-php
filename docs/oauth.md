@@ -304,7 +304,7 @@ curl_close($ch);
 | `prospects:write` | Write Prospects | Create, update, delete prospects and activities |
 | `contracts:read` | Read Contracts | View contracts, signatures, statuses |
 | `contracts:write` | Write Contracts | Create, update, delete contracts |
-| `webhooks:manage` | Manage Webhooks | Subscribe to real-time event notifications |
+| `webhooks:manage` | Manage Event Destinations | Manage event destinations and subscribe to real-time event delivery |
 | `*` | Full Access | All scopes (wildcard) |
 
 ## Field Reference
@@ -466,5 +466,5 @@ class OAuthCallbackHandler
 ## Related
 
 - [Authentication](authentication.md) - API key vs OAuth
-- [Webhooks](webhooks.md) - Get notified of events
+- [Event Destinations](organization/event-destinations.md) - Get notified of events (webhooks, Slack)
 - [Integrations](integrations.md) - Third-party service integrations

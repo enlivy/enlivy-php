@@ -37,6 +37,10 @@ class InvoiceNetworkExchangeService extends AbstractService
         'organization_user_id',
         'invoice_state',
         'status',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
     ];
 
     /**

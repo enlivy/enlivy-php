@@ -12,6 +12,7 @@ enum PackStatuses: string
 
     case INACTIVE = 'inactive';
     case TRIALING = 'trialing';
+    case TRIALING_CANCELLED = 'trialing_cancelled';
     case ACTIVE = 'active';
     case PAST_DUE = 'past_due';
     case CANCELLED = 'cancelled';

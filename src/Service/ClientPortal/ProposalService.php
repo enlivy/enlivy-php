@@ -48,6 +48,20 @@ class ProposalService extends AbstractPortalService
         return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/select-payment-method"), $params, $opts);
     }
 
+    public function createPaymentIntent(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/create-payment-intent"), $params, $opts);
+    }
+
+    public function confirmPayment(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/confirm-payment"), $params, $opts);
+    }
+
     public function paymentInstructions(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

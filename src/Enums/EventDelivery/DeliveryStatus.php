@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Enlivy\Enums\Webhook;
+namespace Enlivy\Enums\EventDelivery;
 
 use Enlivy\Enums\Concern\EnumValues;
 
-enum NotificationStatuses: string
+enum DeliveryStatus: string
 {
     use EnumValues;
 

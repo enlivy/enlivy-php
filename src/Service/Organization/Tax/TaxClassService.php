@@ -28,6 +28,7 @@ class TaxClassService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
+        'tax_rates_overview',
     ];
 
     public const array AVAILABLE_FILTERS = [];

@@ -31,8 +31,12 @@ use Enlivy\ApiResource;
  * @property string|null $last_payment_created_at
  * @property string|null $starts_at
  * @property string|null $ends_at
+ * @property string|null $cancel_effective_at
  * @property string|null $payment_stripe_account_id
  * @property string|null $payment_stripe_subscription_id
+ * @property bool $is_email_notifications_active
+ * @property string|null $email_notifications_to
+ * @property array|null $email_notifications_cc
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

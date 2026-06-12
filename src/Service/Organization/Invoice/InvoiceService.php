@@ -9,6 +9,7 @@ use Enlivy\EnlivyObject;
 use Enlivy\Organization\Invoice;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasDownload;
+use Enlivy\Service\Concern\HasEventTrails;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
@@ -25,6 +26,7 @@ class InvoiceService extends AbstractService
     use HasRestore;
     use HasTagging;
     use HasDownload;
+    use HasEventTrails;
     use HasIncludes;
     use HasFilters;
 

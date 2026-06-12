@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Enlivy\Organization;
+
+use Enlivy\ApiResource;
+
+/**
+ * Represents an Event Subscription in the Enlivy API.
+ *
+ * @property string $id
+ * @property string $object
+ * @property string $organization_id
+ * @property string $organization_event_destination_id
+ * @property string $event
+ * @property array|null $includes
+ */
+class EventSubscription extends ApiResource
+{
+    public const ?string OBJECT_NAME = 'event_subscription';
+}

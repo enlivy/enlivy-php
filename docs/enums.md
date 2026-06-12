@@ -52,7 +52,21 @@ PHP enum methods:
 Enums are grouped by domain, e.g. `Enlivy\Enums\Invoice\Statuses`,
 `Enlivy\Enums\Payment\PaymentMethodProvider`,
 `Enlivy\Enums\TenantBilling\BillingCycles`. Browse `src/Enums/` for the full
-set.
+set. A selection relevant to recently added features:
+
+| Enum | Values |
+|------|--------|
+| `EventDelivery\DestinationType` | `webhook`, `slack` |
+| `EventDelivery\DeliveryStatus` | `pending`, `success`, `failed`, `dropped`, `anomaly` |
+| `EventDelivery\TriggerEvent` | dotted event names (`invoice.paid`, `contract.all_parties_signed`, …) |
+| `EventTrail\EventType` | event-trail subject change types |
+| `EventTrail\Origin` | `back_office`, `client_portal`, `cron`, `webhook`, `system` |
+| `Organization\ButtonStyles` | `primary`, `secondary`, `outline` |
+| `TenantBilling\TrialChangeSetTypes` | `add`, `drop` |
+| `TenantBilling\BillingEffects` | `prorated_now`, `trial`, `next_cycle`, `none` |
+
+> `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
+> and `CARD` (`card`).
 
 ## Stability
 

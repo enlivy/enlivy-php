@@ -8,6 +8,7 @@ use Enlivy\Enums\Concern\EnumValues;
 use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
 use Enlivy\Enums\Payment\PaymentMethodProvider;
 use Enlivy\Enums\Payslip\Fields as PayslipFields;
+use Enlivy\Enums\Proposal\PaymentMethodKind;
 use Enlivy\Enums\TenantBilling\BillingCycles;
 use PHPUnit\Framework\TestCase;
 
@@ -32,6 +33,7 @@ final class EnumsTest extends TestCase
             ['text', 'number', 'number_currency', 'number_percentage'],
             PayslipFields::values(),
         );
+        $this->assertSame(['bank_transfer', 'card'], PaymentMethodKind::values());
     }
 
     /**
@@ -71,6 +73,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(69, $count, 'Expected at least 69 mirrored enums');
+        $this->assertGreaterThanOrEqual(76, $count, 'Expected at least 76 mirrored enums');
     }
 }

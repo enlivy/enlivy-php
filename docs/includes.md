@@ -72,10 +72,12 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | Service | Includes |
 |---------|----------|
 | `invoices` | `bank_account`, `invoice_prefix`, `sender_user`, `receiver_user`, `receiver_user_address`, `line_items`, `receipts`, `deleted_by_user`, `party_locales`, `tag_ids`, `taxes`, `last_peppol_exchange`, `contract` |
+| `invoices` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `invoicePrefixes` | `organization`, `deleted_by_user`, `custom_logo` |
 | `invoiceNetworkExchanges` | `organization`, `parsed_data`, `invoice`, `tag_ids` |
 | `invoiceNotificationLogs` | `deleted_by_user`, `organization` |
 | `receipts` | `organization`, `invoice`, `bank_account`, `sender_user`, `receiver_user`, `deleted_by_user`, `tag_ids`, `taxes`, `contract` |
+| `receipts` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `receiptPrefixes` | `organization`, `receipts`, `deleted_by_user` |
 
 ### CRM
@@ -119,12 +121,13 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `bankTransactions` | `organization`, `bank_account`, `connection_entities`, `cost_type`, `deleted_by_user`, `tag_ids` |
 | `bankTransactionCostTypes` | `organization`, `deleted_by_user`, `tag_ids` |
 | `billingSchedules` | `sender_user`, `receiver_user`, `contract`, `billing_package`, `deleted_by_user`, `payments`, `phases` |
+| `billingSchedules` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 
 ### Tax
 
 | Service | Includes |
 |---------|----------|
-| `taxClasses` | `organization` |
+| `taxClasses` | `organization`, `tax_rates_overview` |
 | `taxRates` | `organization`, `organization_tax_class`, `locations` |
 | `taxTypes` | `organization` |
 | `taxFilingJurisdictions` | `organization` |
@@ -156,7 +159,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | Service | Includes |
 |---------|----------|
 | `tags` | `organization`, `deleted_by_user` |
-| `webhooks` | `organization`, `deleted_by_user`, `events`, `notifications` |
+| `eventDestinations` | `organization`, `deleted_by_user`, `event_subscriptions`, `event_deliveries` |
 | `billingPackages` | `organization`, `project`, `groups`, `payment_plans`, `contract_templates`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
 | `proposals` | `organization`, `project`, `billing_package`, `billing_package_payment_plan`, `payments`, `proposal_contracts`, `billing_schedule`, `invoice`, `proforma_invoice`, `prospect`, `receiver_user`, `sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
 | `notifications` | `organization`, `sent_to_organization_user` |

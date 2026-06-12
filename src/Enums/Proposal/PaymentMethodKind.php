@@ -11,5 +11,5 @@ enum PaymentMethodKind: string
     use EnumValues;
 
     case BANK_TRANSFER = 'bank_transfer';
-    case SAVED_CARD = 'saved_card';
+    case CARD = 'card';
 }

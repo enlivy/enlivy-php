@@ -161,6 +161,8 @@ $invoices = $client->invoices->list([
 |--------|------|
 | `organization_invoice_id` | string |
 | `invoice_state` | `any`, `attached`, `unattached` |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
 
 ### CRM
 
@@ -330,8 +332,33 @@ $invoices = $client->invoices->list([
 | `email` | string |
 | `organization_user_role_id` | string |
 
+### Organization Events
+
+The `eventDestinations` list itself accepts only global filters. Its
+`deliveries()` method and the read-only event-trail history accept the
+following.
+
+**`eventDestinations->deliveries()`**
+
+| Filter | Type |
+|--------|------|
+| `organization_event_destination_id` | string |
+| `event` | string |
+| `status` | `pending`, `success`, `failed`, `dropped`, `anomaly` |
+| `created_at_from`, `created_at_to` | datetime |
+| `updated_at_from`, `updated_at_to` | datetime |
+
+**Event trails** (`invoices`, `receipts`, `billingSchedules` → `eventTrails()`)
+
+| Filter | Type |
+|--------|------|
+| `subject_id` | string |
+| `event_type` | string |
+| `origin` | `back_office`, `client_portal`, `cron`, `webhook`, `system` |
+| `occurred_from`, `occurred_to` | datetime |
+
 ### Services with Global Filters Only
 
 The following services accept only global filters (q, ids, page, per_page, order_by, order, deleted, tag_ids):
 
-`bankAccounts`, `bankTransactionCostTypes`, `contractPrefixes`, `contractSignatures`, `contractStatuses`, `files`, `products`, `payslipSchemas`, `reportSchemas`, `reportSchemaFields`, `receiptPrefixes`, `tags`, `tasks`, `taskStatuses`, `userAddresses`, `userRoles`, `notifications`, `webhooks`, `prospectStatuses`, `prospectActivities`, `apiCredentials`, `resourceBundles`, `taxClasses`, `taxRates`, `taxTypes`, `taxFilingJurisdictions`, `organizations`
+`bankAccounts`, `bankTransactionCostTypes`, `contractPrefixes`, `contractSignatures`, `contractStatuses`, `files`, `products`, `payslipSchemas`, `reportSchemas`, `reportSchemaFields`, `receiptPrefixes`, `tags`, `tasks`, `taskStatuses`, `userAddresses`, `userRoles`, `notifications`, `eventDestinations`, `prospectStatuses`, `prospectActivities`, `apiCredentials`, `resourceBundles`, `taxClasses`, `taxRates`, `taxTypes`, `taxFilingJurisdictions`, `organizations`

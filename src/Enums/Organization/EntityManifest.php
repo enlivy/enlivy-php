@@ -41,4 +41,7 @@ enum EntityManifest: string
     case PLAYBOOK = 'playbook';
     case REPORT = 'report';
     case REPORT_SCHEMA = 'report_schema';
+    case BILLING_PACKAGE = 'billing_package';
+    case PROPOSAL = 'proposal';
+    case FILE = 'file';
 }

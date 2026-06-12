@@ -97,8 +97,8 @@ use Enlivy\Service;
  * @property Service\Organization\PreferenceService $preferences
  * @property Service\Organization\NotificationService $notifications
  *
- * Organization-scoped services - Webhooks & Export:
- * @property Service\Organization\WebhookService $webhooks
+ * Organization-scoped services - Event Delivery & Export:
+ * @property Service\Organization\EventDestinationService $eventDestinations
  * @property Service\Organization\ExportDataService $exportData
  *
  * Organization-scoped services - Portal:
@@ -128,6 +128,7 @@ use Enlivy\Service;
  * @property Service\Organization\StripeWebhookCallbackService $stripeWebhookCallbacks
  * @property Service\Organization\ServiceIntegration\ServiceIntegrationService $serviceIntegration
  * @property Service\Organization\ServiceIntegration\ServiceIntegrationAnafService $serviceIntegrationAnaf
+ * @property Service\Organization\ServiceIntegration\ServiceIntegrationSlackService $serviceIntegrationSlack
  * @property Service\Organization\ServiceIntegration\ServiceIntegrationStripeService $serviceIntegrationStripe
  */
 class EnlivyClient extends BaseEnlivyClient {}

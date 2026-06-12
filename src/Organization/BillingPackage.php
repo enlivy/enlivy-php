@@ -22,6 +22,8 @@ use Enlivy\ApiResource;
  * @property array|null $locale_list
  * @property string|null $type
  * @property bool $is_active
+ * @property string|null $portal_discovery_mode
+ * @property string|null $portal_url
  * @property bool $is_expired
  * @property bool $is_available
  * @property int|null $proposal_valid_for_seconds

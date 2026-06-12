@@ -11,6 +11,7 @@ enum Statuses: string
     use EnumValues;
 
     case DRAFT = 'draft';
+    case LEAD_CONFIGURED = 'lead_configured';
     case SENT = 'sent';
     case VIEWED = 'viewed';
     case ACCEPTED = 'accepted';

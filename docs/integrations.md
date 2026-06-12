@@ -128,6 +128,26 @@ $connection = $client->serviceIntegrationAnaf->connect([
 echo "Redirect to: {$connection->request_url}\n";
 ```
 
+## Slack Integration
+
+Connect Slack to deliver organization events to a workspace channel. A Slack
+connection is one type of [event destination](organization/event-destinations.md)
+(the other being a webhook).
+
+### Initiate Slack Connection
+
+```php
+<?php
+
+$connection = $client->serviceIntegrationSlack->connect([
+    'success_url' => 'https://yourapp.com/integrations/slack/success',
+    'failed_url' => 'https://yourapp.com/integrations/slack/failed',
+]);
+
+// Redirect user to Slack OAuth
+echo "Redirect to: {$connection->request_url}\n";
+```
+
 ## Invoice Network Exchanges
 
 Track PEPPOL/e-invoice submissions and their status.
@@ -303,5 +323,5 @@ try {
 ## Related
 
 - [Invoices](invoices.md) - Create invoices for payment
-- [Webhooks](webhooks.md) - Get notified of integration events
+- [Event Destinations](organization/event-destinations.md) - Get notified of integration events (webhooks, Slack)
 - [OAuth](oauth.md) - OAuth authentication patterns

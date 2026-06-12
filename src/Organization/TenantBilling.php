@@ -18,6 +18,9 @@ use Enlivy\ApiResource;
  * @property string|null $billing_cycle One of: monthly, yearly
  * @property string|null $trial_used_at
  * @property bool $in_trial
+ * @property string|null $trial_ends_at
+ * @property bool $trial_window_shortened
+ * @property int $trial_full_window_days
  * @property string|null $billing_schedule_id
  * @property array $feature_pack_subscriptions
  * @property array $capacity_addon_subscriptions

@@ -26,6 +26,7 @@ use Enlivy\Service\ClientPortal\PortalServiceFactory;
  * @property Service\ClientPortal\ProfileService $profile
  * @property Service\ClientPortal\InvoiceService $invoices
  * @property Service\ClientPortal\ReceiptService $receipts
+ * @property Service\ClientPortal\PayslipService $payslips
  * @property Service\ClientPortal\ContractService $contracts
  * @property Service\ClientPortal\NetworkExchangeService $networkExchanges
  * @property Service\ClientPortal\ReportService $reports
@@ -33,10 +34,12 @@ use Enlivy\Service\ClientPortal\PortalServiceFactory;
  * @property Service\ClientPortal\GuidelineService $guidelines
  * @property Service\ClientPortal\PlaybookService $playbooks
  * @property Service\ClientPortal\BillingPackageService $billingPackages
+ * @property Service\ClientPortal\BillingScheduleService $billingSchedules
  * @property Service\ClientPortal\ProposalService $proposals
  * @property Service\ClientPortal\PaymentMethodService $paymentMethods
  * @property Service\ClientPortal\ProjectService $projects
  * @property Service\ClientPortal\ProspectService $prospects
+ * @property Service\ClientPortal\SessionService $session
  */
 class EnlivyPortalClient implements EnlivyClientInterface
 {

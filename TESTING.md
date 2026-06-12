@@ -61,7 +61,7 @@ tests/Integration/
     ├── ReportTest.php          # Reports, schemas
     ├── ContentTest.php         # Guidelines, playbooks, files
     ├── ProposalTest.php        # Proposals, offers
-    ├── WebhookTest.php         # Webhooks, tags
+    ├── EventDestinationTest.php # Event destinations, tags
     └── TaskTest.php            # Tasks, task statuses
 ```
 

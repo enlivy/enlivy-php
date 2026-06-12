@@ -22,7 +22,14 @@ class UserClientPortalSessionService extends AbstractService
         'organization_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'organization_user_id',
+        'status',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

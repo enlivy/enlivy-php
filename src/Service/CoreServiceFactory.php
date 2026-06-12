@@ -20,6 +20,7 @@ use Enlivy\Service\Organization\Contract\ContractSignatureNotificationLogService
 use Enlivy\Service\Organization\Contract\ContractSignatureService;
 use Enlivy\Service\Organization\Contract\ContractStatusService;
 use Enlivy\Service\Organization\EmailPreviewService;
+use Enlivy\Service\Organization\EventDestinationService;
 use Enlivy\Service\Organization\ExportDataService;
 use Enlivy\Service\Organization\FileService;
 use Enlivy\Service\Organization\GuidelineService;
@@ -61,6 +62,7 @@ use Enlivy\Service\Organization\ReusableContentService;
 use Enlivy\Service\Organization\SearchService;
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationAnafService;
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationService;
+use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationSlackService;
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationStripeService;
 use Enlivy\Service\Organization\SettingService;
 use Enlivy\Service\Organization\StripeWebhookCallbackService;
@@ -84,7 +86,6 @@ use Enlivy\Service\Organization\UserPortalDomainService;
 use Enlivy\Service\Organization\UserRoleAbilityService;
 use Enlivy\Service\Organization\UserRoleService;
 use Enlivy\Service\Organization\UserService as OrganizationUserService;
-use Enlivy\Service\Organization\WebhookService;
 
 class CoreServiceFactory extends AbstractServiceFactory
 {
@@ -180,8 +181,8 @@ class CoreServiceFactory extends AbstractServiceFactory
             'preferences' => PreferenceService::class,
             'notifications' => NotificationService::class,
 
-            // Org-scoped: Webhooks & Export
-            'webhooks' => WebhookService::class,
+            // Org-scoped: Event Delivery & Export
+            'eventDestinations' => EventDestinationService::class,
             'exportData' => ExportDataService::class,
 
             // Org-scoped: Portal
@@ -210,6 +211,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'resourceBundlePermissionReports' => ResourceBundlePermissionReportService::class,
             'stripeWebhookCallbacks' => StripeWebhookCallbackService::class,
             'serviceIntegrationAnaf' => ServiceIntegrationAnafService::class,
+            'serviceIntegrationSlack' => ServiceIntegrationSlackService::class,
             'serviceIntegrationStripe' => ServiceIntegrationStripeService::class,
         ];
     }

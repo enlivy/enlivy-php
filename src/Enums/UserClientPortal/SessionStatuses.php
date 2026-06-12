@@ -12,6 +12,7 @@ enum SessionStatuses: string
 
     case PENDING = 'pending';
     case EMAIL_VERIFICATION_SENT = 'email_verification_sent';
+    case AWAITING_USER_SELECTION = 'awaiting_user_selection';
     case SUCCESS = 'success';
     case EXPIRED = 'expired';
 }

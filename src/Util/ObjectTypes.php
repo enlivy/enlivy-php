@@ -21,6 +21,11 @@ use Enlivy\Organization\ContractPrefix;
 use Enlivy\Organization\ContractSignature;
 use Enlivy\Organization\ContractSignatureNotificationLog;
 use Enlivy\Organization\ContractStatus;
+use Enlivy\Organization\EventDelivery;
+use Enlivy\Organization\EventDestination;
+use Enlivy\Organization\EventSubscription;
+use Enlivy\Organization\EventTrail;
+use Enlivy\Organization\EventTrailChange;
 use Enlivy\Organization\ExportData;
 use Enlivy\Organization\File;
 use Enlivy\Organization\Guideline;
@@ -62,7 +67,6 @@ use Enlivy\Organization\UserBankAccount;
 use Enlivy\Organization\UserPaymentMethod;
 use Enlivy\Organization\UserRole;
 use Enlivy\Organization\UserRoleAbility;
-use Enlivy\Organization\Webhook;
 use Enlivy\User;
 use Enlivy\UserToken;
 
@@ -154,8 +158,12 @@ final class ObjectTypes
         'tag' => Tag::class,
         'notification' => Notification::class,
 
-        // Organization-scoped: Webhooks & Export
-        'webhook' => Webhook::class,
+        // Organization-scoped: Event Delivery & Export
+        'event_destination' => EventDestination::class,
+        'event_delivery' => EventDelivery::class,
+        'event_subscription' => EventSubscription::class,
+        'event_trail' => EventTrail::class,
+        'event_trail_change' => EventTrailChange::class,
         'export_data' => ExportData::class,
 
         // Organization-scoped: Membership & Billing

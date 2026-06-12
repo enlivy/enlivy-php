@@ -275,7 +275,7 @@ class IncludeValidationTest extends IntegrationTestCase
     }
 
     // =========================================================================
-    // Tags & Webhooks
+    // Tags & Event Destinations
     // =========================================================================
 
     public function testTagAllIncludes(): void
@@ -283,9 +283,9 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('tags');
     }
 
-    public function testWebhookAllIncludes(): void
+    public function testEventDestinationAllIncludes(): void
     {
-        $this->assertAllIncludesWork('webhooks');
+        $this->assertAllIncludesWork('eventDestinations');
     }
 
     // =========================================================================

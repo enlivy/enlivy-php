@@ -14,6 +14,7 @@ class PortalServiceFactory extends AbstractServiceFactory
             'profile' => ProfileService::class,
             'invoices' => InvoiceService::class,
             'receipts' => ReceiptService::class,
+            'payslips' => PayslipService::class,
             'contracts' => ContractService::class,
             'networkExchanges' => NetworkExchangeService::class,
             'reports' => ReportService::class,
@@ -21,10 +22,12 @@ class PortalServiceFactory extends AbstractServiceFactory
             'guidelines' => GuidelineService::class,
             'playbooks' => PlaybookService::class,
             'billingPackages' => BillingPackageService::class,
+            'billingSchedules' => BillingScheduleService::class,
             'proposals' => ProposalService::class,
             'paymentMethods' => PaymentMethodService::class,
             'projects' => ProjectService::class,
             'prospects' => ProspectService::class,
+            'session' => SessionService::class,
         ];
     }
 }
