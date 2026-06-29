@@ -13,7 +13,7 @@ namespace Enlivy;
  * @property string $name
  * @property array $scopes
  * @property bool $revoked
- * @property string|null $expires_at
+ * @property int|null $expires_at
  * @property string $created_at
  * @property string $updated_at
  */

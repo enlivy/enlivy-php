@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\ClientPortal;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Util\RequestOptions;
 
@@ -38,5 +39,34 @@ class BillingScheduleService extends AbstractPortalService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/cancel"), $params, $opts);
+    }
+
+    public function reconfigure(string $id, array $params, ?RequestOptions $opts = null): BillingSchedule
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('PUT', $this->portalPath($orgId, "billing-schedules/{$id}/reconfigure"), $params, $opts);
+    }
+
+    // Returns the proration/charge preview (not a billing schedule); apply with reconfigure().
+    public function previewReconfigure(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/preview-reconfigure"), $params, $opts, EnlivyObject::class);
+    }
+
+    public function pause(string $id, array $params = [], ?RequestOptions $opts = null): BillingSchedule
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/pause"), $params, $opts);
+    }
+
+    public function resume(string $id, array $params = [], ?RequestOptions $opts = null): BillingSchedule
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/resume"), $params, $opts);
     }
 }

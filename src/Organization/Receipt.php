@@ -20,6 +20,7 @@ use Enlivy\ApiResource;
  * @property string|null $organization_contract_id
  * @property string|null $receipt_number
  * @property string $status
+ * @property string $source
  * @property string $direction
  * @property string $currency
  * @property float $sub_total
@@ -29,9 +30,11 @@ use Enlivy\ApiResource;
  * @property bool $is_reverse
  * @property bool $is_tax_charged
  * @property string|null $file_extension
+ * @property bool $has_file
  * @property string|null $issued_at
  * @property string|null $due_at
  * @property string|null $paid_at
+ * @property string|null $finalized_at
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

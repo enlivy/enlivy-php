@@ -13,7 +13,11 @@ BillingPackage
     |       |
     |       +-- Items (products/services)
     |
-    +-- Payment Plans (pricing options)
+    +-- Payment Plans (one_time pricing options)
+    |
+    +-- Subscription Terms (subscription cadence variants)
+    |       |
+    |       +-- Items (per-(term, group item) availability + price)
     |
     +-- Contract Templates (optional contracts)
             |
@@ -22,7 +26,10 @@ BillingPackage
 
 ### Types
 
-Billing packages have a `type` field that categorizes the kind of offering.
+Billing packages have a `type` field: `one_time` (priced via **Payment Plans**) or
+`subscription` (priced via **Subscription Terms** — one or more cadence variants such as
+Monthly / Annual, each with its own frequency, currency, and per-item pricing). Exactly one
+subscription term is the default a sell flow falls back to when no specific term is chosen.
 
 ## Creating a Billing Package
 
@@ -104,6 +111,66 @@ $package = $client->billingPackages->create([
 
 echo "Billing package created: {$package->id}\n";
 ```
+
+## Subscription Cadence Variants
+
+A `subscription` package carries one or more **subscription terms** (cadence variants), each
+priced per group item. Author them inline on the package; on read they come back through the
+`subscription_terms` include.
+
+```php
+<?php
+
+$package = $client->billingPackages->create([
+    'alias' => 'membership-2026',
+    'name_lang_map' => ['en' => 'Membership'],
+    'type' => 'subscription',
+    'is_active' => true,
+    'groups' => [ /* product groups + items */ ],
+    'subscription_terms' => [
+        [
+            'name_lang_map' => ['en' => 'Monthly'],
+            'primary_currency' => 'EUR',
+            'frequency' => 'monthly',
+            'is_default' => true,
+            'order' => 1,
+            'items' => [
+                [
+                    'organization_billing_package_group_item_id' => 'org_bp_grpi_xxx',
+                    'is_available' => true,
+                    'prices' => [
+                        ['currency' => 'EUR', 'price' => '34.00', 'discount' => '0'],
+                    ],
+                ],
+            ],
+        ],
+        [
+            'name_lang_map' => ['en' => 'Annual'],
+            'primary_currency' => 'EUR',
+            'frequency' => 'yearly',
+            'order' => 2,
+            'items' => [
+                [
+                    'organization_billing_package_group_item_id' => 'org_bp_grpi_xxx',
+                    'is_available' => true,
+                    'prices' => [
+                        ['currency' => 'EUR', 'price' => '340.00', 'discount' => '0'],
+                    ],
+                ],
+            ],
+        ],
+    ],
+]);
+```
+
+> **`prices` read vs write shape.** On write, `prices` is a list of `{currency, price,
+> discount}` rows (above). On read, a term item's `prices` comes back as a currency-keyed
+> map — `['EUR' => ['price' => '34.00', 'discount' => '0']]`. Amounts are decimal strings; a
+> currency absent from the map falls back to the product catalog price (or FX from the term's
+> `primary_currency`). An item with `is_available => false` is not offered under that cadence.
+
+Frequencies: `weekly`, `biweekly`, `monthly`, `every_3_months`, `every_6_months`, `yearly`.
+A term's `status` is `active` (sellable) or `archived` (hidden from public/portal lanes).
 
 ## Listing Billing Packages
 
@@ -191,7 +258,10 @@ Use the proposals service to create a proposal directly from a billing package:
 
 $proposal = $client->proposals->fromBillingPackage([
     'organization_billing_package_id' => 'org_bp_xxx',
+    // one_time packages: pick a payment plan
     'organization_billing_package_payment_plan_id' => 'org_bp_plan_xxx',
+    // subscription packages: optionally pin a cadence variant (omit = the package default)
+    'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
 
     // Recipient (choose one)
     'organization_prospect_id' => 'org_pros_xxx',
@@ -227,9 +297,49 @@ $package = $portal->billingPackages->retrieve('org_bp_xxx');
 
 // Claim a package (creates an accepted proposal)
 $result = $portal->billingPackages->claim('org_bp_xxx', [
-    'organization_billing_package_payment_plan_id' => 'org_bp_plan_xxx',
+    // subscription packages: the chosen cadence variant (omit = the package default)
+    'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
+    // one_time packages: the chosen payment plan
+    // 'organization_billing_package_payment_plan_id' => 'org_bp_plan_xxx',
 ]);
 ```
+
+### Managing a Subscription
+
+Claiming a subscription package creates a **billing schedule**. The customer manages it
+through the portal:
+
+```php
+<?php
+
+// Preview a composition change (quantities / add-ons) before applying — returns the
+// proration + next-cycle estimate, not the schedule.
+$preview = $portal->billingSchedules->previewReconfigure('org_bs_xxx', [
+    'selected_group_items' => [
+        ['id' => 'org_bp_grpi_xxx', 'quantity' => 2],
+    ],
+]);
+
+// Apply the change
+$schedule = $portal->billingSchedules->reconfigure('org_bs_xxx', [
+    'selected_group_items' => [
+        ['id' => 'org_bp_grpi_xxx', 'quantity' => 2],
+    ],
+]);
+
+$portal->billingSchedules->pause('org_bs_xxx');
+$portal->billingSchedules->resume('org_bs_xxx');
+$portal->billingSchedules->cancel('org_bs_xxx', ['reason' => 'No longer needed']);
+$portal->billingSchedules->changePaymentMethod('org_bs_xxx', [
+    'organization_user_payment_method_id' => 'org_user_pm_xxx',
+]);
+```
+
+The schedule's `customer_can_reconfigure` / `customer_can_pause` / `customer_can_cancel` flags
+indicate which self-service actions are available. Portal reconfigure changes the package
+composition (quantities / add-ons) within the current cadence; switching to a different cadence
+variant is an admin operation (`$client->billingSchedules->reconfigure(...)` with a
+`subscription_term_id`).
 
 ## Available Includes
 
@@ -238,7 +348,8 @@ $result = $portal->billingPackages->claim('org_bp_xxx', [
 | `organization` | Parent organization |
 | `project` | Linked project |
 | `groups` | Product groups with items |
-| `payment_plans` | Available payment plans |
+| `payment_plans` | Available payment plans (one_time) |
+| `subscription_terms` | Subscription cadence variants with their per-item pricing |
 | `contract_templates` | Attached contract templates |
 | `created_by_user` | User who created the package |
 | `deleted_by_user` | User who deleted the package |

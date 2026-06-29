@@ -13,14 +13,16 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string $organization_invoice_id
- * @property string $network
+ * @property string $institution_id
+ * @property string|null $institution_exchange_id
+ * @property string|null $institution_exchange_message_id
+ * @property string|null $institution_exchange_message_created_at
+ * @property string|null $exchange_file_name
+ * @property string|null $exchange_file_signature_name
+ * @property string|null $exchange_file_pdf_name
  * @property string $direction
  * @property string $status
- * @property string|null $external_id
- * @property string|null $exchange_file_name
- * @property string|null $pdf_file_name
  * @property array|null $response_json
- * @property string|null $institution_exchange_message_created_at
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

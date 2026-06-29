@@ -64,6 +64,11 @@ set. A selection relevant to recently added features:
 | `Organization\ButtonStyles` | `primary`, `secondary`, `outline` |
 | `TenantBilling\TrialChangeSetTypes` | `add`, `drop` |
 | `TenantBilling\BillingEffects` | `prorated_now`, `trial`, `next_cycle`, `none` |
+| `BillingPackage\BillingEffect` | `now`, `next_cycle` |
+| `BillingPackage\SubscriptionTermStatuses` | `active`, `archived` |
+| `BillingPackage\ProrationPolicy` | `none`, `prorate_immediately`, `prorate_next_invoice` |
+| `BillingSchedule\PhaseFrequency` | `weekly`, `biweekly`, `monthly`, `every_3_months`, `every_6_months`, `yearly` |
+| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `paused`, `completed`, `cancelled` |
 
 > `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
 > and `CARD` (`card`).

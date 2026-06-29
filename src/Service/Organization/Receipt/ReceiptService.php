@@ -35,6 +35,7 @@ class ReceiptService extends AbstractService
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'invoice',
+        'receipt_prefix',
         'bank_account',
         'sender_user',
         'receiver_user',

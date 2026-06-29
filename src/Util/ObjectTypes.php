@@ -36,6 +36,8 @@ use Enlivy\Organization\InvoiceNotificationLog;
 use Enlivy\Organization\InvoicePrefix;
 use Enlivy\Organization\Notification;
 use Enlivy\Organization\BillingPackage;
+use Enlivy\Organization\BillingPackageSubscriptionTerm;
+use Enlivy\Organization\BillingPackageSubscriptionTermItem;
 use Enlivy\Organization\Payslip;
 use Enlivy\Organization\PayslipSchema;
 use Enlivy\Organization\Playbook;
@@ -168,6 +170,8 @@ final class ObjectTypes
 
         // Organization-scoped: Membership & Billing
         'billing_package' => BillingPackage::class,
+        'subscription_term' => BillingPackageSubscriptionTerm::class,
+        'subscription_term_item' => BillingPackageSubscriptionTermItem::class,
         'proposal' => Proposal::class,
         'tenant_billing' => TenantBilling::class,
 

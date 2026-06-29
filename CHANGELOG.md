@@ -3,6 +3,65 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] - 2026-06-29
+
+Subscription cycle-length support and customer self-service subscription
+management, plus assorted resource/field corrections. All additive.
+
+### Added
+
+- **Subscription cadence variants.** A `subscription` billing package can offer
+  one or more cadence variants (e.g. Monthly, Annual), each with its own
+  frequency, currency, and per-item pricing. New resources
+  `Enlivy\Organization\BillingPackageSubscriptionTerm` and
+  `BillingPackageSubscriptionTermItem` — author them inline on the package via
+  `subscription_terms[]` and read them back through the `subscription_terms`
+  include. The chosen variant flows as
+  `organization_billing_package_subscription_term_id` on a proposal created from a
+  package, on a Client Portal claim, and on the resulting billing schedule (with a
+  `subscription_term` include on the proposal and billing-schedule services). See
+  [docs/organization/billing-packages.md](docs/organization/billing-packages.md).
+- **Customer self-service subscriptions.** The Client Portal billing-schedule
+  service gains `reconfigure()`, `previewReconfigure()` (returns the
+  proration/charge preview), `pause()`, and `resume()`. The organization
+  billing-schedule service gains `reconfigure()` and `previewReconfigure()` (the
+  admin lane, which also accepts `subscription_term_id` to switch cadence), plus
+  `status_not` and `organization_user_id` filters and a `subscription_term`
+  include.
+- **Enums.** `BillingPackage\SubscriptionTermStatuses` (`active`, `archived`) and
+  `BillingPackage\BillingEffect` (`now`, `next_cycle`); `BillingSchedule\PhaseFrequency`
+  gains `every_3_months` and `every_6_months`.
+- New resource fields: `Receipt` (`source`, `finalized_at`, `has_file`),
+  `ReceiptPrefix` (`description`, `reset_yearly`, `counter_year`,
+  `formatted_number`), and a `receipt_prefix` include on the receipt service.
+
+### Changed
+
+- `BillingPackage` exposes `available_currencies` (replacing the no-longer-emitted
+  `currency` / `currency_list`) and the `customer_can_reconfigure` /
+  `customer_can_cancel` / `customer_can_pause` capability flags.
+- `BillingSchedule` now carries `organization_billing_package_id`,
+  `organization_billing_package_subscription_term_id`,
+  `organization_user_payment_method_id`, `management_type`,
+  `payment_provider_billing_reference`, and the `customer_can_*` flags; the
+  no-longer-emitted `type`, `frequency`, `formatted_total`,
+  `payment_stripe_account_id`, and `payment_stripe_subscription_id` properties were
+  removed.
+- `Proposal` references a package via `organization_billing_package_id` /
+  `organization_billing_package_payment_plan_id` (renamed from the legacy
+  `organization_offer_*`) and adds the
+  `organization_billing_package_subscription_term_id` and
+  `organization_billing_schedule_id` links.
+- `OAuthToken::$expires_at` is typed `int|null` (a Unix timestamp), correcting the
+  previous `string|null`.
+- `InvoiceNetworkExchange` property list corrected to the institution/exchange
+  fields the API returns.
+
+### Fixed
+
+- `BillingSchedule\Statuses` now includes `payment_method_required` and `paused`,
+  which were missing and broke typed hydration of paused subscriptions.
+
 ## [1.0.0] - 2026-06-12
 
 First stable release. See [UPGRADING.md](UPGRADING.md) for migration steps from

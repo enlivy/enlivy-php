@@ -22,14 +22,16 @@ use Enlivy\ApiResource;
  * @property array|null $locale_list
  * @property string|null $type
  * @property bool $is_active
+ * @property bool $customer_can_reconfigure
+ * @property bool $customer_can_cancel
+ * @property bool $customer_can_pause
  * @property string|null $portal_discovery_mode
  * @property string|null $portal_url
  * @property bool $is_expired
  * @property bool $is_available
  * @property int|null $proposal_valid_for_seconds
  * @property array|null $allowed_payment_methods
- * @property string|null $currency
- * @property array|null $currency_list
+ * @property array|null $available_currencies
  * @property string|null $currency_conversion_fee
  * @property string|null $expires_at
  * @property string|null $expired_at

@@ -73,6 +73,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(76, $count, 'Expected at least 76 mirrored enums');
+        $this->assertGreaterThanOrEqual(78, $count, 'Expected at least 78 mirrored enums');
     }
 }

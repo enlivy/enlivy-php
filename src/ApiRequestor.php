@@ -11,7 +11,7 @@ use Enlivy\Util\RequestOptions;
 
 final class ApiRequestor
 {
-    private const string SDK_VERSION = '1.0.0';
+    private const string SDK_VERSION = '1.1.0';
 
     public function __construct(
         private readonly AuthHandlerInterface $authHandler,

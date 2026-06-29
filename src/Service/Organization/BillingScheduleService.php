@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasEventTrails;
@@ -37,6 +38,7 @@ class BillingScheduleService extends AbstractService
         'receiver_user',
         'contract',
         'billing_package',
+        'subscription_term',
         'deleted_by_user',
         'payments',
         'phases',
@@ -44,9 +46,11 @@ class BillingScheduleService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'status',
+        'status_not',
         'direction',
         'organization_sender_user_id',
         'organization_receiver_user_id',
+        'organization_user_id',
         'organization_contract_id',
         'organization_bank_account_id',
         'starts_at_from',
@@ -113,5 +117,19 @@ class BillingScheduleService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+
+    public function reconfigure(string $id, array $params, ?RequestOptions $opts = null): BillingSchedule
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}/reconfigure"), $params, $opts);
+    }
+
+    // Returns the proration/charge preview (not a billing schedule); apply with reconfigure().
+    public function previewReconfigure(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/preview-reconfigure"), $params, $opts, EnlivyObject::class);
     }
 }

@@ -13,8 +13,10 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string|null $organization_project_id
- * @property string|null $organization_offer_id
- * @property string|null $organization_offer_payment_plan_id
+ * @property string|null $organization_billing_package_id
+ * @property string|null $organization_billing_package_payment_plan_id
+ * @property string|null $organization_billing_package_subscription_term_id
+ * @property string|null $organization_billing_schedule_id
  * @property string|null $organization_prospect_id
  * @property string|null $organization_receiver_user_id
  * @property string|null $organization_sender_user_id

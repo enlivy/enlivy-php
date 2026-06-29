@@ -32,6 +32,7 @@ class ProposalService extends AbstractService
         'project',
         'billing_package',
         'billing_package_payment_plan',
+        'subscription_term',
         'payments',
         'proposal_contracts',
         'billing_schedule',
