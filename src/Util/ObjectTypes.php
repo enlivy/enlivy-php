@@ -60,8 +60,12 @@ use Enlivy\Organization\Task;
 use Enlivy\Organization\TaskStatus;
 use Enlivy\Organization\TenantBilling;
 use Enlivy\Organization\TaxClass;
+use Enlivy\Organization\TaxEvent;
 use Enlivy\Organization\TaxFilingJurisdiction;
+use Enlivy\Organization\TaxFilingPeriod;
+use Enlivy\Organization\TaxFilingPeriodPayment;
 use Enlivy\Organization\TaxRate;
+use Enlivy\Organization\TaxRegistration;
 use Enlivy\Organization\TaxType;
 use Enlivy\Organization\User as OrganizationUser;
 use Enlivy\Organization\UserAddress;
@@ -136,6 +140,10 @@ final class ObjectTypes
         'tax_rate' => TaxRate::class,
         'tax_type' => TaxType::class,
         'tax_filing_jurisdiction' => TaxFilingJurisdiction::class,
+        'tax_registration' => TaxRegistration::class,
+        'tax_event' => TaxEvent::class,
+        'tax_filing_period' => TaxFilingPeriod::class,
+        'tax_filing_period_payment' => TaxFilingPeriodPayment::class,
 
         // Organization-scoped: Payroll
         'payslip_schema' => PayslipSchema::class,

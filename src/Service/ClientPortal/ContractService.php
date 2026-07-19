@@ -23,6 +23,7 @@ class ContractService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Contract */
         return $this->request('GET', $this->portalPath($orgId, "contracts/{$id}"), $params, $opts);
     }
 

@@ -36,6 +36,7 @@ class ResourceBundleService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<ResourceBundle> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -43,6 +44,7 @@ class ResourceBundleService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ResourceBundle */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -50,6 +52,7 @@ class ResourceBundleService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ResourceBundle */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -57,6 +60,7 @@ class ResourceBundleService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ResourceBundle */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -64,6 +68,7 @@ class ResourceBundleService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ResourceBundle */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

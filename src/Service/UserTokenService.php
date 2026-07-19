@@ -25,6 +25,7 @@ class UserTokenService extends AbstractService
     public function list(string $userId, array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateFilters($params);
+        /** @var Collection<UserToken> */
         return $this->requestCollection('GET', "/users/{$userId}/api-tokens", $params, $opts);
     }
 

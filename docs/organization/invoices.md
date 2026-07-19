@@ -809,6 +809,62 @@ $invoice = $client->invoices->retrieve('org_inv_xxx', [
 ]);
 ```
 
+## Refund & Issuance
+
+Refund an issued invoice by generating a reversal (credit-note) invoice that points back at the
+original. Omit `line_items` for a full refund:
+
+```php
+// Full refund - reverses the entire invoice
+$reversal = $client->invoices->refund('org_inv_xxx');
+```
+
+Pass `line_items` to refund only part of the invoice - each row references an original line item
+and the quantity to reverse:
+
+```php
+$reversal = $client->invoices->refund('org_inv_xxx', [
+    'reason' => 'Damaged on delivery',
+    'note_lang_map' => ['en' => 'Partial refund for 2 units'],
+
+    // Optional: a prefix of type "reversal" for the credit-note number
+    'organization_invoice_prefix_id' => 'org_inv_prefix_xxx',
+
+    // Partial refund - omit for a full refund
+    'line_items' => [
+        ['organization_invoice_line_item_id' => 'org_inv_li_xxx', 'quantity' => 2],
+    ],
+]);
+```
+
+Issue a standard invoice from a proforma:
+
+```php
+$invoice = $client->invoices->issueInvoice('org_inv_xxx', [
+    // Optional: a prefix of type "standard" for the new invoice number
+    'organization_invoice_prefix_id' => 'org_inv_prefix_xxx',
+]);
+```
+
+Issue a receipt for an invoice (returns a `Receipt`):
+
+```php
+$receipt = $client->invoices->issueReceipt('org_inv_xxx');
+
+echo "Receipt: {$receipt->receipt_number}\n";
+```
+
+A refunded invoice exposes its credit notes through the `reversal_invoices` include, and each
+reversal links back to the invoice it refunds through `parent_invoice`:
+
+```php
+// The original, with every reversal issued against it
+$invoice = $client->invoices->retrieve('org_inv_xxx', ['include' => 'reversal_invoices']);
+
+// A reversal, with the invoice it refunds
+$reversal = $client->invoices->retrieve('org_inv_reversal_xxx', ['include' => 'parent_invoice']);
+```
+
 ## Related
 
 - [Organization Users](organization-users.md) - Create customers

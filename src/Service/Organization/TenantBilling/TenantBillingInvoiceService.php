@@ -56,6 +56,7 @@ class TenantBillingInvoiceService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<Invoice> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -64,6 +65,7 @@ class TenantBillingInvoiceService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 

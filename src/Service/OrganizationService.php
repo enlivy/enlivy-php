@@ -46,6 +46,7 @@ class OrganizationService extends AbstractService
         $this->validateIncludes($params);
         $this->validateFilters($params);
 
+        /** @var Collection<Organization> */
         return $this->requestCollection('GET', '/organizations', $params, $opts);
     }
 
@@ -94,5 +95,14 @@ class OrganizationService extends AbstractService
         $this->validateIncludes($params);
 
         return $this->request('GET', "/organizations/{$id}/summary", $params, $opts);
+    }
+
+    /**
+     * Org-scoped discovery: capabilities, readiness, inventory and destinations
+     * for the organization. Returns raw discovery data.
+     */
+    public function discovery(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        return $this->request('GET', "/organizations/{$id}/discovery", $params, $opts);
     }
 }

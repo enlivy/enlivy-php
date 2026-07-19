@@ -66,6 +66,7 @@ class PlaybookService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<Playbook> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -73,6 +74,7 @@ class PlaybookService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Playbook */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -80,6 +82,7 @@ class PlaybookService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Playbook */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -87,6 +90,7 @@ class PlaybookService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Playbook */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -94,6 +98,7 @@ class PlaybookService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Playbook */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 

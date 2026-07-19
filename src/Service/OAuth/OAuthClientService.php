@@ -37,6 +37,7 @@ class OAuthClientService extends AbstractService
         $this->validateIncludes($params);
         $this->validateFilters($params);
 
+        /** @var Collection<OAuthClient> */
         return $this->requestCollection('GET', '/oauth/clients', $params, $opts);
     }
 

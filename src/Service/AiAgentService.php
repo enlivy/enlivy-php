@@ -33,6 +33,7 @@ class AiAgentService extends AbstractService
         $this->validateIncludes($params);
         $this->validateFilters($params);
 
+        /** @var Collection<AiAgent> */
         return $this->requestCollection('GET', '/ai-agents', $params, $opts);
     }
 

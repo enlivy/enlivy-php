@@ -42,6 +42,7 @@ class ContractSignatureNotificationLogService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<ContractSignatureNotificationLog> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -49,6 +50,7 @@ class ContractSignatureNotificationLogService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ContractSignatureNotificationLog */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

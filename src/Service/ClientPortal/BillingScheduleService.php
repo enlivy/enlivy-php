@@ -24,6 +24,7 @@ class BillingScheduleService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingSchedule */
         return $this->request('GET', $this->portalPath($orgId, "billing-schedules/{$id}"), $params, $opts);
     }
 
@@ -31,6 +32,7 @@ class BillingScheduleService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingSchedule */
         return $this->request('PUT', $this->portalPath($orgId, "billing-schedules/{$id}/payment-method"), $params, $opts);
     }
 
@@ -38,6 +40,7 @@ class BillingScheduleService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingSchedule */
         return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/cancel"), $params, $opts);
     }
 
@@ -45,6 +48,7 @@ class BillingScheduleService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingSchedule */
         return $this->request('PUT', $this->portalPath($orgId, "billing-schedules/{$id}/reconfigure"), $params, $opts);
     }
 
@@ -60,6 +64,7 @@ class BillingScheduleService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingSchedule */
         return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/pause"), $params, $opts);
     }
 
@@ -67,6 +72,7 @@ class BillingScheduleService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingSchedule */
         return $this->request('POST', $this->portalPath($orgId, "billing-schedules/{$id}/resume"), $params, $opts);
     }
 }

@@ -38,6 +38,7 @@ class UserAddressService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<UserAddress> */
         return $this->requestCollection('GET', $this->orgPath($orgId, "users/{$userId}/addresses"), $params, $opts);
     }
 

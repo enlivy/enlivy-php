@@ -103,6 +103,7 @@ abstract class AbstractService
     ): Collection {
         $class = $resourceClass ?? static::RESOURCE_CLASS;
 
+        /** @var Collection<T> */
         return $this->client->getRequestor()->requestCollection($method, $path, $params, $opts, $class);
     }
 

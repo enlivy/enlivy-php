@@ -18,6 +18,8 @@ enum EventType: string
     case FINALIZED = 'finalized';
     case CHARGED = 'charged';
     case CHARGE_FAILED = 'charge_failed';
+    case REFUNDED = 'refunded';
+    case REFUND_FAILED = 'refund_failed';
     case PAYMENT_METHOD_CHANGED = 'payment_method_changed';
     case CANCELLED = 'cancelled';
     case PAYMENT_GENERATED = 'payment_generated';

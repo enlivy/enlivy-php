@@ -14,10 +14,10 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property string|null $created_by_user_id
  * @property string $status
+ * @property string $type
+ * @property array|null $parameters
  * @property array|null $data_schema
  * @property array|null $export_remaining_items
- * @property string|null $disk_alias
- * @property string|null $disk_path
  * @property string|null $job_pickup_at
  * @property string|null $job_started_at
  * @property string|null $completed_at

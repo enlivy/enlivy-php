@@ -52,6 +52,7 @@ class InvoiceChargeLogService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<InvoiceChargeLog> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -60,6 +61,7 @@ class InvoiceChargeLogService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var InvoiceChargeLog */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

@@ -23,6 +23,7 @@ class PayslipService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Payslip */
         return $this->request('GET', $this->portalPath($orgId, "payslips/{$id}"), $params, $opts);
     }
 }

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Enlivy\HttpClient;
 
 use Enlivy\ApiResponse;
+use Enlivy\Enlivy;
 use Enlivy\Exception\ApiConnectionException;
+use Enlivy\Exception\ApiException;
 
 final class CurlClient implements HttpClientInterface
 {
@@ -34,7 +36,19 @@ final class CurlClient implements HttpClientInterface
         ?array $params = null,
         int $timeout = 30,
     ): string {
-        [$responseBody] = $this->executeRequest($method, $url, $headers, $params, $timeout);
+        [$responseBody, $responseHeaders, $statusCode] = $this->executeRequest(
+            $method,
+            $url,
+            $headers,
+            $params,
+            $timeout,
+        );
+
+        if ($statusCode >= 400) {
+            $json = json_decode($responseBody, true);
+
+            throw ApiException::factory($statusCode, is_array($json) ? $json : null, $responseHeaders);
+        }
 
         return $responseBody;
     }
@@ -71,7 +85,7 @@ final class CurlClient implements HttpClientInterface
             $url .= '?' . http_build_query($params);
         }
 
-        curl_setopt_array($ch, [
+        $curlOpts = [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => $method,
@@ -79,7 +93,18 @@ final class CurlClient implements HttpClientInterface
             CURLOPT_TIMEOUT => $timeout,
             CURLOPT_CONNECTTIMEOUT => 10,
             CURLOPT_HEADER => true,
-        ]);
+        ];
+
+        if (!Enlivy::getVerifySslCerts()) {
+            $curlOpts[CURLOPT_SSL_VERIFYPEER] = false;
+            $curlOpts[CURLOPT_SSL_VERIFYHOST] = 0;
+        }
+
+        if (Enlivy::getCaBundlePath() !== null) {
+            $curlOpts[CURLOPT_CAINFO] = Enlivy::getCaBundlePath();
+        }
+
+        curl_setopt_array($ch, $curlOpts);
 
         $response = curl_exec($ch);
 

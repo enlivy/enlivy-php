@@ -17,7 +17,6 @@ use Enlivy\ApiResource;
  * @property string $type
  * @property string|null $description
  * @property array|null $price_map
- * @property bool $price_is_tax_inclusive
  * @property string|null $primary_currency
  * @property array|null $name_lang_map
  * @property array|null $description_lang_map

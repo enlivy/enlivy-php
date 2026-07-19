@@ -10,8 +10,8 @@ trait HasFilters
 {
     /**
      * Global filters accepted by all list endpoints.
-     * These are handled by the API's AbstractRepository and do not need
-     * to be declared in each service's AVAILABLE_FILTERS constant.
+     * Handled globally by the API, so they do not need to be declared in
+     * each service's AVAILABLE_FILTERS constant.
      */
     public const array GLOBAL_FILTERS = [
         'q',

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Tests\Mock;
 
 use Enlivy\ApiResponse;
+use Enlivy\Exception\ApiException;
 use Enlivy\HttpClient\HttpClientInterface;
 
 /**
@@ -66,6 +67,10 @@ final class MockHttpClient implements HttpClientInterface
         int $timeout = 30,
     ): string {
         $response = $this->request($method, $url, $headers, $params, $timeout);
+
+        if ($response->statusCode >= 400) {
+            throw ApiException::factory($response->statusCode, $response->json, $response->headers);
+        }
 
         return $response->body;
     }

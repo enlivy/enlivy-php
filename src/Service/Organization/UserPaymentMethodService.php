@@ -48,6 +48,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<UserPaymentMethod> */
         return $this->requestCollection('GET', $this->orgPath($orgId, "users/{$userId}/payment-methods"), $params, $opts);
     }
 
@@ -56,6 +57,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/payment-methods"), $params, $opts);
     }
 
@@ -64,6 +66,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('GET', $this->orgPath($orgId, "users/{$userId}/payment-methods/{$paymentMethodId}"), $params, $opts);
     }
 
@@ -72,6 +75,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('PUT', $this->orgPath($orgId, "users/{$userId}/payment-methods/{$paymentMethodId}"), $params, $opts);
     }
 
@@ -80,6 +84,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('DELETE', $this->orgPath($orgId, "users/{$userId}/payment-methods/{$paymentMethodId}"), $params, $opts);
     }
 
@@ -88,6 +93,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/payment-methods/restore/{$paymentMethodId}"), $params, $opts);
     }
 
@@ -103,6 +109,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/payment-methods/{$paymentMethodId}/set-as-default"), $params, $opts);
     }
 
@@ -111,6 +118,7 @@ class UserPaymentMethodService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/payment-methods/{$paymentMethodId}/sync-from-stripe"), $params, $opts);
     }
 }

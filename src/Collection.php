@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Enlivy;
 
+use Enlivy\Util\RequestOptions;
+
 /**
  * Represents a paginated API response.
  *
@@ -26,6 +28,73 @@ namespace Enlivy;
  */
 class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
 {
+    private ?ApiRequestor $requestor = null;
+
+    private string $requestMethod = 'GET';
+
+    private string $requestPath = '';
+
+    private ?array $requestParams = null;
+
+    private ?RequestOptions $requestOpts = null;
+
+    /** @var class-string<EnlivyObject>|null */
+    private ?string $requestItemClass = null;
+
+    /**
+     * Remember how this page was fetched so autoPagingIterator() can request
+     * the following pages.
+     *
+     * @param class-string<EnlivyObject>|null $itemClass
+     */
+    public function setRequestContext(
+        ApiRequestor $requestor,
+        string $method,
+        string $path,
+        ?array $params,
+        ?RequestOptions $opts,
+        ?string $itemClass,
+    ): void {
+        $this->requestor = $requestor;
+        $this->requestMethod = $method;
+        $this->requestPath = $path;
+        $this->requestParams = $params;
+        $this->requestOpts = $opts;
+        $this->requestItemClass = $itemClass;
+    }
+
+    /**
+     * Iterate every item across all pages, fetching follow-up pages lazily.
+     *
+     * @return \Generator<int, T>
+     */
+    public function autoPagingIterator(): \Generator
+    {
+        $page = $this;
+
+        while (true) {
+            foreach ($page->getData() as $item) {
+                yield $item;
+            }
+
+            if ($this->requestor === null || !$page->hasMore()) {
+                return;
+            }
+
+            $params = $this->requestParams ?? [];
+            $params['page'] = $page->getCurrentPage() + 1;
+
+            /** @var Collection<T> $page */
+            $page = $this->requestor->requestCollection(
+                $this->requestMethod,
+                $this->requestPath,
+                $params,
+                $this->requestOpts,
+                $this->requestItemClass,
+            );
+        }
+    }
+
     /**
      * Refresh collection from API data with typed items.
      *

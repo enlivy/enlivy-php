@@ -66,9 +66,8 @@ $service = $client->products->create([
         'ro' => 'ora',
     ],
 
-    // Tax configuration
+    // Tax configuration - tax treatment derives from the assigned tax class
     'organization_tax_class_id' => 'org_tax_xxx',
-    'price_is_tax_inclusive' => false,
 
     // Unique identifier (optional)
     'alias' => 'consult-hour',
@@ -126,22 +125,6 @@ $physical = $client->products->create([
     'upc_number' => '012345678905',   // UPC-A
 
     'is_sold' => true,
-]);
-```
-
-### Tax-Inclusive Pricing
-
-```php
-<?php
-
-$product = $client->products->create([
-    'type' => 'service',
-    'name_lang_map' => ['en' => 'Design Work'],
-    'price_map' => [
-        'EUR' => 119.00, // Price includes VAT
-    ],
-    'price_is_tax_inclusive' => true,
-    'organization_tax_class_id' => 'org_tax_xxx',
 ]);
 ```
 
@@ -380,8 +363,7 @@ $invoice = $client->invoices->create([
 | `description_lang_map` | object | Description by language |
 | `unit_lang_map` | object | Unit by language (e.g., `{"en": "hour"}`) |
 | `description` | string | Plain text description |
-| `organization_tax_class_id` | string | Tax class ID |
-| `price_is_tax_inclusive` | boolean | Whether prices include tax (default: false) |
+| `organization_tax_class_id` | string | Tax class ID (determines the product's tax treatment) |
 | `primary_currency` | string | Primary currency when multiple prices exist |
 | `invoice_schema_map` | object | PEPPOL e-invoicing fields |
 | `stripe_product_id_list` | array | Linked Stripe product IDs |

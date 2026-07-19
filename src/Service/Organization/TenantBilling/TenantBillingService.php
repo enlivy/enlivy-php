@@ -45,6 +45,7 @@ class TenantBillingService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var TenantBilling */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/state'), $params, $opts);
     }
 

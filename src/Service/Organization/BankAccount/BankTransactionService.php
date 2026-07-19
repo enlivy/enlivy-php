@@ -73,6 +73,7 @@ class BankTransactionService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<BankTransaction> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -80,6 +81,7 @@ class BankTransactionService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BankTransaction */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -87,6 +89,7 @@ class BankTransactionService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BankTransaction */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -94,6 +97,7 @@ class BankTransactionService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BankTransaction */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -101,6 +105,7 @@ class BankTransactionService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BankTransaction */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 }

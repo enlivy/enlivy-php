@@ -35,6 +35,7 @@ class ReportSchemaFieldService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<ReportSchemaField> */
         return $this->requestCollection('GET', $this->orgPath($orgId, "report-schemas/{$schemaId}/fields"), $params, $opts);
     }
 

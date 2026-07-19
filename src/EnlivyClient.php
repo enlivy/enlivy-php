@@ -70,6 +70,10 @@ use Enlivy\Service;
  * @property Service\Organization\Tax\TaxRateService $taxRates
  * @property Service\Organization\Tax\TaxTypeService $taxTypes
  * @property Service\Organization\Tax\TaxFilingJurisdictionService $taxFilingJurisdictions
+ * @property Service\Organization\Tax\TaxRegistrationService $taxRegistrations
+ * @property Service\Organization\Tax\TaxEventService $taxEvents
+ * @property Service\Organization\Tax\TaxFilingPeriodService $taxFilingPeriods
+ * @property Service\Organization\Tax\TaxFilingPeriodPaymentService $taxFilingPeriodPayments
  *
  * Organization-scoped services - Payroll:
  * @property Service\Organization\Payslip\PayslipSchemaService $payslipSchemas
@@ -94,6 +98,7 @@ use Enlivy\Service;
  * Organization-scoped services - Settings & Tags:
  * @property Service\Organization\TagService $tags
  * @property Service\Organization\SettingService $settings
+ * @property Service\Organization\SettingLocalizationService $settingLocalizations
  * @property Service\Organization\PreferenceService $preferences
  * @property Service\Organization\NotificationService $notifications
  *

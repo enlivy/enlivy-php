@@ -3,6 +3,93 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.0.0] - 2026-07-19
+
+A tax-compliance engine plus invoice refunds and proposal-to-billing-schedule
+support. The bump to `2.0.0` reflects wire-contract removals and renames (see
+[UPGRADING.md](UPGRADING.md)); the SDK's PHP surface stays source-compatible —
+no class, method, or enum case was removed.
+
+### Added
+
+- **Tax-compliance subsystem.** New services `$client->taxRegistrations`,
+  `$client->taxEvents`, `$client->taxFilingPeriods`, and (nested)
+  `$client->taxFilingPeriodPayments`, with resources `TaxRegistration`,
+  `TaxEvent`, `TaxFilingPeriod`, and `TaxFilingPeriodPayment`. Registrations add
+  `suggested()`; filing periods add `acceptComputed()` and `returnView()`; all
+  support soft delete and `restore()`. Filing-period payments are nested — every
+  method takes the filing-period id first. See
+  [docs/organization/taxes.md](docs/organization/taxes.md).
+- **Invoice refunds & issuance.** `$client->invoices->refund()` (full or partial,
+  generating a reversal/credit-note invoice), `issueInvoice()` (mint a standard
+  invoice from a proforma), and `issueReceipt()`. Two new invoice includes:
+  `reversal_invoices` and `parent_invoice`.
+- **Manual proposal → billing schedule.** `$client->proposals->createBillingSchedule()`
+  for an accepted subscription proposal (gated on the new read-only
+  `can_create_billing_schedule` flag). Proposals also expose
+  `has_unsigned_required_contracts` and `billed_currency`.
+- **Billing-package contract preview.** `$client->billingPackages->previewContractTemplate($id, $templateId)`
+  returns a rendered `Contract`. Contract-template sections gain `content_source`
+  (enum `BillingPackage\ContractSectionContentSources`) and `configuration`;
+  templates gain per-party `sender_rawd_lang_map` / `receiver_rawd_lang_map`.
+- **Data export.** `ExportData` gains `type` / `parameters` and the export
+  service a `type` filter — `accounting_saga` exports take
+  `parameters.date_from` / `date_to`.
+- **Discovery & monitors.** `$client->organizations->discovery($id)` (org-scoped
+  discovery) and `$client->misc->taxMonitors()`.
+- **Setting localizations.** `$client->settingLocalizations` — `list()`,
+  `retrieve($group, $key)`, `set($group, $key, ...)`, `delete($group, $key)`.
+- **Enums.** The `Enlivy\Enums\Tax\*` family (product categories, registration
+  schemes, seller VAT statuses, validation/suggestion sources, filing
+  frequencies/statuses, payment types/statuses, assurance modes, and tax-event
+  directions/source-types/regimes/supply-types), plus `Payment\RefundStatus`,
+  `CurrencyExchangeRateProviders`, `BillingPackage\ContractSectionContentSources`,
+  `ExportData\Types`, and `Organization\SettingGroups`. New cases:
+  `BillingSchedule\Statuses` (`cancelling`), `EventTrail\EventType` (`refunded`,
+  `refund_failed`), `TenantBilling\PackStatuses` (`active_cancelled`).
+- **Resource fields.** `TaxClass` gains `display_name` / `display_name_lang_map`
+  / `tax_category`; `TaxRate` gains localizable `name` / `display_name`,
+  `retired_at` / `retired_reason_lang_map` / `retired_by_user_id`,
+  `stripe_tax_rate_id`, and `auto_imported_from` / `auto_imported_hash`.
+- **Automatic retries.** Transient failures (connection errors, `429`, `5xx`)
+  are retried with exponential backoff and `Retry-After` support — for `GET`
+  requests, and for writes carrying an `Idempotency-Key`. The `max_retries`
+  client option and `Enlivy::setMaxNetworkRetries()` now take effect
+  (previously accepted but ignored).
+- **Auto-pagination.** `Collection::autoPagingIterator()` lazily walks every
+  page: `foreach ($client->invoices->list() as ...)` stays single-page,
+  `foreach ($collection->autoPagingIterator() as ...)` iterates them all.
+- **Request options.** `RequestOptions` gains per-request `timeout` and extra
+  `headers`. Client telemetry (`X-Enlivy-Client-User-Agent`: SDK/PHP/OS
+  versions) is sent by default; disable with `Enlivy::setEnableTelemetry(false)`.
+- `ApiResource::isDeleted()` — true when the resource carries a `deleted_at`.
+- CI (GitHub Actions, PHP 8.3–8.5), `CONTRIBUTING.md`, and `SECURITY.md`.
+
+### Changed
+
+- `TaxRate.country_code` is now `seller_country_code` (system-managed). Tax-rate
+  locations take `country_code` and `zip_code`.
+- The subscription cadence field on a proposal created from a package (and on a
+  Client Portal claim) is now `organization_billing_package_subscription_term_id`
+  (previously `subscription_term_id`).
+- PHPStan gate raised to level 5 with zero errors.
+
+### Fixed
+
+- Raw downloads (`download()` methods) now throw the typed `ApiException`
+  hierarchy on HTTP errors instead of returning the error JSON as if it were
+  file content.
+- `Enlivy::setVerifySslCerts()` / `setCaBundlePath()` are now honored by the
+  cURL transport (previously silent no-ops).
+
+### Removed
+
+- **`Product.price_is_tax_inclusive`** — tax treatment now derives from the
+  product's assigned tax class / category.
+- **`TaxRate.is_shipping`**, and the `iso_3166` write field on tax-rate locations.
+- The stale `TaxClass.alias` property (never emitted by the API).
+- `Enlivy\Util\Util::flattenParams()` (unused).
+
 ## [1.1.0] - 2026-06-29
 
 Subscription cycle-length support and customer self-service subscription

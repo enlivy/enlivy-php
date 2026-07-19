@@ -53,4 +53,15 @@ class MiscService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/translate'), $params, $opts);
     }
+
+    /**
+     * Tax-threshold monitors (registration/nexus thresholds) for the
+     * organization. Returns a raw snapshot.
+     */
+    public function taxMonitors(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/tax-monitors'), $params, $opts);
+    }
 }

@@ -64,6 +64,7 @@ use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationAnafService
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationService;
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationSlackService;
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationStripeService;
+use Enlivy\Service\Organization\SettingLocalizationService;
 use Enlivy\Service\Organization\SettingService;
 use Enlivy\Service\Organization\StripeWebhookCallbackService;
 use Enlivy\Service\Organization\TagService;
@@ -74,8 +75,12 @@ use Enlivy\Service\Organization\TenantBilling\TenantBillingPaymentMethodService;
 use Enlivy\Service\Organization\TenantBilling\TenantBillingService;
 use Enlivy\Service\Organization\TenantBilling\TenantBillingTrialService;
 use Enlivy\Service\Organization\Tax\TaxClassService;
+use Enlivy\Service\Organization\Tax\TaxEventService;
 use Enlivy\Service\Organization\Tax\TaxFilingJurisdictionService;
+use Enlivy\Service\Organization\Tax\TaxFilingPeriodPaymentService;
+use Enlivy\Service\Organization\Tax\TaxFilingPeriodService;
 use Enlivy\Service\Organization\Tax\TaxRateService;
+use Enlivy\Service\Organization\Tax\TaxRegistrationService;
 use Enlivy\Service\Organization\Tax\TaxTypeService;
 use Enlivy\Service\Organization\UserAddressService;
 use Enlivy\Service\Organization\UserBankAccountService;
@@ -154,6 +159,10 @@ class CoreServiceFactory extends AbstractServiceFactory
             'taxRates' => TaxRateService::class,
             'taxTypes' => TaxTypeService::class,
             'taxFilingJurisdictions' => TaxFilingJurisdictionService::class,
+            'taxRegistrations' => TaxRegistrationService::class,
+            'taxEvents' => TaxEventService::class,
+            'taxFilingPeriods' => TaxFilingPeriodService::class,
+            'taxFilingPeriodPayments' => TaxFilingPeriodPaymentService::class,
 
             // Org-scoped: Payroll
             'payslipSchemas' => PayslipSchemaService::class,
@@ -178,6 +187,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             // Org-scoped: Settings & Tags
             'tags' => TagService::class,
             'settings' => SettingService::class,
+            'settingLocalizations' => SettingLocalizationService::class,
             'preferences' => PreferenceService::class,
             'notifications' => NotificationService::class,
 

@@ -26,7 +26,9 @@ class ExportDataService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'type',
+    ];
 
     /**
      * @return Collection<ExportData>
@@ -37,6 +39,7 @@ class ExportDataService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<ExportData> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -44,6 +47,7 @@ class ExportDataService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ExportData */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -51,6 +55,7 @@ class ExportDataService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ExportData */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -58,6 +63,7 @@ class ExportDataService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ExportData */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -65,6 +71,7 @@ class ExportDataService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var ExportData */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/retry"), $params, $opts);
     }
 }

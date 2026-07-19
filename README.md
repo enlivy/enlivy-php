@@ -1,6 +1,12 @@
 # Enlivy PHP SDK
 
-Official PHP client library for the [Enlivy API](https://enlivy.com).
+[![CI](https://github.com/enlivy/enlivy-php/actions/workflows/ci.yml/badge.svg)](https://github.com/enlivy/enlivy-php/actions/workflows/ci.yml)
+[![Latest Version](https://img.shields.io/packagist/v/enlivy/enlivy-php.svg)](https://packagist.org/packages/enlivy/enlivy-php)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+Official PHP client library for the [Enlivy API](https://enlivy.com). Follows
+[Semantic Versioning](https://semver.org/); breaking changes ship only in major
+versions, with migration notes in [UPGRADING.md](UPGRADING.md).
 
 ## Requirements
 
@@ -96,7 +102,7 @@ Detailed guides with code examples for every feature:
 | [Billing Packages](docs/organization/billing-packages.md) | Reusable billing templates with payment plans |
 | [Proposals](docs/organization/proposals.md) | Send proposals to prospects and customers |
 | [Products](docs/organization/products.md) | Product and service catalog |
-| [Taxes](docs/organization/taxes.md) | Tax classes, rates, and filing jurisdictions |
+| [Taxes](docs/organization/taxes.md) | Tax classes and rates, plus the compliance engine: registrations, the tax-event subledger, and filing periods |
 
 ### CRM & Sales
 
@@ -168,7 +174,35 @@ echo "Page " . $invoices->getCurrentPage() . " of " . $invoices->getTotalPages()
 foreach ($invoices as $invoice) {
     echo $invoice->id;
 }
+
+// Or iterate every item across all pages; follow-up pages are fetched lazily
+foreach ($invoices->autoPagingIterator() as $invoice) {
+    echo $invoice->id;
+}
 ```
+
+## Request Options
+
+Every service method accepts an optional `RequestOptions` as its last argument:
+
+```php
+use Enlivy\Util\RequestOptions;
+
+$invoice = $client->invoices->create($params, new RequestOptions(
+    organizationId: 'org_other',      // per-request organization override
+    idempotencyKey: 'idem_xyz',       // safe write retries
+    locale: 'ro',                     // Accept-Language for localized fields
+    timeout: 60,                      // per-request timeout (seconds)
+    headers: ['X-Custom' => 'value'], // extra headers
+));
+```
+
+## Retries
+
+Transient failures (connection errors, `429`, `5xx`) are retried automatically
+with exponential backoff — for `GET` requests, and for writes that carry an
+`Idempotency-Key`. Configure via `max_retries` on the client (default `2`, `0`
+disables) or globally with `Enlivy::setMaxNetworkRetries()`.
 
 ## API Discovery
 

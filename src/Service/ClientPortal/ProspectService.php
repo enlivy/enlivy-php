@@ -40,6 +40,7 @@ class ProspectService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Prospect */
         return $this->request('POST', $this->portalPath($orgId, "projects/{$projectId}/prospects"), $params, $opts);
     }
 
@@ -50,6 +51,7 @@ class ProspectService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Prospect */
         return $this->request('GET', $this->portalPath($orgId, "projects/{$projectId}/prospects/{$id}"), $params, $opts);
     }
 
@@ -60,6 +62,7 @@ class ProspectService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Prospect */
         return $this->request('PUT', $this->portalPath($orgId, "projects/{$projectId}/prospects/{$id}"), $params, $opts);
     }
 }

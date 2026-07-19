@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Enlivy;
 
 use Enlivy\Auth\AuthHandlerInterface;
+use Enlivy\Exception\ApiConnectionException;
 use Enlivy\Exception\ApiException;
 use Enlivy\HttpClient\HttpClientInterface;
 use Enlivy\Util\RequestOptions;
 
 final class ApiRequestor
 {
-    private const string SDK_VERSION = '1.1.0';
+    private const array RETRYABLE_STATUS_CODES = [429, 500, 502, 503, 504];
 
     public function __construct(
         private readonly AuthHandlerInterface $authHandler,
@@ -31,25 +32,46 @@ final class ApiRequestor
         ?RequestOptions $opts = null,
     ): ApiResponse {
         $url = $this->apiBase . $path;
-        $headers = $this->buildHeaders($opts);
+        $attempt = 0;
 
-        $response = $this->httpClient->request($method, $url, $headers, $params, $this->timeout);
+        $timeout = $opts->timeout ?? $this->timeout;
 
-        // Handle 401 with OAuth auto-refresh
-        if ($response->statusCode === 401 && $this->authHandler->canRefresh()) {
-            $refreshed = $this->authHandler->refreshAccessToken();
-
-            if ($refreshed) {
+        while (true) {
+            try {
                 $headers = $this->buildHeaders($opts);
-                $response = $this->httpClient->request($method, $url, $headers, $params, $this->timeout);
+                $response = $this->httpClient->request($method, $url, $headers, $params, $timeout);
+
+                // Handle 401 with OAuth auto-refresh
+                if ($response->statusCode === 401 && $this->authHandler->canRefresh()) {
+                    $refreshed = $this->authHandler->refreshAccessToken();
+
+                    if ($refreshed) {
+                        $headers = $this->buildHeaders($opts);
+                        $response = $this->httpClient->request($method, $url, $headers, $params, $timeout);
+                    }
+                }
+            } catch (ApiConnectionException $e) {
+                if ($this->shouldRetry($method, null, $opts, $attempt)) {
+                    $this->sleepBeforeRetry($attempt, null);
+                    $attempt++;
+                    continue;
+                }
+
+                throw $e;
             }
-        }
 
-        if ($response->statusCode >= 400) {
-            throw ApiException::factory($response->statusCode, $response->json, $response->headers);
-        }
+            if ($response->statusCode >= 400) {
+                if ($this->shouldRetry($method, $response, $opts, $attempt)) {
+                    $this->sleepBeforeRetry($attempt, $response);
+                    $attempt++;
+                    continue;
+                }
 
-        return $response;
+                throw ApiException::factory($response->statusCode, $response->json, $response->headers);
+            }
+
+            return $response;
+        }
     }
 
     /**
@@ -71,8 +93,10 @@ final class ApiRequestor
         $data = $response->json ?? [];
 
         // Create collection and hydrate items with the specified class
+        /** @var Collection<T> $collection */
         $collection = new Collection();
         $collection->refreshFromWithClass($data, $resourceClass);
+        $collection->setRequestContext($this, $method, $path, $params, $opts, $resourceClass);
 
         return $collection;
     }
@@ -87,9 +111,58 @@ final class ApiRequestor
         ?RequestOptions $opts = null,
     ): string {
         $url = $this->apiBase . $path;
-        $headers = $this->buildHeaders($opts);
+        $attempt = 0;
+        $timeout = $opts->timeout ?? $this->timeout;
 
-        return $this->httpClient->requestRaw($method, $url, $headers, $params, $this->timeout);
+        while (true) {
+            $headers = $this->buildHeaders($opts);
+
+            try {
+                return $this->httpClient->requestRaw($method, $url, $headers, $params, $timeout);
+            } catch (ApiConnectionException $e) {
+                if ($this->shouldRetry($method, null, $opts, $attempt)) {
+                    $this->sleepBeforeRetry($attempt, null);
+                    $attempt++;
+                    continue;
+                }
+
+                throw $e;
+            }
+        }
+    }
+
+    /**
+     * Retries are limited to requests that are safe to replay: GETs, or
+     * writes the caller made idempotent via an Idempotency-Key.
+     */
+    private function shouldRetry(string $method, ?ApiResponse $response, ?RequestOptions $opts, int $attempt): bool
+    {
+        if ($attempt >= $this->maxRetries) {
+            return false;
+        }
+
+        if (strtoupper($method) !== 'GET' && $opts?->idempotencyKey === null) {
+            return false;
+        }
+
+        if ($response === null) {
+            return true;
+        }
+
+        return in_array($response->statusCode, self::RETRYABLE_STATUS_CODES, true);
+    }
+
+    private function sleepBeforeRetry(int $attempt, ?ApiResponse $response): void
+    {
+        $delay = min(2.0, 0.5 * (2 ** $attempt));
+        $delay *= 0.5 + (mt_rand(0, 1000) / 2000);
+
+        $retryAfter = $response?->getHeader('Retry-After');
+        if ($retryAfter !== null && is_numeric($retryAfter)) {
+            $delay = max($delay, min(5.0, (float) $retryAfter));
+        }
+
+        usleep((int) ($delay * 1_000_000));
     }
 
     /**
@@ -100,7 +173,17 @@ final class ApiRequestor
         $headers = $this->authHandler->getHeaders();
 
         $headers['Accept'] = 'application/json';
-        $headers['User-Agent'] = 'Enlivy/PhpSDK/' . self::SDK_VERSION;
+        $headers['User-Agent'] = 'Enlivy/PhpSDK/' . Enlivy::VERSION;
+
+        if (Enlivy::getEnableTelemetry()) {
+            $headers['X-Enlivy-Client-User-Agent'] = json_encode([
+                'sdk' => 'enlivy-php',
+                'sdk_version' => Enlivy::VERSION,
+                'lang' => 'php',
+                'lang_version' => PHP_VERSION,
+                'os' => PHP_OS_FAMILY,
+            ], JSON_THROW_ON_ERROR);
+        }
 
         if ($opts?->idempotencyKey !== null) {
             $headers['Idempotency-Key'] = $opts->idempotencyKey;
@@ -108,6 +191,10 @@ final class ApiRequestor
 
         if ($opts?->locale !== null) {
             $headers['Accept-Language'] = $opts->locale;
+        }
+
+        foreach ($opts->headers ?? [] as $name => $value) {
+            $headers[$name] = $value;
         }
 
         return $headers;

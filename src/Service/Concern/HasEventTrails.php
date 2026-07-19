@@ -42,6 +42,7 @@ trait HasEventTrails
         $this->validateEventTrailIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var EventTrail */
         return $this->request('GET', $this->orgPath($orgId, static::RESOURCE . "/event-trails/{$id}"), $params, $opts, EventTrail::class);
     }
 

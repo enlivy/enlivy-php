@@ -6,6 +6,7 @@ namespace Enlivy\Service\Organization\BillingPackage;
 
 use Enlivy\Collection;
 use Enlivy\Organization\BillingPackage;
+use Enlivy\Organization\Contract;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
@@ -64,6 +65,7 @@ class BillingPackageService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<BillingPackage> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -71,6 +73,7 @@ class BillingPackageService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BillingPackage */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -78,6 +81,7 @@ class BillingPackageService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BillingPackage */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -85,6 +89,7 @@ class BillingPackageService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BillingPackage */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -92,6 +97,7 @@ class BillingPackageService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BillingPackage */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -99,6 +105,7 @@ class BillingPackageService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BillingPackage */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/expire"), $params, $opts);
     }
 
@@ -112,5 +119,17 @@ class BillingPackageService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/download"), $params, $opts);
+    }
+
+    /**
+     * Render a preview of one of the package's contract templates. Accepts an
+     * optional `locale` (must be one of the package's locales).
+     */
+    public function previewContractTemplate(string $id, string $templateId, array $params = [], ?RequestOptions $opts = null): Contract
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Contract */
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/contract-templates/{$templateId}/preview"), $params, $opts, Contract::class);
     }
 }

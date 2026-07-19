@@ -44,6 +44,9 @@ $proposal = $client->proposals->fromBillingPackage([
     'organization_billing_package_id' => 'org_bp_xxx',
     'organization_billing_package_payment_plan_id' => 'org_bp_plan_xxx',
 
+    // Subscription packages: pin a cadence variant (omit = the package default)
+    // 'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
+
     // Recipient
     'organization_prospect_id' => 'org_pros_xxx',
 ]);
@@ -419,6 +422,29 @@ $proposal = $client->proposals->delete('org_prop_xxx');
 echo "Deleted at: {$proposal->deleted_at}\n";
 ```
 
+## Creating a Billing Schedule
+
+Manually create a billing schedule from an **accepted** subscription proposal. This is only valid
+while the proposal's `can_create_billing_schedule` is `true` (a schedule has not already been
+created). All body fields are optional:
+
+```php
+<?php
+
+$proposal = $client->proposals->createBillingSchedule('org_prop_xxx', [
+    'start_at' => '2026-04-01',
+    'max_occurrences' => 12,
+    'payment_method' => 'bank_transfer',
+    'organization_user_payment_method_id' => 'org_user_pm_xxx',
+    'organization_bank_account_id' => 'org_bank_xxx',
+    'name_lang_map' => ['en' => 'Membership'],
+    'currency' => 'EUR',
+    'currency_conversion_fee' => 2.5,
+]);
+
+echo "Billing schedule created for proposal: {$proposal->id}\n";
+```
+
 ## Field Reference
 
 ### Required Fields
@@ -442,7 +468,9 @@ echo "Deleted at: {$proposal->deleted_at}\n";
 | Field | Type | Description |
 |-------|------|-------------|
 | `organization_billing_package_id` | string | Base billing package |
-| `organization_billing_package_payment_plan_id` | string | Selected payment plan from billing package |
+| `organization_billing_package_payment_plan_id` | string | Selected payment plan from billing package (one_time) |
+| `organization_billing_package_subscription_term_id` | string | Selected subscription cadence variant from billing package (subscription) |
+| `billed_currency` | string | Currency the accepted proposal is billed in (also returned on read) |
 | `organization_project_id` | string | Link to project |
 | `organization_sender_user_id` | string | Sender user ID |
 | `note_lang_map` | object | Note by language |
@@ -477,6 +505,16 @@ echo "Deleted at: {$proposal->deleted_at}\n";
 | `order` | integer | Sort order |
 | `is_optional` | boolean | Whether item is optional |
 | `invoice_schema_map` | object | PEPPOL e-invoicing fields |
+
+### Read-Only Fields
+
+Returned on read, not writable:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `can_create_billing_schedule` | boolean | Whether a billing schedule can still be created from this (accepted subscription) proposal |
+| `has_unsigned_required_contracts` | boolean | Whether required contracts remain unsigned |
+| `billed_currency` | string\|null | Currency the proposal is billed in |
 
 ## Complete Example: Proposal Workflow
 

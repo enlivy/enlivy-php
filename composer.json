@@ -47,7 +47,7 @@
     "prefer-stable": true,
     "scripts": {
         "test": "phpunit",
-        "stan": "phpstan analyse -l 3 src/ --memory-limit=512M",
+        "stan": "phpstan analyse -l 5 src/ --memory-limit=512M",
         "qa": [
             "@test",
             "@stan"

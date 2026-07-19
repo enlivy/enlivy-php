@@ -16,4 +16,9 @@ abstract class ApiResource extends EnlivyObject
      * Override in subclasses to enable automatic type mapping.
      */
     public const ?string OBJECT_NAME = null;
+
+    public function isDeleted(): bool
+    {
+        return ($this->values['deleted_at'] ?? null) !== null;
+    }
 }

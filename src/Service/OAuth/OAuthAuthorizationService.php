@@ -26,6 +26,7 @@ class OAuthAuthorizationService extends AbstractService
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
         $this->validateFilters($params);
+        /** @var Collection<OAuthAuthorization> */
         return $this->requestCollection('GET', '/oauth/authorizations', $params, $opts);
     }
 

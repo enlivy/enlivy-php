@@ -30,12 +30,15 @@ use Enlivy\ApiResource;
  * @property string|null $recipient_email
  * @property string|null $recipient_name
  * @property string $currency
+ * @property string|null $billed_currency
  * @property float $sub_total
  * @property float $discount
  * @property float $total
  * @property array|null $allowed_payment_methods
  * @property bool $contract_is_required
  * @property string|null $contract_trigger
+ * @property bool $has_unsigned_required_contracts
+ * @property bool $can_create_billing_schedule
  * @property array|null $note_lang_map
  * @property string|null $sent_at
  * @property string|null $expires_at

@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Invoice;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Invoice;
+use Enlivy\Organization\Receipt;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasEventTrails;
@@ -49,6 +50,8 @@ class InvoiceService extends AbstractService
         'contract',
         'charge_logs',
         'latest_charge_log',
+        'reversal_invoices',
+        'parent_invoice',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -102,6 +105,7 @@ class InvoiceService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<Invoice> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -110,6 +114,7 @@ class InvoiceService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -118,6 +123,7 @@ class InvoiceService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -126,6 +132,7 @@ class InvoiceService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -134,6 +141,7 @@ class InvoiceService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -161,6 +169,44 @@ class InvoiceService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/charge"), $params, $opts);
+    }
+
+    /**
+     * Refund an issued invoice, generating a reversal (credit-note) invoice.
+     * Omit `line_items` for a full refund; pass them to refund partially.
+     */
+    public function refund(string $id, array $params = [], ?RequestOptions $opts = null): Invoice
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Invoice */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/refund"), $params, $opts);
+    }
+
+    /**
+     * Issue a standard invoice from a proforma.
+     */
+    public function issueInvoice(string $id, array $params = [], ?RequestOptions $opts = null): Invoice
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Invoice */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/issue-invoice"), $params, $opts);
+    }
+
+    /**
+     * Issue a receipt for the invoice.
+     */
+    public function issueReceipt(string $id, array $params = [], ?RequestOptions $opts = null): Receipt
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Receipt */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/issue-receipt"), $params, $opts, Receipt::class);
     }
 }

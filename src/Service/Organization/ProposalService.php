@@ -76,6 +76,7 @@ class ProposalService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<Proposal> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -83,6 +84,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -90,6 +92,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -97,6 +100,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -104,6 +108,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -111,6 +116,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/from-billing-package'), $params, $opts);
     }
 
@@ -118,6 +124,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/send"), $params, $opts);
     }
 
@@ -125,13 +132,26 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/accept"), $params, $opts);
+    }
+
+    /**
+     * Manually create a billing schedule from an accepted subscription proposal.
+     */
+    public function createBillingSchedule(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/billing-schedule"), $params, $opts);
     }
 
     public function reject(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/reject"), $params, $opts);
     }
 
@@ -139,6 +159,7 @@ class ProposalService extends AbstractService
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/expire"), $params, $opts);
     }
 

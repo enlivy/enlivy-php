@@ -249,6 +249,43 @@ $package = $client->billingPackages->delete('org_bp_xxx');
 $package = $client->billingPackages->restore('org_bp_xxx');
 ```
 
+## Contract Templates
+
+A billing package can carry contract templates, each built from ordered **sections**. A section's
+`content_source` selects what fills it, alongside an accompanying `configuration` object:
+
+| `content_source` | Fills the section with |
+|------------------|------------------------|
+| `standard` | Free-form authored content |
+| `reusable_content` | A shared reusable content block |
+| `purchase_items` | The purchased line items |
+| `purchase_terms` | The subscription / payment terms |
+| `purchase_summary` | A totals summary of the purchase |
+| `product_list` | The package's product list |
+| `purchased_product_list` | Only the products actually purchased |
+
+Values come from the `Enlivy\Enums\BillingPackage\ContractSectionContentSources` enum.
+
+For the product-list sources, `configuration` narrows which products appear:
+`{'mode': 'allow'|'exclude', 'product_ids': [...]}`.
+
+Templates also carry per-party identity blocks: `sender_rawd_lang_map` and
+`receiver_rawd_lang_map` (localizable raw party details rendered into the
+contract header), writable on `contract_templates[]` alongside the sections.
+
+### Previewing a Contract Template
+
+Render a preview of one of the package's contract templates. The optional `locale` must be one of
+the package's locales. The result is a rendered `Contract` preview and is not persisted:
+
+```php
+<?php
+
+$contract = $client->billingPackages->previewContractTemplate('org_bp_xxx', 'tpl_xxx', [
+    'locale' => 'en',
+]);
+```
+
 ## Creating a Proposal from a Billing Package
 
 Use the proposals service to create a proposal directly from a billing package:
@@ -338,8 +375,8 @@ $portal->billingSchedules->changePaymentMethod('org_bs_xxx', [
 The schedule's `customer_can_reconfigure` / `customer_can_pause` / `customer_can_cancel` flags
 indicate which self-service actions are available. Portal reconfigure changes the package
 composition (quantities / add-ons) within the current cadence; switching to a different cadence
-variant is an admin operation (`$client->billingSchedules->reconfigure(...)` with a
-`subscription_term_id`).
+variant is an admin operation (`$client->billingSchedules->reconfigure(...)` with an
+`organization_billing_package_subscription_term_id`).
 
 ## Available Includes
 

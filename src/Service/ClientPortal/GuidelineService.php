@@ -24,6 +24,7 @@ class GuidelineService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Guideline */
         return $this->request('GET', $this->portalPath($orgId, "guidelines/{$id}"), $params, $opts);
     }
 
@@ -31,6 +32,7 @@ class GuidelineService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Guideline */
         return $this->request('PUT', $this->portalPath($orgId, "guidelines/{$id}"), $params, $opts);
     }
 

@@ -34,6 +34,7 @@ class InvitationCodeService extends AbstractService
         $this->validateIncludes($params);
         $this->validateFilters($params);
 
+        /** @var Collection<InvitationCode> */
         return $this->requestCollection('GET', '/invitation-codes', $params, $opts);
     }
 
@@ -76,6 +77,7 @@ class InvitationCodeService extends AbstractService
     {
         $this->validateIncludes($params);
 
+        /** @var Collection<InvitationCode> */
         return $this->requestCollection('GET', '/invitation-codes/referrals', $params, $opts);
     }
 
@@ -86,6 +88,7 @@ class InvitationCodeService extends AbstractService
     {
         $this->validateIncludes($params);
 
+        /** @var Collection<InvitationCode> */
         return $this->requestCollection('GET', "/invitation-codes/{$id}/referrals", $params, $opts);
     }
 }

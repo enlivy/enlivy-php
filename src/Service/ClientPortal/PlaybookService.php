@@ -24,6 +24,7 @@ class PlaybookService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Playbook */
         return $this->request('GET', $this->portalPath($orgId, "playbooks/{$id}"), $params, $opts);
     }
 
@@ -31,6 +32,7 @@ class PlaybookService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Playbook */
         return $this->request('PUT', $this->portalPath($orgId, "playbooks/{$id}"), $params, $opts);
     }
 

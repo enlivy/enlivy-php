@@ -24,6 +24,7 @@ class InvoiceService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Invoice */
         return $this->request('GET', $this->portalPath($orgId, "invoices/{$id}"), $params, $opts);
     }
 

@@ -163,7 +163,7 @@ any stale PHPDoc.
 
 ```bash
 composer test          # PHPUnit — must be green
-composer stan          # PHPStan level 3 — zero new errors
+composer stan          # PHPStan level 5 — zero errors
 composer qa            # both of the above
 ```
 

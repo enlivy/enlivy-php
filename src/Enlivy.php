@@ -19,7 +19,7 @@ final class Enlivy
     /**
      * SDK version.
      */
-    public const string VERSION = '1.1.0';
+    public const string VERSION = '2.0.0';
 
     /**
      * Default API base URL.
@@ -75,6 +75,8 @@ final class Enlivy
      * Maximum number of request retries.
      */
     private static int $maxNetworkRetries = 2;
+
+    private static bool $enableTelemetry = true;
 
     /**
      * Request timeout in seconds.
@@ -270,6 +272,20 @@ final class Enlivy
     }
 
     /**
+     * Whether the SDK sends the anonymous client-runtime telemetry header
+     * (SDK version, PHP version, OS family).
+     */
+    public static function getEnableTelemetry(): bool
+    {
+        return self::$enableTelemetry;
+    }
+
+    public static function setEnableTelemetry(bool $enable): void
+    {
+        self::$enableTelemetry = $enable;
+    }
+
+    /**
      * Get the request timeout in seconds.
      */
     public static function getTimeout(): int
@@ -386,6 +402,7 @@ final class Enlivy
         self::$verifySslCerts = true;
         self::$caBundlePath = null;
         self::$maxNetworkRetries = 2;
+        self::$enableTelemetry = true;
         self::$timeout = 30;
         self::$onTokenRefresh = null;
     }

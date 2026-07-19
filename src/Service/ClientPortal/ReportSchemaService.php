@@ -23,6 +23,7 @@ class ReportSchemaService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var ReportSchema */
         return $this->request('GET', $this->portalPath($orgId, "report-schemas/{$id}"), $params, $opts);
     }
 }

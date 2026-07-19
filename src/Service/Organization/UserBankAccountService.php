@@ -41,6 +41,7 @@ class UserBankAccountService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<UserBankAccount> */
         return $this->requestCollection('GET', $this->orgPath($orgId, "users/{$userId}/bank-accounts"), $params, $opts);
     }
 
@@ -49,6 +50,7 @@ class UserBankAccountService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserBankAccount */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/bank-accounts"), $params, $opts);
     }
 
@@ -57,6 +59,7 @@ class UserBankAccountService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserBankAccount */
         return $this->request('GET', $this->orgPath($orgId, "users/{$userId}/bank-accounts/{$bankAccountId}"), $params, $opts);
     }
 
@@ -65,6 +68,7 @@ class UserBankAccountService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserBankAccount */
         return $this->request('PUT', $this->orgPath($orgId, "users/{$userId}/bank-accounts/{$bankAccountId}"), $params, $opts);
     }
 
@@ -73,6 +77,7 @@ class UserBankAccountService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserBankAccount */
         return $this->request('DELETE', $this->orgPath($orgId, "users/{$userId}/bank-accounts/{$bankAccountId}"), $params, $opts);
     }
 
@@ -81,6 +86,7 @@ class UserBankAccountService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserBankAccount */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/bank-accounts/restore/{$bankAccountId}"), $params, $opts);
     }
 
@@ -89,6 +95,7 @@ class UserBankAccountService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserBankAccount */
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/bank-accounts/{$bankAccountId}/set-primary"), $params, $opts);
     }
 }

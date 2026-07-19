@@ -39,6 +39,7 @@ class EventDestinationService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<EventDestination> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -47,6 +48,7 @@ class EventDestinationService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var EventDestination */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -55,6 +57,7 @@ class EventDestinationService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var EventDestination */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
@@ -63,6 +66,7 @@ class EventDestinationService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var EventDestination */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -71,6 +75,7 @@ class EventDestinationService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var EventDestination */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
@@ -105,6 +110,7 @@ class EventDestinationService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var EventDelivery */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/deliveries/{$id}"), $params, $opts, EventDelivery::class);
     }
 }

@@ -24,6 +24,7 @@ class ProposalService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Proposal */
         return $this->request('GET', $this->portalPath($orgId, "proposals/{$id}"), $params, $opts);
     }
 
@@ -31,6 +32,7 @@ class ProposalService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Proposal */
         return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/accept"), $params, $opts);
     }
 
@@ -38,6 +40,7 @@ class ProposalService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Proposal */
         return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/reject"), $params, $opts);
     }
 

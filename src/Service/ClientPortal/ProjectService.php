@@ -23,6 +23,7 @@ class ProjectService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Project */
         return $this->request('GET', $this->portalPath($orgId, "projects/{$id}"), $params, $opts);
     }
 }

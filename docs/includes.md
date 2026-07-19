@@ -71,7 +71,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `invoices` | `bank_account`, `invoice_prefix`, `sender_user`, `receiver_user`, `receiver_user_address`, `line_items`, `receipts`, `deleted_by_user`, `party_locales`, `tag_ids`, `taxes`, `last_peppol_exchange`, `contract` |
+| `invoices` | `bank_account`, `invoice_prefix`, `sender_user`, `receiver_user`, `receiver_user_address`, `line_items`, `receipts`, `deleted_by_user`, `party_locales`, `tag_ids`, `taxes`, `last_peppol_exchange`, `contract`, `charge_logs`, `latest_charge_log`, `reversal_invoices`, `parent_invoice` |
 | `invoices` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `invoicePrefixes` | `organization`, `deleted_by_user`, `custom_logo` |
 | `invoiceNetworkExchanges` | `organization`, `parsed_data`, `invoice`, `tag_ids` |

@@ -23,6 +23,7 @@ class ReceiptService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Receipt */
         return $this->request('GET', $this->portalPath($orgId, "receipts/{$id}"), $params, $opts);
     }
 

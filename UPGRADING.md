@@ -1,3 +1,84 @@
+# Upgrading to 2.0.0
+
+`2.0.0` adds the tax-compliance engine, invoice refunds, and proposal-to-billing
+-schedule support. All of that is **additive**. The major bump is for a handful
+of **wire-contract** removals and renames below.
+
+The SDK's PHP surface is source-compatible — no class, method, or enum case was
+removed, and resources remain dynamic (reading a field the API no longer returns
+yields `null` rather than an error). You only need to change code if you *write*
+or *read* one of the fields below.
+
+## 1. Products: `price_is_tax_inclusive` removed
+
+Products no longer carry a `price_is_tax_inclusive` boolean. Tax treatment now
+derives from the product's assigned tax class / category.
+
+```php
+// Before
+$client->products->create([
+    'name_lang_map' => ['en' => 'Consulting'],
+    'price_is_tax_inclusive' => true, // no longer accepted
+    // ...
+]);
+
+// After — omit it; assign a tax class instead
+$client->products->create([
+    'name_lang_map' => ['en' => 'Consulting'],
+    'organization_tax_class_id' => 'org_tax_class_xxx',
+    // ...
+]);
+```
+
+If you read `$product->price_is_tax_inclusive`, it is no longer returned.
+
+## 2. Tax rates: `country_code` → `seller_country_code`, `is_shipping` removed
+
+On the tax-rate resource, `country_code` was renamed to `seller_country_code`
+(and is now system-managed), and the `is_shipping` flag was removed. Tax-rate
+locations take `country_code` and `zip_code` (the `iso_3166` write field is
+gone).
+
+```php
+// Before
+$rate->country_code;      // read
+$client->taxRates->create([
+    // ...
+    'is_shipping' => false,
+    'locations' => [['country_code' => 'US', 'iso_3166' => 'US-CA']],
+]);
+
+// After
+$rate->seller_country_code;
+$client->taxRates->create([
+    // ...
+    'locations' => [['country_code' => 'US', 'zip_code' => null]],
+]);
+```
+
+## 3. Proposals: subscription-term field renamed
+
+When creating a proposal from a billing package (`fromBillingPackage()`) or
+claiming one through the Client Portal, the subscription cadence field is now
+`organization_billing_package_subscription_term_id` (previously
+`subscription_term_id`).
+
+```php
+// Before
+$client->proposals->fromBillingPackage([
+    'organization_billing_package_id' => 'org_bp_xxx',
+    'subscription_term_id' => 'org_bp_sub_term_xxx',
+]);
+
+// After
+$client->proposals->fromBillingPackage([
+    'organization_billing_package_id' => 'org_bp_xxx',
+    'organization_billing_package_subscription_term_id' => 'org_bp_sub_term_xxx',
+]);
+```
+
+---
+
 # Upgrading to 1.0.0
 
 `1.0.0` is the first stable release. It contains three breaking changes from the

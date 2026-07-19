@@ -47,6 +47,7 @@ class ProjectMemberService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<ProjectMember> */
         return $this->requestCollection('GET', $this->orgPath($orgId, "projects/{$projectId}/members"), $params, $opts);
     }
 

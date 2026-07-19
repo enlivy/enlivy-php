@@ -24,6 +24,7 @@ class BillingPackageService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var BillingPackage */
         return $this->request('GET', $this->portalPath($orgId, "billing-packages/{$id}"), $params, $opts);
     }
 

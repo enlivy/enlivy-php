@@ -118,4 +118,22 @@ final class EnlivyObjectTest extends TestCase
 
         $this->assertNull($obj->nonexistent);
     }
+
+    public function testIsDeletedReflectsDeletedAt(): void
+    {
+        $active = EnlivyObject::constructFrom([
+            'id' => 'org_inv_1',
+            'object' => 'invoice',
+            'deleted_at' => null,
+        ]);
+        $deleted = EnlivyObject::constructFrom([
+            'id' => 'org_inv_2',
+            'object' => 'invoice',
+            'deleted_at' => '2026-07-19T00:00:00Z',
+        ]);
+
+        $this->assertInstanceOf(\Enlivy\Organization\Invoice::class, $active);
+        $this->assertFalse($active->isDeleted());
+        $this->assertTrue($deleted->isDeleted());
+    }
 }

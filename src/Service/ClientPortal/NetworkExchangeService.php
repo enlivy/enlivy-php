@@ -23,6 +23,7 @@ class NetworkExchangeService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var InvoiceNetworkExchange */
         return $this->request('GET', $this->portalPath($orgId, "network-exchanges/{$id}"), $params, $opts);
     }
 

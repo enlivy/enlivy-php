@@ -357,8 +357,65 @@ following.
 | `origin` | `back_office`, `client_portal`, `cron`, `webhook`, `system` |
 | `occurred_from`, `occurred_to` | datetime |
 
+### Taxes
+
+**`taxRates`**
+
+| Filter | Type |
+|--------|------|
+| `organization_tax_class_id` | string |
+| `has_eu_vat_properties` | bool |
+
+**`taxRegistrations`**
+
+| Filter | Type |
+|--------|------|
+| `country_code` | string |
+| `scheme` | string |
+
+**`taxEvents`**
+
+| Filter | Type |
+|--------|------|
+| `direction` | `output`, `input` |
+| `source_type` | string |
+| `source_id` | string |
+| `category` | string |
+| `regime` | `accrual`, `cash` |
+| `country_code` | string |
+| `organization_tax_filing_period_id` | string |
+| `is_reverse_charge` | bool |
+| `tax_point_date_from`, `tax_point_date_to` | date |
+
+**`taxFilingPeriods`**
+
+| Filter | Type |
+|--------|------|
+| `status` | `open`, `closed`, `filed`, `submitted` |
+| `organization_tax_filing_jurisdiction_id` | string |
+| `organization_tax_type_id` | string |
+| `period_start_from`, `period_start_to` | date |
+| `period_end_from`, `period_end_to` | date |
+| `is_liability_cleared` | bool |
+
+**`taxFilingPeriodPayments`**
+
+| Filter | Type |
+|--------|------|
+| `status` | `pending`, `cleared`, `failed` |
+| `payment_type` | `payment`, `refund`, `advance`, `penalty`, `interest` |
+| `payment_date_from`, `payment_date_to` | date |
+
+### Data Export
+
+**`exportData`**
+
+| Filter | Type |
+|--------|------|
+| `type` | `full`, `accounting_saga` |
+
 ### Services with Global Filters Only
 
 The following services accept only global filters (q, ids, page, per_page, order_by, order, deleted, tag_ids):
 
-`bankAccounts`, `bankTransactionCostTypes`, `contractPrefixes`, `contractSignatures`, `contractStatuses`, `files`, `products`, `payslipSchemas`, `reportSchemas`, `reportSchemaFields`, `receiptPrefixes`, `tags`, `tasks`, `taskStatuses`, `userAddresses`, `userRoles`, `notifications`, `eventDestinations`, `prospectStatuses`, `prospectActivities`, `apiCredentials`, `resourceBundles`, `taxClasses`, `taxRates`, `taxTypes`, `taxFilingJurisdictions`, `organizations`
+`bankAccounts`, `bankTransactionCostTypes`, `contractPrefixes`, `contractSignatures`, `contractStatuses`, `files`, `products`, `payslipSchemas`, `reportSchemas`, `reportSchemaFields`, `receiptPrefixes`, `tags`, `tasks`, `taskStatuses`, `userAddresses`, `userRoles`, `notifications`, `eventDestinations`, `prospectStatuses`, `prospectActivities`, `apiCredentials`, `resourceBundles`, `taxClasses`, `taxTypes`, `taxFilingJurisdictions`, `organizations`

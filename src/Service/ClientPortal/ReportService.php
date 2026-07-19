@@ -31,6 +31,7 @@ class ReportService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Report */
         return $this->request('POST', $this->portalPath($orgId, 'reports'), $params, $opts);
     }
 
@@ -38,6 +39,7 @@ class ReportService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Report */
         return $this->request('GET', $this->portalPath($orgId, "reports/{$id}"), $params, $opts);
     }
 
@@ -45,6 +47,7 @@ class ReportService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Report */
         return $this->request('PUT', $this->portalPath($orgId, "reports/{$id}"), $params, $opts);
     }
 }

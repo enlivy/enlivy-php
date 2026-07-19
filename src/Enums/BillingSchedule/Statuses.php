@@ -14,6 +14,7 @@ enum Statuses: string
     case ACTIVE = 'active';
     case PAYMENT_METHOD_REQUIRED = 'payment_method_required';
     case PAUSED = 'paused';
+    case CANCELLING = 'cancelling';
     case COMPLETED = 'completed';
     case CANCELLED = 'cancelled';
 }

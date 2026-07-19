@@ -27,6 +27,7 @@ class UserRoleAbilityService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<UserRoleAbility> */
         return $this->requestCollection('GET', $this->orgPath($orgId, "user-roles/{$roleId}/abilities"), $params, $opts);
     }
 

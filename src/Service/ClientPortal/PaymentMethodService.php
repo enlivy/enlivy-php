@@ -23,6 +23,7 @@ class PaymentMethodService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var Collection<UserPaymentMethod> */
         return $this->requestCollection('GET', $this->portalPath($orgId, 'payment-methods'), $params, $opts);
     }
 
@@ -30,6 +31,7 @@ class PaymentMethodService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('POST', $this->portalPath($orgId, 'payment-methods'), $params, $opts);
     }
 
@@ -47,6 +49,7 @@ class PaymentMethodService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('GET', $this->portalPath($orgId, "payment-methods/{$id}"), $params, $opts);
     }
 
@@ -54,6 +57,7 @@ class PaymentMethodService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('DELETE', $this->portalPath($orgId, "payment-methods/{$id}"), $params, $opts);
     }
 
@@ -61,6 +65,7 @@ class PaymentMethodService extends AbstractPortalService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
+        /** @var UserPaymentMethod */
         return $this->request('POST', $this->portalPath($orgId, "payment-methods/{$id}/set-as-default"), $params, $opts);
     }
 }

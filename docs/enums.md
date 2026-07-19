@@ -68,10 +68,36 @@ set. A selection relevant to recently added features:
 | `BillingPackage\SubscriptionTermStatuses` | `active`, `archived` |
 | `BillingPackage\ProrationPolicy` | `none`, `prorate_immediately`, `prorate_next_invoice` |
 | `BillingSchedule\PhaseFrequency` | `weekly`, `biweekly`, `monthly`, `every_3_months`, `every_6_months`, `yearly` |
-| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `paused`, `completed`, `cancelled` |
+| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `paused`, `cancelling`, `completed`, `cancelled` |
+| `Payment\RefundStatus` | `succeeded`, `failed`, `pending` |
+| `BillingPackage\ContractSectionContentSources` | `standard`, `reusable_content`, `purchase_items`, `purchase_terms`, `purchase_summary`, `product_list`, `purchased_product_list` |
+| `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
+| `ExportData\Types` | `full`, `accounting_saga` |
 
 > `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
 > and `CARD` (`card`).
+
+## Tax
+
+The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
+
+| Enum | Values |
+|------|--------|
+| `Tax\ProductTaxCategories` | `general_services`, `digital_services`, `general_physical_goods`, `foodstuffs`, `printed_books_periodicals`, … (14 EU/UK/CH categories) |
+| `Tax\RegistrationSchemes` | `vat_registered`, `small_business_domestic`, `small_business_cross_border`, `oss_union`, `oss_non_union`, `ioss`, `not_registered` |
+| `Tax\SellerVatStatuses` | `undeclared`, `registered`, `small_business_exempt`, `not_registered`, `not_applicable` |
+| `Tax\ValidationSources` | `vies`, `anaf`, `manual`, `companies_api` |
+| `Tax\RegistrationSuggestionConfidences` | `verified`, `stored_identifier`, `country_default` |
+| `Tax\RegistrationSuggestionSources` | `companies_api`, `organization_information`, `country_pack` |
+| `Tax\FilingFrequencies` | `monthly`, `quarterly`, `semiannual`, `annual`, `event_driven` |
+| `Tax\FilingPeriodStatuses` | `open`, `closed`, `filed`, `submitted` |
+| `Tax\FilingPeriodPaymentTypes` | `payment`, `refund`, `advance`, `penalty`, `interest` |
+| `Tax\FilingPeriodPaymentStatuses` | `pending`, `cleared`, `failed` |
+| `Tax\AssuranceModes` | `full_books`, `hybrid`, `declared` |
+| `Tax\TaxEventDirections` | `output`, `input` |
+| `Tax\TaxEventSourceTypes` | `invoice`, `receipt`, `customs`, `bank_correction`, `authority`, `manual`, `baseline` |
+| `Tax\TaxEventRegimes` | `accrual`, `cash` |
+| `Tax\TaxEventSupplyTypes` | `goods`, `services`, `triangular` |
 
 ## Stability
 
