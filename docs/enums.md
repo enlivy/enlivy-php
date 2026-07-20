@@ -14,7 +14,7 @@ building and response validation instead of hard-coded strings.
 <?php
 
 use Enlivy\Enums\Invoice\Statuses;
-use Enlivy\Enums\Payment\PaymentMethodProvider;
+use Enlivy\Enums\Payment\PaymentProvider;
 
 // Build requests with typed values
 $client->invoices->update('org_inv_xxx', [
@@ -30,9 +30,9 @@ if (! Statuses::isValid($incoming)) {
 $status = Statuses::tryFrom($invoice->status);
 
 // Enumerate
-PaymentMethodProvider::values();   // ['stripe', 'paypal']
-PaymentMethodProvider::names();    // ['STRIPE', 'PAYPAL']
-PaymentMethodProvider::cases();    // native PHP enum cases
+PaymentProvider::values();   // ['stripe', 'paypal']
+PaymentProvider::names();    // ['STRIPE', 'PAYPAL']
+PaymentProvider::cases();    // native PHP enum cases
 ```
 
 ## Helpers
@@ -50,7 +50,7 @@ PHP enum methods:
 ## Organisation
 
 Enums are grouped by domain, e.g. `Enlivy\Enums\Invoice\Statuses`,
-`Enlivy\Enums\Payment\PaymentMethodProvider`,
+`Enlivy\Enums\Payment\PaymentProvider`,
 `Enlivy\Enums\TenantBilling\BillingCycles`. Browse `src/Enums/` for the full
 set. A selection relevant to recently added features:
 
@@ -87,8 +87,8 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 | `Tax\RegistrationSchemes` | `vat_registered`, `small_business_domestic`, `small_business_cross_border`, `oss_union`, `oss_non_union`, `ioss`, `not_registered` |
 | `Tax\SellerVatStatuses` | `undeclared`, `registered`, `small_business_exempt`, `not_registered`, `not_applicable` |
 | `Tax\ValidationSources` | `vies`, `anaf`, `manual`, `companies_api` |
-| `Tax\RegistrationSuggestionConfidences` | `verified`, `stored_identifier`, `country_default` |
-| `Tax\RegistrationSuggestionSources` | `companies_api`, `organization_information`, `country_pack` |
+| `Tax\RegistrationSuggestionConfidences` | `verified`, `stored_identifier`, `derived`, `country_default` |
+| `Tax\RegistrationSuggestionSources` | `companies_api`, `organization_information`, `country_pack`, `activity` |
 | `Tax\FilingFrequencies` | `monthly`, `quarterly`, `semiannual`, `annual`, `event_driven` |
 | `Tax\FilingPeriodStatuses` | `open`, `closed`, `filed`, `submitted` |
 | `Tax\FilingPeriodPaymentTypes` | `payment`, `refund`, `advance`, `penalty`, `interest` |

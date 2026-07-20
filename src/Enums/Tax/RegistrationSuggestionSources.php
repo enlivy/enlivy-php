@@ -13,4 +13,5 @@ enum RegistrationSuggestionSources: string
     case COMPANIES_API = 'companies_api';
     case ORGANIZATION_INFORMATION = 'organization_information';
     case COUNTRY_PACK = 'country_pack';
+    case ACTIVITY = 'activity';
 }

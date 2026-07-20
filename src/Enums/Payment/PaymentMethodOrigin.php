@@ -13,4 +13,5 @@ enum PaymentMethodOrigin: string
     case PLATFORM_SETUP = 'platform_setup';
     case IMPORTED_OFF_PLATFORM = 'imported_off_platform';
     case MANUAL_ENTRY = 'manual_entry';
+    case API_BIND = 'api_bind';
 }

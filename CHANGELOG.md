@@ -3,6 +3,42 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.1.0] - 2026-07-20
+
+Payment-method binding, organization integration keys, a payment-provider naming
+alignment, and a foreign-currency conversion fix.
+
+### Added
+
+- **Bind a payment method.** `$client->userPaymentMethods->bind($userId, [...])`
+  attaches an externally-tokenized payment method (e.g. a Stripe PaymentMethod
+  created off-platform with the organization's publishable key) to a user — pass
+  `payment_provider` (`stripe`) and `stripe_payment_method_id`.
+- **Organization integration keys.** The `Organization` resource now exposes an
+  `integrations` map carrying the public keys an off-platform integration needs
+  (`integrations.stripe.publishable_key`, `integrations.stripe.account_id`), or
+  `null` for a provider that is not connected.
+- **Enum cases.** `Payment\PaymentMethodOrigin` gains `api_bind`;
+  `Tax\RegistrationSuggestionConfidences` gains `derived`;
+  `Tax\RegistrationSuggestionSources` gains `activity`.
+
+### Changed
+
+- **Payment-provider naming.** The `Payment\PaymentMethodProvider` enum is now
+  `Payment\PaymentProvider` (values unchanged: `stripe`, `paypal`), matching the
+  API. The user-payment-method `provider` field follows suit and is now
+  `payment_provider` — on the `UserPaymentMethod` resource, the `create()` body,
+  and the `list()` filter. To migrate, swap
+  `Enlivy\Enums\Payment\PaymentMethodProvider` for
+  `Enlivy\Enums\Payment\PaymentProvider` and the `provider` key for
+  `payment_provider`.
+
+### Fixed
+
+- `BankAccountBalance.balance_converted_currency` is now `null` when no exchange
+  rate is available, instead of a misleading `0.0` — part of an upstream
+  foreign-currency conversion fix across balances, analytics, and forecasts.
+
 ## [2.0.0] - 2026-07-19
 
 A tax-compliance engine plus invoice refunds and proposal-to-billing-schedule

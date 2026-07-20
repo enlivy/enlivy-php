@@ -16,7 +16,7 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string $organization_user_id
- * @property string $provider
+ * @property string $payment_provider
  * @property string $type
  * @property string $origin
  * @property array|null $origin_metadata

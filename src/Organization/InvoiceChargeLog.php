@@ -20,8 +20,8 @@ use Enlivy\ApiResource;
  * @property string|null $initiated_by_organization_user_id
  * @property string $source One of: cron, admin, portal_user, standalone, webhook
  * @property string $status One of: in_progress, succeeded, failed, requires_action, already_paid
- * @property string $provider One of: stripe, paypal
- * @property string|null $provider_reference
+ * @property string $payment_provider One of: stripe, paypal
+ * @property string|null $payment_provider_reference
  * @property string|null $error_code
  * @property string|null $error_message
  * @property float $amount

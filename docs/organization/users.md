@@ -610,12 +610,12 @@ charging). All methods are nested under the user ID.
 
 ```php
 $methods = $client->userPaymentMethods->list('org_user_xxx', [
-    'provider' => 'stripe',
+    'payment_provider' => 'stripe',
     'status' => 'active',
 ]);
 
 $method = $client->userPaymentMethods->create('org_user_xxx', [
-    'provider' => 'stripe',
+    'payment_provider' => 'stripe',
     'type' => 'card',
     'origin' => 'manual',
 ]);
@@ -625,6 +625,14 @@ $client->userPaymentMethods->syncFromStripe('org_user_xxx', $method->id);
 $client->userPaymentMethods->importFromStripe('org_user_xxx', [
     'stripe_customer_id' => 'cus_xxx',
 ]);
+
+// Bind a payment method tokenized off-platform (e.g. a Stripe PaymentMethod
+// created with Stripe.js using the org's publishable key from $org->integrations)
+$bound = $client->userPaymentMethods->bind('org_user_xxx', [
+    'payment_provider' => 'stripe',
+    'stripe_payment_method_id' => 'pm_xxx',
+]);
+
 $client->userPaymentMethods->delete('org_user_xxx', $method->id);
 $client->userPaymentMethods->restore('org_user_xxx', $method->id);
 ```

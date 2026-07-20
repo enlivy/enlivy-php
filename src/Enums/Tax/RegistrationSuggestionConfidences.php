@@ -12,5 +12,6 @@ enum RegistrationSuggestionConfidences: string
 
     case VERIFIED = 'verified';
     case STORED_IDENTIFIER = 'stored_identifier';
+    case DERIVED = 'derived';
     case COUNTRY_DEFAULT = 'country_default';
 }

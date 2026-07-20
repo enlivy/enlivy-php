@@ -6,7 +6,7 @@ namespace Enlivy\Enums\Payment;
 
 use Enlivy\Enums\Concern\EnumValues;
 
-enum PaymentMethodProvider: string
+enum PaymentProvider: string
 {
     use EnumValues;
 

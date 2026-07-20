@@ -30,7 +30,7 @@ class UserPaymentMethodService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'provider',
+        'payment_provider',
         'type',
         'origin',
         'status',
@@ -102,6 +102,19 @@ class UserPaymentMethodService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/payment-methods/import-from-stripe"), $params, $opts);
+    }
+
+    /**
+     * Bind an externally-created payment method (e.g. a Stripe PaymentMethod
+     * tokenized off-platform) to the user.
+     */
+    public function bind(string $userId, array $params, ?RequestOptions $opts = null): UserPaymentMethod
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var UserPaymentMethod */
+        return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/payment-methods/bind"), $params, $opts);
     }
 
     public function setAsDefault(string $userId, string $paymentMethodId, array $params = [], ?RequestOptions $opts = null): UserPaymentMethod

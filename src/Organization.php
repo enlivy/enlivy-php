@@ -20,6 +20,7 @@ namespace Enlivy;
  * @property array $information
  * @property array $feature_list
  * @property array $branding_map
+ * @property array $integrations
  * @property string $created_at
  * @property string $updated_at
  */

@@ -6,7 +6,7 @@ namespace Enlivy\Tests\Unit;
 
 use Enlivy\Enums\Concern\EnumValues;
 use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
-use Enlivy\Enums\Payment\PaymentMethodProvider;
+use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Payslip\Fields as PayslipFields;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
@@ -29,7 +29,7 @@ final class EnumsTest extends TestCase
     public function testCriticalContractValues(): void
     {
         $this->assertSame('paid', InvoiceStatuses::PAID->value);
-        $this->assertSame(['stripe', 'paypal'], PaymentMethodProvider::values());
+        $this->assertSame(['stripe', 'paypal'], PaymentProvider::values());
         $this->assertSame(['monthly', 'yearly'], BillingCycles::values());
         $this->assertSame(
             ['text', 'number', 'number_currency', 'number_percentage'],
