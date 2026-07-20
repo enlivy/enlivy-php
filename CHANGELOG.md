@@ -3,6 +3,20 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.2.0] - 2026-07-20
+
+E-invoicing status with a filing preview, plus a selectable document type when
+pushing an invoice to a tax-authority network.
+
+### Added
+
+- **E-invoicing status & document-type override.**
+  `$client->invoices->peppolStatus($id, $institution)` returns an invoice's
+  status on a tax-authority e-invoicing network, with a filing preview when it
+  has not yet been pushed (ANAF only). Both `peppolStatus()` and `peppolPush()`
+  accept an optional `document_type_code` (`380` commercial invoice, `381`
+  credit note). New enum `Enlivy\Enums\NetworkExchange\DocumentTypeCodes`.
+
 ## [2.1.0] - 2026-07-20
 
 Payment-method binding, organization integration keys, a payment-provider naming

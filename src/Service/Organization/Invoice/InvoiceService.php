@@ -153,12 +153,30 @@ class InvoiceService extends AbstractService
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/email"), $params, $opts);
     }
 
+    /**
+     * Push an invoice to a tax-authority e-invoicing network. Pass an optional
+     * `document_type_code` (`380` commercial invoice, `381` credit note) to
+     * override the document type inferred from the invoice.
+     */
     public function peppolPush(string $id, string $institution, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/peppol/{$institution}"), $params, $opts);
+    }
+
+    /**
+     * Get an invoice's e-invoicing status on a tax-authority network, with a
+     * filing preview when it has not yet been pushed. Accepts the same optional
+     * `document_type_code` override as the push. ANAF only.
+     */
+    public function peppolStatus(string $id, string $institution, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/peppol/{$institution}"), $params, $opts);
     }
 
     /**

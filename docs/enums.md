@@ -73,6 +73,7 @@ set. A selection relevant to recently added features:
 | `BillingPackage\ContractSectionContentSources` | `standard`, `reusable_content`, `purchase_items`, `purchase_terms`, `purchase_summary`, `product_list`, `purchased_product_list` |
 | `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
 | `ExportData\Types` | `full`, `accounting_saga` |
+| `NetworkExchange\DocumentTypeCodes` | `380` (commercial invoice), `381` (credit note) |
 
 > `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
 > and `CARD` (`card`).

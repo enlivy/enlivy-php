@@ -543,6 +543,15 @@ $result = $client->invoices->peppolPush('org_inv_xxx', 'anaf');
 
 // Send to other PEPPOL networks
 $result = $client->invoices->peppolPush('org_inv_xxx', 'peppol');
+
+// Optionally override the document type (380 = commercial invoice, 381 = credit note)
+$result = $client->invoices->peppolPush('org_inv_xxx', 'anaf', [
+    'document_type_code' => '381',
+]);
+
+// Check the e-invoicing status, with a filing preview when not yet pushed (ANAF only).
+// Accepts the same optional document_type_code override as the push.
+$status = $client->invoices->peppolStatus('org_inv_xxx', 'anaf');
 ```
 
 ## Downloading Invoice PDF
