@@ -3,6 +3,48 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.3.0] - 2026-07-23
+
+Create a billing schedule directly from a subscription package (with an optional
+immediate first charge), a tax-applicability check, and access to the response
+metadata that rides alongside a created resource.
+
+### Added
+
+- **Billing schedule from a billing package.**
+  `$client->billingSchedules->fromBillingPackage([...])` materializes a
+  subscription schedule straight from a package — pass
+  `organization_billing_package_id`, an optional
+  `organization_billing_package_subscription_term_id` (cadence variant),
+  optional `selected_group_items`, and `start_at` (omit or `null` = start now).
+  When the schedule is created `active` and already due, the first cycle is
+  invoiced and charged inline.
+- **Inline first-charge result.** A created schedule carries the charge outcome
+  on the response meta — `meta.charge_result` (`status` /
+  `error_code` / `error_message` / `provider_reference` / `next_action_url`) and
+  `meta.invoice_id`. Reachable via the new `lastResponse()` accessor (below).
+  Applies to both `fromBillingPackage()` and `create()`.
+- **`EnlivyObject::lastResponse()`.** Every object returned by the SDK now
+  carries the raw `ApiResponse` it was hydrated from — status code, headers, and
+  the decoded body (including any `meta`). Read endpoint metadata (or a response
+  header) with `$object->lastResponse()?->json['meta']`.
+- **Tax applicability check.**
+  `$client->misc->determineIsTaxCharged([...])` reports whether a sale will carry
+  tax for a recipient — by `organization_receiver_user_id`, or ad-hoc via
+  `country_code` / `is_business_entity` / `is_eu_vat_registered`. Returns
+  `is_tax_charged`, `reason`, `needs_attention`. New enum
+  `Enlivy\Enums\Tax\TaxApplicabilityReasons`.
+
+### Changed
+
+- **Breaking (wire): billing-package fields are rejected on
+  `billingSchedules->create()`.** Package-backed creation now lives solely on
+  `fromBillingPackage()`. Sending `organization_billing_package_id`,
+  `organization_billing_package_subscription_term_id`, `selected_group_items` or
+  `start_at` to `create()` is rejected — the endpoint composes explicit
+  `phases`/`payments` only. The SDK's PHP surface is unchanged (`create()` keeps
+  its signature); see [UPGRADING](UPGRADING.md) to migrate.
+
 ## [2.2.0] - 2026-07-20
 
 E-invoicing status with a filing preview, plus a selectable document type when

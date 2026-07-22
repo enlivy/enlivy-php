@@ -40,6 +40,21 @@ class MiscService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-tax-rate-id'), $params, $opts);
     }
 
+    /**
+     * Determine whether tax is charged for a sale, given the receiver context.
+     *
+     * Accepts `organization_receiver_user_id`, or an ad-hoc receiver via
+     * `country_code` / `is_business_entity` / `is_eu_vat_registered` (all optional).
+     * Returns `{ is_tax_charged: bool, reason: string, needs_attention: bool }` —
+     * `reason` is a {@see \Enlivy\Enums\Tax\TaxApplicabilityReasons} value.
+     */
+    public function determineIsTaxCharged(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-is-tax-charged'), $params, $opts);
+    }
+
     public function testEmail(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

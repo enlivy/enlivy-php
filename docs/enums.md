@@ -87,6 +87,7 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 | `Tax\ProductTaxCategories` | `general_services`, `digital_services`, `general_physical_goods`, `foodstuffs`, `printed_books_periodicals`, … (14 EU/UK/CH categories) |
 | `Tax\RegistrationSchemes` | `vat_registered`, `small_business_domestic`, `small_business_cross_border`, `oss_union`, `oss_non_union`, `ioss`, `not_registered` |
 | `Tax\SellerVatStatuses` | `undeclared`, `registered`, `small_business_exempt`, `not_registered`, `not_applicable` |
+| `Tax\TaxApplicabilityReasons` | `seller_not_registered`, `outside_scope`, `domestic`, `eu_reverse_charge`, `eu_business_without_vat_id`, `eu_consumer` |
 | `Tax\ValidationSources` | `vies`, `anaf`, `manual`, `companies_api` |
 | `Tax\RegistrationSuggestionConfidences` | `verified`, `stored_identifier`, `derived`, `country_default` |
 | `Tax\RegistrationSuggestionSources` | `companies_api`, `organization_information`, `country_pack`, `activity` |

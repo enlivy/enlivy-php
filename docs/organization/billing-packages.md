@@ -312,6 +312,91 @@ $proposal = $client->proposals->fromBillingPackage([
 echo "Proposal created: {$proposal->id}\n";
 ```
 
+## Creating a Billing Schedule from a Billing Package
+
+A subscription package becomes recurring billing in one of two ways:
+
+- **Via a proposal** (above) — you quote the customer, they accept and pay, and the
+  billing schedule activates on that first payment.
+- **Directly** — when you already have the customer and their payment method and just
+  want to start billing. `billingSchedules->fromBillingPackage()` materializes the
+  subscription schedule straight from the package, and can charge the first cycle inline.
+
+```php
+<?php
+
+$schedule = $client->billingSchedules->fromBillingPackage([
+    'organization_billing_package_id' => 'org_bp_xxx',
+    // Optional cadence variant (omit = the package default)
+    'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
+    // Optional composition (quantities / add-ons); omit to use the package defaults
+    'selected_group_items' => [
+        ['id' => 'org_bp_grpi_xxx', 'quantity' => 2],
+    ],
+
+    'organization_sender_user_id' => 'org_user_sender',
+    'organization_receiver_user_id' => 'org_user_customer',
+    'organization_user_payment_method_id' => 'org_user_pm_xxx',
+
+    // pending = set up now, activate on the first payment; active = start billing
+    'status' => 'active',
+
+    // When the first cycle starts, anchoring the schedule. Omit or null = start now.
+    'start_at' => null,
+]);
+
+echo "Schedule {$schedule->id} ({$schedule->status})\n";
+```
+
+The package owns the composition, so `phases`, `payments`, `direction` and
+`management_type` are derived from it and are rejected if you send them.
+
+### Immediate first charge
+
+If the schedule is created `active` and its first cycle is already due (for example
+`start_at` is null/now), that cycle is invoiced and charged inline against the receiver's
+saved payment method. The created schedule is returned as usual; the charge outcome rides
+on the response `meta`, reachable through `lastResponse()`:
+
+```php
+<?php
+
+$schedule = $client->billingSchedules->fromBillingPackage([/* … */]);
+
+$meta      = $schedule->lastResponse()?->json['meta'] ?? [];
+$charge    = $meta['charge_result'] ?? null;   // null when nothing was billed
+$invoiceId = $meta['invoice_id'] ?? null;      // the invoice the first cycle generated
+
+if ($charge !== null && $charge['status'] === 'requires_action') {
+    // Card needs 3DS/SCA — send the customer to complete it:
+    $redirectTo = $charge['next_action_url'];
+}
+```
+
+`charge_result` fields:
+
+| Field | Meaning |
+|-------|---------|
+| `status` | `succeeded` (charged) · `requires_action` (needs 3DS/SCA — see `next_action_url`) · `failed` (declined; the invoice stays open and the cron retries) · `already_paid` |
+| `error_code` | Stable machine code (e.g. `card_declined`) to localize on the frontend |
+| `error_message` | Raw provider message (audit detail) |
+| `provider_reference` | Payment-provider reference for the attempt |
+| `next_action_url` | Authentication URL when `status` is `requires_action`; null otherwise |
+
+`charge_result` is `null` when nothing was billed — the schedule isn't `active`, it starts
+in the future, or the organization's billing-schedules feature is inactive. A non-card
+payment method still generates the invoice (collect it manually) and reports `status`
+`failed` with `error_code` `payment_method_not_auto_chargeable`.
+
+> The same `meta.charge_result` / `meta.invoice_id` rides on `billingSchedules->create()`
+> (raw phases/payments) when a schedule is created `active` and due — read it the same way.
+
+> **Package fields are not accepted on `create()`.** The standard create endpoint composes
+> explicit `phases`/`payments` only; `organization_billing_package_id`,
+> `organization_billing_package_subscription_term_id`, `selected_group_items` and `start_at`
+> are rejected there. Use `fromBillingPackage()`. (Earlier SDK versions accepted a package on
+> `create()` — see [UPGRADING](../../UPGRADING.md).)
+
 ## Client Portal: Billing Packages
 
 Customers can browse and claim billing packages through the Client Portal:

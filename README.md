@@ -204,6 +204,22 @@ with exponential backoff — for `GET` requests, and for writes that carry an
 `Idempotency-Key`. Configure via `max_retries` on the client (default `2`, `0`
 disables) or globally with `Enlivy::setMaxNetworkRetries()`.
 
+## Response Metadata
+
+Every object the SDK returns carries the raw response it was hydrated from —
+status code, headers, and the decoded body — via `lastResponse()`. Reach for it
+when an endpoint returns data alongside the resource in `meta`, such as the
+inline first-charge result on a newly created billing schedule:
+
+```php
+$schedule = $client->billingSchedules->fromBillingPackage([/* … */]);
+
+$response = $schedule->lastResponse();
+$response?->statusCode;                 // 201
+$response?->getHeader('X-Request-Id');
+$response?->json['meta']['charge_result'] ?? null;
+```
+
 ## API Discovery
 
 The SDK includes a discovery service for programmatic API introspection:

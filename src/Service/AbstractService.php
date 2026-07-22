@@ -81,10 +81,13 @@ abstract class AbstractService
         if ($class !== null && is_subclass_of($class, ApiResource::class)) {
             $obj = new $class($data['id'] ?? null);
             $obj->refreshFrom($data);
-            return $obj;
+        } else {
+            $obj = EnlivyObject::constructFrom($data);
         }
 
-        return EnlivyObject::constructFrom($data);
+        $obj->setLastResponse($response);
+
+        return $obj;
     }
 
     /**

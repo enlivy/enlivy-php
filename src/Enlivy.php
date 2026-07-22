@@ -19,7 +19,7 @@ final class Enlivy
     /**
      * SDK version.
      */
-    public const string VERSION = '2.2.0';
+    public const string VERSION = '2.3.0';
 
     /**
      * Default API base URL.

@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\EnlivyClient;
 use Enlivy\EnlivyObject;
 use Enlivy\Exception\InvalidArgumentException;
+use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\Prospect;
 use Enlivy\Tests\Mock\MockHttpClient;
 use Enlivy\Util\RequestOptions;
@@ -232,5 +233,81 @@ final class ServiceTest extends TestCase
         $result = $this->client->prospects->board();
 
         $this->assertInstanceOf(EnlivyObject::class, $result);
+    }
+
+    public function testTypedResourceCarriesLastResponse(): void
+    {
+        $this->httpClient->addResponse(
+            200,
+            ['data' => ['id' => 'org_pros_xxx', 'object' => 'prospect', 'title' => 'X']],
+            ['X-Request-Id' => 'req_123'],
+        );
+
+        $result = $this->client->prospects->retrieve('org_pros_xxx');
+
+        $this->assertNotNull($result->lastResponse());
+        $this->assertSame(200, $result->lastResponse()->statusCode);
+        $this->assertSame('req_123', $result->lastResponse()->getHeader('X-Request-Id'));
+    }
+
+    public function testBillingScheduleFromBillingPackagePostsAndExposesChargeMeta(): void
+    {
+        $this->httpClient->addResponse(201, [
+            'data' => [
+                'id' => 'org_bill_sch_new',
+                'object' => 'billing_schedule',
+                'status' => 'active',
+            ],
+            'meta' => [
+                'charge_result' => [
+                    'status' => 'succeeded',
+                    'error_code' => null,
+                    'error_message' => null,
+                    'provider_reference' => 'charge:ch_123',
+                    'next_action_url' => null,
+                ],
+                'invoice_id' => 'org_inv_123',
+            ],
+        ]);
+
+        $result = $this->client->billingSchedules->fromBillingPackage([
+            'organization_billing_package_id' => 'org_bp_1',
+            'organization_sender_user_id' => 'org_user_s',
+            'organization_receiver_user_id' => 'org_user_r',
+            'status' => 'active',
+        ]);
+
+        $this->assertInstanceOf(BillingSchedule::class, $result);
+        $this->assertSame('org_bill_sch_new', $result->id);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/billing-schedules/from-billing-package', $request['url']);
+
+        $meta = $result->lastResponse()?->json['meta'] ?? [];
+        $this->assertSame('succeeded', $meta['charge_result']['status']);
+        $this->assertSame('org_inv_123', $meta['invoice_id']);
+    }
+
+    public function testMiscDetermineIsTaxChargedSendsGet(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'is_tax_charged' => true,
+            'reason' => 'domestic',
+            'needs_attention' => false,
+        ]);
+
+        $result = $this->client->misc->determineIsTaxCharged([
+            'country_code' => 'RO',
+            'is_business_entity' => true,
+        ]);
+
+        $this->assertInstanceOf(EnlivyObject::class, $result);
+        $this->assertTrue($result->is_tax_charged);
+        $this->assertSame('domestic', $result->reason);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/misc/determine-is-tax-charged', $request['url']);
     }
 }

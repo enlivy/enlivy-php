@@ -12,6 +12,7 @@ class EnlivyObject implements \ArrayAccess, \JsonSerializable
 {
     protected array $values = [];
     protected Set $unsavedValues;
+    protected ?ApiResponse $lastResponse = null;
 
     final public function __construct(?string $id = null)
     {
@@ -141,6 +142,21 @@ class EnlivyObject implements \ArrayAccess, \JsonSerializable
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * The raw response this object was hydrated from. Reach for it to read data
+     * the endpoint returns alongside `data` — e.g. the `meta` an inline first
+     * charge attaches to a created billing schedule, or a response header.
+     */
+    public function lastResponse(): ?ApiResponse
+    {
+        return $this->lastResponse;
+    }
+
+    public function setLastResponse(ApiResponse $response): void
+    {
+        $this->lastResponse = $response;
     }
 
     // ArrayAccess

@@ -120,7 +120,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `bankAccounts` | `organization`, `deleted_by_user`, `tag_ids`, `bank_account_data_account_detail` |
 | `bankTransactions` | `organization`, `bank_account`, `connection_entities`, `cost_type`, `deleted_by_user`, `tag_ids` |
 | `bankTransactionCostTypes` | `organization`, `deleted_by_user`, `tag_ids` |
-| `billingSchedules` | `sender_user`, `receiver_user`, `contract`, `billing_package`, `deleted_by_user`, `payments`, `phases` |
+| `billingSchedules` | `sender_user`, `receiver_user`, `contract`, `billing_package`, `subscription_term`, `deleted_by_user`, `payments`, `phases` |
 | `billingSchedules` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 
 ### Tax

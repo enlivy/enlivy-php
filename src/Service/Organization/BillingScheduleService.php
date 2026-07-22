@@ -100,12 +100,55 @@ class BillingScheduleService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
+    /**
+     * Create a billing schedule from raw phases/payments.
+     *
+     * Composes an explicit schedule only. To create one from a subscription
+     * billing package use {@see self::fromBillingPackage()} — the package fields
+     * (`organization_billing_package_id`, `organization_billing_package_subscription_term_id`,
+     * `selected_group_items`, `start_at`) are rejected on this endpoint.
+     *
+     * A schedule created already `active` and due has its first cycle billed
+     * inline; the charge outcome is on the response meta — see
+     * {@see self::fromBillingPackage()} for how to read it.
+     */
     public function create(array $params, ?RequestOptions $opts = null): BillingSchedule
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var BillingSchedule */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
+    }
+
+    /**
+     * Create a billing schedule from a subscription billing package.
+     *
+     * The package owns the composition. Send `organization_billing_package_id`,
+     * an optional `organization_billing_package_subscription_term_id` (cadence
+     * variant; omitted = the package default), and optional `selected_group_items`
+     * (`[['id' => '…', 'quantity' => 1], …]`). `start_at` anchors the first cycle
+     * (omit or send `null` to start now). `phases`, `payments`, `direction` and
+     * `management_type` are not accepted here — the package forces them.
+     *
+     * When the schedule is created `active` and already due, the first cycle is
+     * billed inline. The created BillingSchedule is returned; the charge outcome
+     * rides on the response meta:
+     *
+     *   $schedule = $client->billingSchedules->fromBillingPackage([...]);
+     *   $meta = $schedule->lastResponse()?->json['meta'] ?? [];
+     *   $meta['charge_result']['status'] ?? null;  // succeeded | requires_action | failed | already_paid
+     *   $meta['charge_result']['next_action_url'] ?? null;  // 3DS/SCA redirect when requires_action
+     *   $meta['invoice_id'] ?? null;  // the invoice the first cycle generated
+     *
+     * `charge_result` is null when nothing was billed (schedule not active, starts
+     * in the future, or the billing-schedules feature is inactive).
+     */
+    public function fromBillingPackage(array $params, ?RequestOptions $opts = null): BillingSchedule
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var BillingSchedule */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/from-billing-package'), $params, $opts);
     }
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): BillingSchedule

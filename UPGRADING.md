@@ -1,3 +1,44 @@
+# Upgrading to 2.3.0
+
+`2.3.0` is additive except for one **wire-contract** change: billing-package
+fields are no longer accepted on `billingSchedules->create()`. The SDK's PHP
+surface is unchanged — `create()` keeps its signature — so you only need to
+change code if you were creating package-backed schedules through it.
+
+## Billing-package creation moved to `fromBillingPackage()`
+
+`create()` now composes explicit `phases`/`payments` only. Move package-backed
+creation to the dedicated endpoint:
+
+```php
+// Before — a package on create() is now rejected (422)
+$schedule = $client->billingSchedules->create([
+    'organization_billing_package_id' => 'org_bp_xxx',
+    'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
+    'selected_group_items' => [['id' => 'org_bp_grpi_xxx', 'quantity' => 1]],
+    'organization_sender_user_id' => 'org_user_s',
+    'organization_receiver_user_id' => 'org_user_r',
+    'status' => 'active',
+]);
+
+// After — same fields, dedicated endpoint
+$schedule = $client->billingSchedules->fromBillingPackage([
+    'organization_billing_package_id' => 'org_bp_xxx',
+    'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
+    'selected_group_items' => [['id' => 'org_bp_grpi_xxx', 'quantity' => 1]],
+    'organization_sender_user_id' => 'org_user_s',
+    'organization_receiver_user_id' => 'org_user_r',
+    'status' => 'active',
+    'start_at' => null, // omit or null = start now
+]);
+```
+
+`fromBillingPackage()` also bills the first cycle inline when the schedule is
+created `active` and due; read the outcome from
+`$schedule->lastResponse()?->json['meta']` (`charge_result`, `invoice_id`). See
+[docs/organization/billing-packages.md](docs/organization/billing-packages.md).
+Raw `create()` with `phases`/`payments` is unchanged.
+
 # Upgrading to 2.0.0
 
 `2.0.0` adds the tax-compliance engine, invoice refunds, and proposal-to-billing

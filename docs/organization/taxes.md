@@ -397,6 +397,35 @@ $payments = $client->taxFilingPeriodPayments->list('org_tax_filing_period_xxx', 
 $client->taxFilingPeriodPayments->delete('org_tax_filing_period_xxx', $payment->id);
 ```
 
+## Will Tax Be Charged?
+
+Determine up front whether a sale to a given recipient will carry tax — useful when
+building a quote or a checkout. Pass an existing recipient by id, or describe one ad-hoc:
+
+```php
+<?php
+
+// By recipient
+$result = $client->misc->determineIsTaxCharged([
+    'organization_receiver_user_id' => 'org_user_xxx',
+]);
+
+// Or ad-hoc (any combination; all optional)
+$result = $client->misc->determineIsTaxCharged([
+    'country_code' => 'DE',
+    'is_business_entity' => true,
+    'is_eu_vat_registered' => true,
+]);
+
+$result->is_tax_charged;   // bool
+$result->reason;           // Tax\TaxApplicabilityReasons value, e.g. eu_reverse_charge
+$result->needs_attention;  // bool — the seller's setup may need review (e.g. not registered)
+```
+
+`reason` explains the outcome — `domestic`, `eu_reverse_charge`, `eu_consumer`,
+`eu_business_without_vat_id`, `outside_scope` or `seller_not_registered` (see
+[enums](../enums.md)).
+
 ## Tax Monitors
 
 A snapshot of registration/nexus threshold monitors for the organization (raw
