@@ -28,6 +28,7 @@ use Enlivy\Service\Organization\Invoice\InvoiceChargeLogService;
 use Enlivy\Service\Organization\Invoice\InvoiceNetworkExchangeService;
 use Enlivy\Service\Organization\Invoice\InvoiceNotificationLogService;
 use Enlivy\Service\Organization\Invoice\InvoicePrefixService;
+use Enlivy\Service\Organization\Invoice\InvoiceScheduledReminderService;
 use Enlivy\Service\Organization\Invoice\InvoiceService;
 use Enlivy\Service\Organization\MatchService;
 use Enlivy\Service\Organization\MiscService;
@@ -137,6 +138,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'invoicePrefixes' => InvoicePrefixService::class,
             'invoiceChargeLogs' => InvoiceChargeLogService::class,
             'invoiceNotificationLogs' => InvoiceNotificationLogService::class,
+            'invoiceScheduledReminders' => InvoiceScheduledReminderService::class,
             'invoiceNetworkExchanges' => InvoiceNetworkExchangeService::class,
             'receipts' => ReceiptService::class,
             'receiptPrefixes' => ReceiptPrefixService::class,

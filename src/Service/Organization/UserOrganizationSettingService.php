@@ -15,13 +15,16 @@ class UserOrganizationSettingService extends AbstractService
         return $this->request('GET', "/users/{$userId}/organizations/{$orgId}/settings", $params, $opts);
     }
 
-    public function update(string $userId, string $orgId, array $params, ?RequestOptions $opts = null): EnlivyObject
+    /**
+     * Set one setting for this user within the organization. The new value goes in `value`.
+     */
+    public function update(string $userId, string $orgId, string $key, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
-        return $this->request('POST', "/users/{$userId}/organizations/{$orgId}/settings", $params, $opts);
+        return $this->request('POST', "/users/{$userId}/organizations/{$orgId}/settings/{$key}", $params, $opts);
     }
 
-    public function delete(string $userId, string $orgId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    public function delete(string $userId, string $orgId, string $key, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
-        return $this->request('DELETE', "/users/{$userId}/organizations/{$orgId}/settings", $params, $opts);
+        return $this->request('DELETE', "/users/{$userId}/organizations/{$orgId}/settings/{$key}", $params, $opts);
     }
 }

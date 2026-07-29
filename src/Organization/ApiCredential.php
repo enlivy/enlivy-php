@@ -13,9 +13,12 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string $name
- * @property string $type
- * @property array|null $credentials
+ * @property string|null $service
+ * @property bool $has_credentials
  * @property array|null $settings
+ * @property string|null $account_identifier
+ * @property string|null $site_url
+ * @property array|null $supports
  * @property string $created_at
  * @property string $updated_at
  */

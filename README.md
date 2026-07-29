@@ -97,7 +97,7 @@ Detailed guides with code examples for every feature:
 
 | Guide | Description |
 |-------|-------------|
-| [Invoices](docs/organization/invoices.md) | Create, send, and manage invoices |
+| [Invoices](docs/organization/invoices.md) | Create, send, charge, and chase invoices, including scheduled payment reminders |
 | [Receipts](docs/organization/receipts.md) | Receipt management and tracking |
 | [Billing Packages](docs/organization/billing-packages.md) | Reusable billing templates with payment plans |
 | [Proposals](docs/organization/proposals.md) | Send proposals to prospects and customers |
@@ -116,7 +116,7 @@ Detailed guides with code examples for every feature:
 
 | Guide | Description |
 |-------|-------------|
-| [Contracts](docs/organization/contracts.md) | Contract management, e-signatures, and templates |
+| [Contracts](docs/organization/contracts.md) | Contract management, e-signatures, templates, and what references a contract |
 
 ### Banking
 

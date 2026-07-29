@@ -11,6 +11,7 @@ use Enlivy\ApiResource;
  *
  * @property string $id
  * @property string $object
+ * @property string|null $unique_id
  * @property string $organization_id
  * @property string $organization_project_id
  * @property string $organization_user_id

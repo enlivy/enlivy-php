@@ -11,7 +11,6 @@ use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasEventTrails;
 use Enlivy\Service\Concern\HasImports;
 use Enlivy\Service\Concern\HasRestore;
-use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
@@ -25,7 +24,6 @@ class BillingScheduleService extends AbstractService
 {
     use HasRestore;
     use HasImports;
-    use HasTagging;
     use HasEventTrails;
     use HasIncludes;
     use HasFilters;

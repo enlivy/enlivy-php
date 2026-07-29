@@ -13,8 +13,6 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string|null $organization_project_id
- * @property string|null $created_by_user_id
- * @property string|null $expired_by_user_id
  * @property string|null $alias
  * @property array|null $name_lang_map
  * @property array|null $description_lang_map
@@ -29,16 +27,18 @@ use Enlivy\ApiResource;
  * @property string|null $portal_url
  * @property bool $is_expired
  * @property bool $is_available
+ * @property string|null $expires_at
+ * @property string|null $expired_at
+ * @property string|null $expired_by_user_id
  * @property int|null $proposal_valid_for_seconds
  * @property array|null $allowed_payment_methods
  * @property array|null $available_currencies
  * @property string|null $currency_conversion_fee
- * @property string|null $expires_at
- * @property string|null $expired_at
+ * @property string|null $created_by_user_id
+ * @property string|null $deleted_by_user_id
+ * @property string|null $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class BillingPackage extends ApiResource
 {

@@ -15,29 +15,30 @@ use Enlivy\ApiResource;
  * @property string|null $organization_prospect_status_id
  * @property string|null $linked_organization_user_id
  * @property string|null $assigned_organization_user_id
- * @property string|null $assigned_organization_project_id
- * @property string|null $source_referrer_organization_user_id
- * @property string|null $created_by_user_id
  * @property string|null $title
+ * @property string|null $assigned_organization_project_id
  * @property string|null $first_name
  * @property string|null $last_name
  * @property string|null $company_name
  * @property string|null $email
+ * @property string|null $country_code
  * @property string|null $phone_number
  * @property string|null $phone_number_country_code
- * @property string|null $country_code
+ * @property array|null $social_profiles
  * @property string|null $source_type
  * @property string|null $source_channel
  * @property string|null $source_campaign
+ * @property string|null $source_referrer_organization_user_id
  * @property string|null $summary
  * @property float|null $budget
  * @property string|null $budget_currency
- * @property array|null $social_profiles
  * @property string|null $state_qualified_at
  * @property string|null $state_disqualified_at
+ * @property string|null $state_disqualified_reason
  * @property string|null $state_won_at
  * @property string|null $state_lost_at
  * @property string|null $state_lost_reason
+ * @property string|null $created_by_user_id
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

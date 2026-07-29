@@ -11,6 +11,7 @@ enum SettingGroups: string
     use EnumValues;
 
     case INVOICING = 'invoicing';
+    case INVOICE_PAYMENT_REMINDER = 'invoice_payment_reminder';
     case TAXES = 'taxes';
     case RECEIPTS = 'receipts';
     case BANKING = 'banking';

@@ -16,9 +16,10 @@ use Enlivy\ApiResource;
  * @property array|null $description_lang_map
  * @property string|null $contract_state
  * @property string|null $action_required_type
+ * @property string|null $action_success_advance_to_organization_contract_status_id
  * @property string $direction
- * @property string|null $rgba_color_code
  * @property int $order
+ * @property string|null $rgba_color_code
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

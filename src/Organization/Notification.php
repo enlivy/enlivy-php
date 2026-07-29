@@ -12,11 +12,13 @@ use Enlivy\ApiResource;
  * @property string $id
  * @property string $object
  * @property string $organization_id
- * @property string|null $sent_to_organization_user_id
  * @property string $event
- * @property string|null $entity_type
- * @property string|null $entity_id
- * @property string|null $read_at
+ * @property string|null $type
+ * @property string|null $title
+ * @property string|null $sent_to_email_address
+ * @property string|null $sent_to_organization_user_id
+ * @property string|null $sent_from_email_address
+ * @property string|null $sent_from_email_name
  * @property string $created_at
  * @property string $updated_at
  */

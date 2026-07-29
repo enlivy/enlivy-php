@@ -19,7 +19,6 @@ use Enlivy\ApiResource;
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class ContractPrefix extends ApiResource
 {

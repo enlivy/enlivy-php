@@ -19,9 +19,9 @@ use Enlivy\ApiResource;
  * @property string|null $information_key_net_total
  * @property string|null $information_key_tax_total
  * @property string|null $information_key_total
+ * @property string|null $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property string|null $deleted_at
  * @property string|null $deleted_by_user_id
  */
 class PayslipSchema extends ApiResource

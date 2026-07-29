@@ -435,5 +435,5 @@ try {
 ## Related
 
 - [Prospects](prospects.md) - Manage prospects within projects
-- [Organization Users](organization-users.md) - Team members
+- [Organization Users](users.md) - Team members
 - [Reports](reports.md) - Reports accessible in projects

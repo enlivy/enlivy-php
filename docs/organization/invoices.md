@@ -9,7 +9,7 @@ Before creating an invoice, you need:
 2. Optionally, a **sender** OrganizationUser with `can_be_invoicing = true`
 3. Optionally, **tax classes** for proper tax calculation
 
-See [Organization Users](organization-users.md) to create customers first.
+See [Organization Users](users.md) to create customers first.
 
 ## Invoice Concepts
 
@@ -818,6 +818,60 @@ $invoice = $client->invoices->retrieve('org_inv_xxx', [
 ]);
 ```
 
+## Payment Reminders
+
+An organization can chase unpaid invoices automatically — a nudge before the due date and follow-ups
+after it. The cadence lives in the organization's `invoice_payment_reminder` settings group.
+
+### What has already been sent
+
+Reminders are recorded as notification logs, alongside manual and automatic sends:
+
+```php
+use Enlivy\Enums\Invoice\NotificationLogTypes;
+
+$sent = $client->invoiceNotificationLogs->list([
+    'types' => implode(',', [
+        NotificationLogTypes::EMAIL_REMINDER_UPCOMING->value,
+        NotificationLogTypes::EMAIL_REMINDER_OVERDUE->value,
+    ]),
+    'created_at_from' => '2026-07-01T00:00:00Z',
+    'organization_invoice_id' => 'org_inv_xxx',
+]);
+```
+
+### What is about to be sent
+
+`invoiceScheduledReminders` projects the reminders still to come. Nothing is stored: rows are
+recomputed from the current settings on every read, so they move the moment those settings change —
+and they carry no `id`.
+
+```php
+$upcoming = $client->invoiceScheduledReminders->list([
+    'from' => '2026-08-01T00:00:00Z',
+    'to' => '2026-08-31T00:00:00Z',
+]);
+
+foreach ($upcoming->getData() as $reminder) {
+    echo "{$reminder->scheduled_for}  {$reminder->type}  #{$reminder->sequence}"
+        . "  invoice {$reminder->organization_invoice_number}"
+        . "  {$reminder->total} {$reminder->currency}"
+        . "  -> {$reminder->recipient_email}\n";
+}
+```
+
+| Field | Notes |
+|---|---|
+| `organization_invoice_id` / `organization_invoice_number` | The invoice being chased |
+| `type` | `email_reminder_upcoming` (before due) or `email_reminder_overdue` |
+| `scheduled_for` | The send moment, in UTC — the organization's own morning |
+| `sequence` | Which reminder of this type this will be, counting the ones already sent |
+| `due_at`, `total`, `currency`, `recipient_email` | Invoice context, so a list needs no second call |
+
+Filters: `from` (defaults to now), `to` (defaults to 30 days out, capped at 366 days from now),
+`type`, and `organization_invoice_id`. The response `meta` echoes the window actually walked — read
+`meta.to` back rather than assuming the one you asked for was honored.
+
 ## Refund & Issuance
 
 Refund an issued invoice by generating a reversal (credit-note) invoice that points back at the
@@ -876,7 +930,7 @@ $reversal = $client->invoices->retrieve('org_inv_reversal_xxx', ['include' => 'p
 
 ## Related
 
-- [Organization Users](organization-users.md) - Create customers
+- [Organization Users](users.md) - Create customers
 - [Products](products.md) - Manage product catalog
 - [Taxes](taxes.md) - Configure tax classes
 - [Receipts](receipts.md) - Create receipts for payments

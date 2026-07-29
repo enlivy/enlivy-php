@@ -629,6 +629,6 @@ try {
 
 ## Related
 
-- [Organization Users](organization-users.md) - Create customers from won prospects
+- [Organization Users](users.md) - Create customers from won prospects
 - [Proposals](proposals.md) - Send formal proposals to prospects
 - [Projects](projects.md) - Manage prospects within projects

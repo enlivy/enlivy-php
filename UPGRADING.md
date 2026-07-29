@@ -1,3 +1,109 @@
+# Upgrading to 2.4.0
+
+`2.4.0` is a **minor** release. It does remove two methods, three enum cases and
+a number of resource properties, and changes three signatures — but every one of
+those targeted something the API does not serve: a path that returns 404, a value
+the API never emits, or a field it never returns. **No code that works today can
+break**, which is why this is not a major bump. Read on if you call any of them.
+
+## Invoice log endpoints moved under `invoices/`
+
+`invoice-charge-logs` is now `invoices/charge-logs`, and
+`invoice-notification-logs` is now `invoices/notification-logs`.
+
+**If you use the SDK, there is nothing to do.** `$client->invoiceChargeLogs` and
+`$client->invoiceNotificationLogs` keep their names, methods and signatures — only
+the paths they emit changed:
+
+```php
+// Unchanged - the SDK targets the new paths automatically
+$logs = $client->invoiceChargeLogs->list(['organization_invoice_id' => 'org_inv_xxx']);
+$sent = $client->invoiceNotificationLogs->list(['organization_invoice_id' => 'org_inv_xxx']);
+```
+
+This is a wire break shipped in a minor release, deliberately. Both are secondary
+read-only endpoints with no traffic at the time of the move, so a major bump would
+have cost every consumer an upgrade to fix a problem none of them had. If you call
+the old paths directly with your own HTTP client, update them or pin `2.3.x`.
+
+## OAuth consent endpoints require a first-party key
+
+`/oauth/authorize/*` and `/oauth/authorizations/*` no longer accept an OAuth
+access token. An access token approving its own consent could widen its own grant,
+so these now require an API key:
+
+```php
+// Manage grants with an API-key client, not an OAuth-token one
+$client = new \Enlivy\EnlivyClient(['api_key' => '1|token']);
+
+$client->oauthAuthorizations->list();
+$client->oauthAuthorizations->update('oauth_cua_xxx', ['scopes' => ['accounting:read']]);
+```
+
+## Calendar dates now serialize as `Y-m-d`
+
+Fields backed by a calendar-day column previously came back as a midnight-UTC
+timestamp, which rendered as the previous day in any negative-offset timezone.
+They now return the plain date the docs and `/discovery` already declared:
+
+```php
+// Before: "2026-01-01T00:00:00.000000Z"
+// After:  "2026-01-01"
+echo $registration->effective_from;
+```
+
+Affected: `TaxRegistration.cash_accounting_from` / `cash_accounting_to` /
+`effective_from` / `effective_to`, `TaxEvent.tax_point_date` / `document_date`,
+`TaxFilingPeriod.period_start` / `period_end` / `filing_due_date` /
+`payment_due_date`, `TaxFilingPeriodPayment.payment_date`, `Report.report_date`,
+`OrganizationUser.birthdate`, and payment-method `expires_at`. Parsing with
+`strtotime()` or `DateTimeImmutable` keeps working; string comparison against a
+full timestamp does not.
+
+## Methods that could not work are now correct
+
+Three methods targeted paths the API does not serve, so no working code can be
+calling them today — but the signatures changed:
+
+```php
+// Settings are set one key at a time
+$client->settings->update('invoice_payment_reminder_is_enabled', ['value' => true]);
+$client->userOrganizationSettings->update($userId, $orgId, 'locale', ['value' => 'ro']);
+$client->userOrganizationSettings->delete($userId, $orgId, 'locale');
+```
+
+`billingSchedules->addTag()` / `removeTag()` are **removed** — billing schedules
+have no tagging endpoints. The `tag_ids` include and filter are unaffected.
+
+## Enum: `Contract\StateActionRequiredTypes`
+
+Three cases were mirrored from a block that is commented out upstream and were
+never emitted by the API. `PARTIES_SIGNATURES_REQUIRED` remains:
+
+```php
+// Removed - these were never real API values
+StateActionRequiredTypes::RECEIVER_RECEIPT_CONFIRMATION_REQUIRED;
+StateActionRequiredTypes::SENDER_SIGNATURE_REQUIRED;
+StateActionRequiredTypes::SENDER_RECEIPT_CONFIRMATION_REQUIRED;
+```
+
+## Resource properties re-derived from the API
+
+Every resource's `@property` list was regenerated from the response the API
+actually returns. These are docblock annotations, so nothing changes at runtime —
+but if your IDE or PHPStan previously accepted `$invoice->status_color` or
+`$receipt->deleted_by_user_id`, those were always null and are now gone. Newly
+declared properties (e.g. `$invoice->will_number_be_auto_assigned`,
+`$bankAccount->sync_provider`) were already being returned.
+
+## Stricter validation on write
+
+`first_name` and `last_name` (registration, users, prospects, contract parties)
+now reject non-name input, and registration passwords are length-bounded. Payloads
+that previously slipped through may return 422.
+
+---
+
 # Upgrading to 2.3.0
 
 `2.3.0` is additive except for one **wire-contract** change: billing-package

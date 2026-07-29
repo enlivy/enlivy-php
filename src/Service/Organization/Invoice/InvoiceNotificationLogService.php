@@ -23,7 +23,7 @@ class InvoiceNotificationLogService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
-    protected const string RESOURCE = 'invoice-notification-logs';
+    protected const string RESOURCE = 'invoices/notification-logs';
     protected const ?string RESOURCE_CLASS = InvoiceNotificationLog::class;
 
     public const array AVAILABLE_INCLUDES = [
@@ -33,6 +33,9 @@ class InvoiceNotificationLogService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'organization_invoice_id',
+        'types',
+        'created_at_from',
+        'created_at_to',
     ];
 
     /**
@@ -40,6 +43,8 @@ class InvoiceNotificationLogService extends AbstractService
      *
      * Resource-specific filters:
      * - `organization_invoice_id` (string) - Filter by invoice
+     * - `types` (string|array) - Filter by notification type (comma-separated or array; see `Enums\Invoice\NotificationLogTypes`)
+     * - `created_at_from` / `created_at_to` (datetime) - Sent date range
      *
      * @return Collection<InvoiceNotificationLog>
      *

@@ -48,6 +48,7 @@ use Enlivy\Service;
  * @property Service\Organization\Invoice\InvoicePrefixService $invoicePrefixes
  * @property Service\Organization\Invoice\InvoiceChargeLogService $invoiceChargeLogs
  * @property Service\Organization\Invoice\InvoiceNotificationLogService $invoiceNotificationLogs
+ * @property Service\Organization\Invoice\InvoiceScheduledReminderService $invoiceScheduledReminders
  * @property Service\Organization\Invoice\InvoiceNetworkExchangeService $invoiceNetworkExchanges
  * @property Service\Organization\Receipt\ReceiptService $receipts
  * @property Service\Organization\Receipt\ReceiptPrefixService $receiptPrefixes

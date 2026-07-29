@@ -76,6 +76,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `invoicePrefixes` | `organization`, `deleted_by_user`, `custom_logo` |
 | `invoiceNetworkExchanges` | `organization`, `parsed_data`, `invoice`, `tag_ids` |
 | `invoiceNotificationLogs` | `deleted_by_user`, `organization` |
+| `invoiceScheduledReminders` | _(none — rows are projected, not stored)_ |
 | `receipts` | `organization`, `invoice`, `bank_account`, `sender_user`, `receiver_user`, `deleted_by_user`, `tag_ids`, `taxes`, `contract` |
 | `receipts` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `receiptPrefixes` | `organization`, `receipts`, `deleted_by_user` |

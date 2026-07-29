@@ -307,6 +307,37 @@ curl_close($ch);
 | `webhooks:manage` | Manage Event Destinations | Manage event destinations and subscribe to real-time event delivery |
 | `*` | Full Access | All scopes (wildcard) |
 
+## Managing Consent
+
+This is the resource-owner's side of the flow, not the client's: listing what has been granted,
+narrowing it, revoking it. Authenticate with a first-party API key — an OAuth access token is
+rejected here, because a token approving its own consent could widen its own grant.
+
+```php
+<?php
+
+$grants = $client->oauthAuthorizations->list();
+
+// Drop an organization or a scope from an existing grant.
+// Each list is replaced wholesale - send the full set you want to keep.
+$client->oauthAuthorizations->update('oauth_cua_xxx', [
+    'scopes' => ['accounting:read'],
+]);
+
+$client->oauthAuthorizations->revoke('oauth_cua_xxx');
+```
+
+Access tokens are re-derived from the authorization record, so a scope or organization removed here
+stops working at the client's next token refresh — there is no need to revoke tokens as well.
+
+### The consent screen
+
+`info()`, `approve()` and `deny()` back a browser consent screen and are not usable standalone: the
+pending request lives in an encrypted cookie set by the `/oauth/authorize` redirect, so these calls
+only work from a client that carries it. `approve()` takes `organizations` (required) and an
+optional `scopes` list that narrows the grant to a subset of what was requested — omit it to grant
+everything. Scopes beyond the request are rejected.
+
 ## Field Reference
 
 ### OAuth Client Required Fields

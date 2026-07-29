@@ -74,6 +74,8 @@ set. A selection relevant to recently added features:
 | `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
 | `ExportData\Types` | `full`, `accounting_saga` |
 | `NetworkExchange\DocumentTypeCodes` | `380` (commercial invoice), `381` (credit note) |
+| `Invoice\NotificationLogTypes` | `network_exchange_auto_push`, `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue` |
+| `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `personalization` |
 
 > `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
 > and `CARD` (`card`).
@@ -84,8 +86,9 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 
 | Enum | Values |
 |------|--------|
+| `Tax\TaxFamilies` | `vat`, `sales_tax`, `income_tax`, `payroll` |
 | `Tax\ProductTaxCategories` | `general_services`, `digital_services`, `general_physical_goods`, `foodstuffs`, `printed_books_periodicals`, … (14 EU/UK/CH categories) |
-| `Tax\RegistrationSchemes` | `vat_registered`, `small_business_domestic`, `small_business_cross_border`, `oss_union`, `oss_non_union`, `ioss`, `not_registered` |
+| `Tax\RegistrationSchemes` | `vat_registered`, `small_business_domestic`, `small_business_cross_border`, `oss_union`, `oss_non_union`, `ioss`, `not_registered`, `micro_enterprise`, `profit_tax`, `self_employed_income`, `employer` |
 | `Tax\SellerVatStatuses` | `undeclared`, `registered`, `small_business_exempt`, `not_registered`, `not_applicable` |
 | `Tax\TaxApplicabilityReasons` | `seller_not_registered`, `outside_scope`, `domestic`, `eu_reverse_charge`, `eu_business_without_vat_id`, `eu_consumer` |
 | `Tax\ValidationSources` | `vies`, `anaf`, `manual`, `companies_api` |
@@ -95,7 +98,7 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 | `Tax\FilingPeriodStatuses` | `open`, `closed`, `filed`, `submitted` |
 | `Tax\FilingPeriodPaymentTypes` | `payment`, `refund`, `advance`, `penalty`, `interest` |
 | `Tax\FilingPeriodPaymentStatuses` | `pending`, `cleared`, `failed` |
-| `Tax\AssuranceModes` | `full_books`, `hybrid`, `declared` |
+| `Tax\AssuranceModes` | `full_books`, `hybrid`, `declared`, `none` |
 | `Tax\TaxEventDirections` | `output`, `input` |
 | `Tax\TaxEventSourceTypes` | `invoice`, `receipt`, `customs`, `bank_correction`, `authority`, `manual`, `baseline` |
 | `Tax\TaxEventRegimes` | `accrual`, `cash` |

@@ -322,6 +322,6 @@ try {
 
 ## Related
 
-- [Invoices](invoices.md) - Create invoices for payment
+- [Invoices](organization/invoices.md) - Create invoices for payment
 - [Event Destinations](organization/event-destinations.md) - Get notified of integration events (webhooks, Slack)
 - [OAuth](oauth.md) - OAuth authentication patterns

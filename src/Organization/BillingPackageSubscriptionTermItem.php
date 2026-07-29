@@ -22,10 +22,10 @@ use Enlivy\ApiResource;
  * @property array|null $prices
  * @property array|null $unit_lang_map
  * @property array|null $invoice_schema_map
+ * @property string|null $deleted_by_user_id
+ * @property string|null $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class BillingPackageSubscriptionTermItem extends ApiResource
 {

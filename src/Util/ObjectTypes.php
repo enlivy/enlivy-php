@@ -17,6 +17,7 @@ use Enlivy\Organization\BankTransaction;
 use Enlivy\Organization\BankTransactionCostType;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\Contract;
+use Enlivy\Organization\ContractConnection;
 use Enlivy\Organization\ContractPrefix;
 use Enlivy\Organization\ContractSignature;
 use Enlivy\Organization\ContractSignatureNotificationLog;
@@ -130,6 +131,7 @@ final class ObjectTypes
 
         // Organization-scoped: Contracts
         'contract' => Contract::class,
+        'contract_connection' => ContractConnection::class,
         'contract_prefix' => ContractPrefix::class,
         'contract_status' => ContractStatus::class,
         'contract_signature' => ContractSignature::class,

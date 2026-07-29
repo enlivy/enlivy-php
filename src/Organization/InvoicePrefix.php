@@ -18,10 +18,11 @@ use Enlivy\ApiResource;
  * @property string|null $description
  * @property float $current_number
  * @property string $type
+ * @property bool $reset_yearly
+ * @property int|null $counter_year
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class InvoicePrefix extends ApiResource
 {

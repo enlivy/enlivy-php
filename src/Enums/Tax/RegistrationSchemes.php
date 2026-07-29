@@ -17,4 +17,8 @@ enum RegistrationSchemes: string
     case OSS_NON_UNION = 'oss_non_union';
     case IOSS = 'ioss';
     case NOT_REGISTERED = 'not_registered';
+    case MICRO_ENTERPRISE = 'micro_enterprise';
+    case PROFIT_TAX = 'profit_tax';
+    case SELF_EMPLOYED_INCOME = 'self_employed_income';
+    case EMPLOYER = 'employer';
 }

@@ -259,9 +259,11 @@ transaction footprint (raw suggestion rows, not persisted records).
 
 use Enlivy\Enums\Tax\RegistrationSchemes;
 use Enlivy\Enums\Tax\FilingFrequencies;
+use Enlivy\Enums\Tax\TaxFamilies;
 
 $registration = $client->taxRegistrations->create([
     'country_code' => 'RO',
+    'tax_family' => TaxFamilies::VAT->value, // defaults to vat when omitted
     'scheme' => RegistrationSchemes::VAT_REGISTERED->value,
     'registration_number' => 'RO12345678',
     'filing_frequency' => FilingFrequencies::MONTHLY->value,
@@ -282,6 +284,12 @@ $registrations = $client->taxRegistrations->list([
 // System-suggested registrations
 $suggested = $client->taxRegistrations->suggested();
 ```
+
+A registration belongs to one tax family, and a scheme only means something inside its own —
+`vat_registered` on a payroll row is a 422. `vat` covers the VAT/OSS/IOSS schemes; `income_tax`
+covers `micro_enterprise`, `profit_tax` and `self_employed_income`; `payroll` covers `employer`.
+Declaring an income-tax or payroll standing is what makes the corresponding filing obligations
+appear — `tax_family` defaults to `vat`, so omitting it keeps the pre-existing behaviour.
 
 ## Tax Events (subledger)
 
@@ -505,7 +513,8 @@ echo "Total: {$invoice->total}\n";
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `country_code` | string | Yes | Country of registration |
-| `scheme` | string | Yes | Registration scheme (`Enums\Tax\RegistrationSchemes`) |
+| `scheme` | string | Yes | Registration scheme (`Enums\Tax\RegistrationSchemes`), valid for the `tax_family` |
+| `tax_family` | string | No | `Enums\Tax\TaxFamilies`; defaults to `vat` |
 | `effective_from` | date | Yes | Effective start date |
 | `subdivision_iso_3166` | string | No | Subdivision code |
 | `registration_number` | string | No | Registration/VAT number |

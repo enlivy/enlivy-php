@@ -9,6 +9,7 @@ use Enlivy\EnlivyClient;
 use Enlivy\EnlivyObject;
 use Enlivy\Exception\InvalidArgumentException;
 use Enlivy\Organization\BillingSchedule;
+use Enlivy\Organization\ContractConnection;
 use Enlivy\Organization\Prospect;
 use Enlivy\Tests\Mock\MockHttpClient;
 use Enlivy\Util\RequestOptions;
@@ -309,5 +310,134 @@ final class ServiceTest extends TestCase
         $request = $this->httpClient->getLastRequest();
         $this->assertSame('GET', $request['method']);
         $this->assertStringContainsString('/misc/determine-is-tax-charged', $request['url']);
+    }
+
+    public function testInvoiceChargeLogsListHitsTheNestedInvoicesPath(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->invoiceChargeLogs->list(['organization_invoice_id' => 'org_inv_1']);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/invoices/charge-logs', $request['url']);
+    }
+
+    public function testInvoiceNotificationLogsListHitsTheNestedInvoicesPathAndAcceptsTypeFilters(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->invoiceNotificationLogs->list([
+            'types' => 'email_reminder_upcoming,email_reminder_overdue',
+            'created_at_from' => '2026-07-01T00:00:00Z',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/invoices/notification-logs', $request['url']);
+        $this->assertSame('email_reminder_upcoming,email_reminder_overdue', $request['params']['types']);
+        $this->assertSame('2026-07-01T00:00:00Z', $request['params']['created_at_from']);
+    }
+
+    public function testInvoiceNotificationLogRestoreKeepsItsNestedPath(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_inv_nl_1']]);
+
+        $this->client->invoiceNotificationLogs->restore('org_inv_nl_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString(
+            '/organizations/org_default/invoices/notification-logs/restore/org_inv_nl_1',
+            $request['url'],
+        );
+    }
+
+    public function testScheduledRemindersHydrateWithoutAnIdAndCarryTheWindowMeta(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [
+                [
+                    'organization_invoice_id' => 'org_inv_1',
+                    'organization_invoice_number' => 'INV-0001',
+                    'type' => 'email_reminder_upcoming',
+                    'scheduled_for' => '2026-08-01T05:00:00Z',
+                    'sequence' => 1,
+                    'due_at' => '2026-08-04T00:00:00Z',
+                    'total' => '120.000000',
+                    'currency' => 'EUR',
+                    'recipient_email' => 'billing@example.com',
+                ],
+            ],
+            'meta' => ['from' => '2026-08-01T00:00:00Z', 'to' => '2026-08-31T00:00:00Z', 'count' => 1],
+        ]);
+
+        $reminders = $this->client->invoiceScheduledReminders->list([
+            'from' => '2026-08-01T00:00:00Z',
+            'to' => '2026-08-31T00:00:00Z',
+            'type' => 'email_reminder_upcoming',
+        ]);
+
+        $this->assertInstanceOf(Collection::class, $reminders);
+        $this->assertCount(1, $reminders->getData());
+
+        $reminder = $reminders->getData()[0];
+        $this->assertInstanceOf(EnlivyObject::class, $reminder);
+        $this->assertSame('email_reminder_upcoming', $reminder->type);
+        $this->assertSame(1, $reminder->sequence);
+        $this->assertSame('INV-0001', $reminder->organization_invoice_number);
+
+        $this->assertFalse($reminders->hasMore());
+        $this->assertSame('2026-08-31T00:00:00Z', $reminders->meta['to']);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/invoices/scheduled-reminders', $request['url']);
+    }
+
+    public function testScheduledRemindersRejectAnUnknownFilter(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->client->invoiceScheduledReminders->list(['status' => 'pending']);
+    }
+
+    public function testContractConnectionsReturnTypedRows(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [
+                [
+                    'id' => 'org_inv_1',
+                    'entity' => 'invoice',
+                    'title' => 'INV-0001',
+                    'status' => 'issued',
+                    'total' => '120.000000',
+                    'currency' => 'EUR',
+                    'created_at' => '2026-07-01T10:00:00Z',
+                    'updated_at' => '2026-07-01T10:00:00Z',
+                ],
+            ],
+        ]);
+
+        $connections = $this->client->contracts->connections('org_cont_1', ['entity' => ['invoice']]);
+
+        $row = $connections->getData()[0];
+        $this->assertInstanceOf(ContractConnection::class, $row);
+        $this->assertSame('invoice', $row->entity);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/contracts/org_cont_1/connections', $request['url']);
+    }
+
+    public function testOAuthAuthorizationUpdateSendsPatch(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => ['id' => 'oauth_cua_1', 'scopes' => ['accounting:read']],
+        ]);
+
+        $this->client->oauthAuthorizations->update('oauth_cua_1', ['scopes' => ['accounting:read']]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('PATCH', $request['method']);
+        $this->assertStringContainsString('/oauth/authorizations/oauth_cua_1', $request['url']);
     }
 }

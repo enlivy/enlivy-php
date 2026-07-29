@@ -33,6 +33,18 @@ Portal Session
 | `contracts` | View and download contracts |
 | `reports` | View and submit reports |
 
+### Portal Base URL
+
+Where customers actually land. Read it off the organization rather than hardcoding a host — an
+organization that has verified a custom domain is served from that domain, and the fallback host is
+server configuration you cannot derive:
+
+```php
+$organization = $client->organizations->retrieve('org_xxx');
+
+echo $organization->customer_portal_base_url; // https://portal.example.com
+```
+
 ## Creating a Portal Session
 
 ### Basic Session
@@ -328,7 +340,7 @@ try {
 
 ## Related
 
-- [Organization Users](organization-users.md) - Customer accounts
+- [Organization Users](users.md) - Customer accounts
 - [Invoices](invoices.md) - Customer invoices
 - [Contracts](contracts.md) - Customer contracts
 - [Reports](reports.md) - Customer reports

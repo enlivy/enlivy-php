@@ -542,5 +542,5 @@ try {
 
 - [Invoices](invoices.md) - Create invoices before receipts
 - [Bank Accounts](bank-accounts.md) - Bank account for receipts
-- [Organization Users](organization-users.md) - Receipt recipients
+- [Organization Users](users.md) - Receipt recipients
 - [Contracts](contracts.md) - Link receipts to contracts

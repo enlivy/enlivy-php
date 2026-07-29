@@ -17,9 +17,9 @@ use Enlivy\ApiResource;
  * @property string|null $organization_report_id
  * @property string|null $organization_prospect_status_path_id
  * @property string|null $organization_project_prospect_status_id
- * @property string|null $created_by_user_id
- * @property string $type
+ * @property string|null $title
  * @property string|null $description
+ * @property string|null $outcome
  * @property string|null $activity_at
  * @property string $created_at
  * @property string $updated_at

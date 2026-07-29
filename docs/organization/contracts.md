@@ -9,7 +9,7 @@ Before creating a contract, you need:
 2. **Contract status** configured in your organization
 3. Optionally, a **contract prefix** for numbering
 
-See [Organization Users](organization-users.md) to create parties first.
+See [Organization Users](users.md) to create parties first.
 
 ## Contract Concepts
 
@@ -613,6 +613,39 @@ $prefix = $client->contractPrefixes->create([
 ]);
 ```
 
+## Contract Connections
+
+Everything that references a contract, in one paginated feed — proposals, invoices, receipts,
+payslips, billing schedules, scheduled payments and amendment contracts.
+
+Cancelling a contract deliberately leaves those running, so this is what to review before deciding
+what to close by hand:
+
+```php
+<?php
+
+$connections = $client->contracts->connections('org_cont_xxx');
+
+foreach ($connections->getData() as $connection) {
+    echo "{$connection->entity}  {$connection->title}"
+        . "  {$connection->status}  {$connection->total} {$connection->currency}\n";
+}
+```
+
+Narrow it to the kinds you care about:
+
+```php
+$invoicesAndReceipts = $client->contracts->connections('org_cont_xxx', [
+    'entity' => ['invoice', 'receipt'],
+    'limit' => 50,
+]);
+```
+
+Accepted `entity` values: `proposal`, `invoice`, `receipt`, `payslip`, `billing_schedule`,
+`billing_scheduled_payment`, `contract`. Rows are one projection across those tables, so `title`,
+`status`, `total` and `currency` come back null wherever the source has nothing to offer — a
+contract carries no money of its own.
+
 ## Deleting a Contract
 
 ```php
@@ -832,6 +865,6 @@ try {
 
 ## Related
 
-- [Organization Users](organization-users.md) - Create contract parties
+- [Organization Users](users.md) - Create contract parties
 - [Proposals](proposals.md) - Create proposals before contracts
 - [Invoices](invoices.md) - Invoice based on contract terms

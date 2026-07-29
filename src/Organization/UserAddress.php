@@ -22,11 +22,9 @@ use Enlivy\ApiResource;
  * @property string|null $address_state
  * @property string|null $address_iso_3166
  * @property string|null $address_zip_code
- * @property string|null $address_hash
+ * @property string|null $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class UserAddress extends ApiResource
 {

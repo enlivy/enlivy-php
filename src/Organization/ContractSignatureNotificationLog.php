@@ -11,13 +11,20 @@ use Enlivy\ApiResource;
  *
  * @property string $id
  * @property string $object
- * @property string $organization_id
  * @property string $organization_contract_id
  * @property string $organization_contract_signature_id
  * @property string|null $type
+ * @property string|null $event
+ * @property string|null $event_label
+ * @property string|null $sent_to
+ * @property string|null $sent_from
+ * @property string|null $sent_from_name
+ * @property string|null $subject
  * @property string|null $status
+ * @property string|null $provider_message_id
+ * @property string|null $verified_at
+ * @property string|null $ip_address
  * @property string $created_at
- * @property string $updated_at
  */
 class ContractSignatureNotificationLog extends ApiResource
 {

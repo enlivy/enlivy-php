@@ -33,11 +33,14 @@ class SettingService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$key}"), $params, $opts);
     }
 
-    public function update(array $params, ?RequestOptions $opts = null): EnlivyObject
+    /**
+     * Set one setting. The new value goes in `value`.
+     */
+    public function update(string $key, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$key}"), $params, $opts);
     }
 
     public function delete(string $key, array $params = [], ?RequestOptions $opts = null): EnlivyObject

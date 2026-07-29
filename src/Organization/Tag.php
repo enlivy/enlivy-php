@@ -15,10 +15,10 @@ use Enlivy\ApiResource;
  * @property string $alias
  * @property string|null $description
  * @property string $rgba_color_code
- * @property string $created_at
- * @property string $updated_at
  * @property string|null $deleted_at
  * @property string|null $deleted_by_user_id
+ * @property string $created_at
+ * @property string $updated_at
  */
 class Tag extends ApiResource
 {

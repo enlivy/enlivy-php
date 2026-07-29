@@ -13,4 +13,5 @@ enum AssuranceModes: string
     case FULL_BOOKS = 'full_books';
     case HYBRID = 'hybrid';
     case DECLARED = 'declared';
+    case NONE = 'none';
 }

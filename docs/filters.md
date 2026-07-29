@@ -154,6 +154,16 @@ $invoices = $client->invoices->list([
 | Filter | Type |
 |--------|------|
 | `organization_invoice_id` | string |
+| `types` | `network_exchange_auto_push`, `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue` (comma-separated or array) |
+| `created_at_from`, `created_at_to` | datetime |
+
+**`invoiceScheduledReminders`**
+
+| Filter | Type |
+|--------|------|
+| `from`, `to` | datetime |
+| `type` | `email_reminder_upcoming`, `email_reminder_overdue` |
+| `organization_invoice_id` | string |
 
 **`invoiceNetworkExchanges`**
 

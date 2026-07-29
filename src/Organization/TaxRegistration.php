@@ -14,6 +14,7 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property string $country_code
  * @property string|null $subdivision_iso_3166
+ * @property string|null $tax_family
  * @property string $scheme
  * @property string|null $registration_number
  * @property string|null $filing_frequency

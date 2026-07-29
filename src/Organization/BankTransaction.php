@@ -12,28 +12,25 @@ use Enlivy\ApiResource;
  * @property string $id
  * @property string $object
  * @property string $organization_id
- * @property string $organization_bank_account_id
- * @property string|null $organization_bank_transaction_cost_type_id
- * @property string|null $organization_sender_user_id
- * @property string|null $organization_receiver_user_id
- * @property string $direction
- * @property string $source
+ * @property string|null $hash
+ * @property string|null $title
  * @property float $amount
  * @property string $currency
- * @property string|null $source_currency
+ * @property string $direction
+ * @property string|null $note
+ * @property string $organization_bank_account_id
+ * @property string|null $organization_sender_user_id
+ * @property string|null $organization_receiver_user_id
+ * @property string|null $sender_label
+ * @property string|null $receiver_label
+ * @property string|null $organization_bank_transaction_cost_type_id
+ * @property string|null $state
+ * @property string|null $stripe_payout_id
+ * @property string|null $stripe_reporting_category
  * @property array|null $currency_conversion_information
- * @property string|null $description
- * @property string|null $reference
- * @property string|null $sender_name
- * @property string|null $sender_iban
- * @property string|null $receiver_name
- * @property string|null $receiver_iban
- * @property string|null $external_id
- * @property string|null $transaction_date
+ * @property string|null $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class BankTransaction extends ApiResource
 {

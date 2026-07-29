@@ -21,7 +21,7 @@ class InvoiceChargeLogService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
-    protected const string RESOURCE = 'invoice-charge-logs';
+    protected const string RESOURCE = 'invoices/charge-logs';
     protected const ?string RESOURCE_CLASS = InvoiceChargeLog::class;
 
     public const array AVAILABLE_INCLUDES = [

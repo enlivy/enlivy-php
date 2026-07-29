@@ -425,6 +425,6 @@ REPORT,
 
 ## Related
 
-- [Invoices](invoices.md) - Process invoices with AI
-- [Contracts](contracts.md) - Analyze contracts with AI
-- [Prospects](prospects.md) - AI-assisted prospect management
+- [Invoices](organization/invoices.md) - Process invoices with AI
+- [Contracts](organization/contracts.md) - Analyze contracts with AI
+- [Prospects](organization/prospects.md) - AI-assisted prospect management

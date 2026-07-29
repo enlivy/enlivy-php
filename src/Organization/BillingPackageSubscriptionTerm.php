@@ -26,10 +26,10 @@ use Enlivy\ApiResource;
  * @property string $status
  * @property bool $is_default
  * @property int $order
+ * @property string|null $deleted_by_user_id
+ * @property string|null $deleted_at
  * @property string $created_at
  * @property string $updated_at
- * @property string|null $deleted_at
- * @property string|null $deleted_by_user_id
  */
 class BillingPackageSubscriptionTerm extends ApiResource
 {

@@ -22,6 +22,7 @@ enum EntityManifest: string
     case TAX_RATE = 'tax_rate';
     case TAX_CLASS = 'tax_class';
     case BILLING_SCHEDULE = 'billing_schedule';
+    case BILLING_SCHEDULED_PAYMENT = 'billing_scheduled_payment';
     case BANK_ACCOUNT = 'bank_account';
     case BANK_TRANSACTION = 'bank_transaction';
     case BANK_TRANSACTION_COST_TYPE = 'bank_transaction_cost_type';

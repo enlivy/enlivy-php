@@ -15,6 +15,7 @@ use Enlivy\ApiResource;
  * @property string $organization_event_destination_id
  * @property string $event
  * @property array|null $includes
+ * @property string|null $config
  */
 class EventSubscription extends ApiResource
 {

@@ -17,6 +17,7 @@ use Enlivy\ApiResource;
  * @property string|null $status_type
  * @property string|null $rgba_color_code
  * @property int $order
+ * @property bool $is_stuck_threshold_days
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

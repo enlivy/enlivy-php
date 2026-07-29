@@ -6,6 +6,7 @@ namespace Enlivy\Service\Organization\Contract;
 
 use Enlivy\Collection;
 use Enlivy\Organization\Contract;
+use Enlivy\Organization\ContractConnection;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasRestore;
@@ -122,6 +123,35 @@ class ContractService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var Contract */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+
+    /**
+     * List every entity that references this contract, in one paginated feed.
+     *
+     * Cancelling a contract deliberately leaves proposals, invoices, receipts, payslips, billing
+     * schedules, scheduled payments and amendment contracts running — this is what to review to
+     * decide what to close by hand.
+     *
+     * Parameters:
+     * - `entity` (array) - Narrow to these kinds: proposal, invoice, receipt, payslip,
+     *   billing_schedule, billing_scheduled_payment, contract
+     * - `limit` (int) - Page size
+     * - `page` (int) - Page number
+     *
+     * @return Collection<ContractConnection>
+     */
+    public function connections(string $id, array $params = [], ?RequestOptions $opts = null): Collection
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Collection<ContractConnection> */
+        return $this->requestCollection(
+            'GET',
+            $this->orgPath($orgId, self::RESOURCE . "/{$id}/connections"),
+            $params,
+            $opts,
+            ContractConnection::class,
+        );
     }
 
     public function downloadEvidence(string $id, array $params = [], ?RequestOptions $opts = null): string

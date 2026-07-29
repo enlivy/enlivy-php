@@ -12,8 +12,8 @@ use Enlivy\ApiResource;
  * @property string $id
  * @property string $object
  * @property string $organization_id
- * @property string|null $alias
  * @property array|null $name_lang_map
+ * @property string|null $alias
  * @property array|null $note_lang_map
  * @property bool $is_active
  * @property string $created_at

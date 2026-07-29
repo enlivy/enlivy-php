@@ -3,6 +3,125 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.4.0] - 2026-07-29
+
+Scheduled payment reminders, everything that references a contract, consent you
+can narrow after the fact, and tax registrations beyond VAT.
+
+### Added
+
+- **Scheduled payment reminders.**
+  `$client->invoiceScheduledReminders->list([...])` projects the reminders an
+  organization is about to send — `from` / `to` (default 30 days, capped at 366),
+  `type`, `organization_invoice_id`. Rows carry the invoice, the reminder type,
+  `scheduled_for`, the `sequence` within its type, and enough invoice context
+  (`due_at`, `total`, `currency`, `recipient_email`) to render a list without a
+  second call. Nothing is stored: rows are recomputed from the current reminder
+  settings on every read, so they carry no `id` and move when those settings do.
+- **Notification-log filters.** `invoiceNotificationLogs->list()` accepts `types`
+  (comma-separated or array) and `created_at_from` / `created_at_to`, so the
+  reminders already sent can be read back without client-side filtering.
+- **`Enlivy\Enums\Invoice\NotificationLogTypes`** — `network_exchange_auto_push`,
+  `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue`.
+- **Contract connections.**
+  `$client->contracts->connections('org_cont_xxx', [...])` lists every entity
+  referencing a contract — proposals, invoices, receipts, payslips, billing
+  schedules, scheduled payments and amendment contracts — in one paginated feed,
+  narrowable with `entity`. Cancelling a contract deliberately leaves those
+  running, so this is what to review before closing them by hand. New resource
+  `Enlivy\Organization\ContractConnection`.
+- **Narrow an existing OAuth grant.**
+  `$client->oauthAuthorizations->update('oauth_cua_xxx', ['scopes' => [...]])`
+  drops scopes or organizations from a grant already given. Each list is replaced
+  wholesale. Access tokens are re-derived from the authorization record, so a
+  removal takes effect at the client's next refresh.
+- **Consent can grant less than was asked for.** `oauthAuthorizations->approve()`
+  accepts an optional `scopes` list that narrows the grant to a subset of the
+  request; omit it to grant everything requested.
+- **Tax families.** Tax registrations carry `tax_family` (`vat`, `sales_tax`,
+  `income_tax`, `payroll`) — how an organization declares its income-tax or
+  payroll standing, which is what makes the corresponding filing obligations
+  appear. Defaults to `vat`, and a scheme is validated against its family, so
+  `vat_registered` on a payroll row is rejected. New enum
+  `Enlivy\Enums\Tax\TaxFamilies`; `Tax\RegistrationSchemes` gains
+  `micro_enterprise`, `profit_tax`, `self_employed_income`, `employer`.
+- **`Organization.customer_portal_base_url`.** The base URL customers actually
+  land on, honoring a verified custom domain. Read it rather than hardcoding a
+  host — the fallback lives in server configuration.
+- **Filing is opt-in.** `Tax\AssuranceModes` gains `none` — the affirmative
+  "filed elsewhere", distinct from never having been asked. Holding a tax
+  registration no longer conscripts an organization into generated filing periods.
+- **Enum cases.** `Organization\SettingGroups` + `invoice_payment_reminder`;
+  `Organization\EntityManifest` + `billing_scheduled_payment`.
+
+### Changed
+
+- **Invoice log endpoints moved under `invoices/`.** `invoice-charge-logs` →
+  `invoices/charge-logs` and `invoice-notification-logs` →
+  `invoices/notification-logs`. The SDK's PHP surface is unchanged —
+  `$client->invoiceChargeLogs` and `$client->invoiceNotificationLogs` keep their
+  names, methods and signatures — only the emitted paths differ. **This is a wire
+  break that was deliberately not treated as breaking**: these are secondary
+  read-only endpoints with no traffic at the time of the move, so the cost of a
+  major bump outweighed the risk. Pin `2.3.x` if you are calling the old paths
+  directly rather than through the SDK.
+- **OAuth consent endpoints are first-party only.** `/oauth/authorize/*` and
+  `/oauth/authorizations/*` no longer accept an OAuth access token — authenticate
+  with an API key. An access token approving its own consent could widen its own
+  grant.
+- **Portal contract abilities are state-aware.** A terminated contract no longer
+  offers `sign`, and `download` follows the signed-document evidence rather than a
+  timestamp.
+- **Person-name fields and password length are validated on write.** `first_name`
+  and `last_name` across registration, users, prospects and contract parties now
+  reject non-name input; registration passwords are length-bounded. Previously
+  accepted payloads may now return 422.
+
+### Fixed
+
+- **Calendar dates are no longer sent as timestamps.** Columns that hold a
+  calendar day now serialize as `Y-m-d` instead of a midnight-UTC instant — which
+  rendered as the previous day in any negative-offset timezone. Affects
+  `TaxRegistration.cash_accounting_from` / `cash_accounting_to` / `effective_from`
+  / `effective_to`, `TaxEvent.tax_point_date` / `document_date`,
+  `TaxFilingPeriod.period_start` / `period_end` / `filing_due_date` /
+  `payment_due_date`, `TaxFilingPeriodPayment.payment_date`,
+  `Report.report_date`, `OrganizationUser.birthdate` and payment-method
+  `expires_at`. This is the format the docs and `/discovery` already declared.
+- **`oauthAuthorizations` returns typed objects.** `list()` and `revoke()`
+  declared `OAuthAuthorization` while the service had no resource class, so
+  `revoke()` raised a `TypeError` at runtime. The consent endpoints (`info()`,
+  `approve()`, `deny()`) keep returning raw objects.
+- **`InvoiceNotificationLog` fields corrected.** The resource advertised five
+  properties the API never returns (`organization_id`, `recipient_email`,
+  `status`, `sent_at`, `error_message`) and omitted two it does: `sent_to` (the
+  recipient address) and `message`. Annotations only — no runtime behaviour
+  changes — but `$log->recipient_email` was always null; read `$log->sent_to`.
+- **Resource fields re-derived from the API across the whole SDK.** Every
+  resource's `@property` block was regenerated from the response it actually
+  receives, in response order. 52 resources changed. The pattern throughout:
+  properties that were never returned (`Invoice.status_color`,
+  `Invoice.payment_stripe_*`, `Receipt.deleted_by_user_id`,
+  `Contract.formatted_number`, `File.disk_path`, `ApiCredential.credentials`, …)
+  and returned fields that were missing (`Invoice.will_number_be_auto_assigned`,
+  `BankAccount.sync_provider`, `ContractSignature.has_signature_image`,
+  `Notification.title`, `Prospect.state_disqualified_reason`, …).
+  `InvoiceNotificationLog` above is one instance. Annotations only — no runtime
+  behaviour changes — but a property that was never returned always read null.
+- **`SettingService::update()` could not work.** It posted to
+  `/settings` while the endpoint is `POST /settings/{key}`, and took no key at
+  all. Now `update(string $key, array $params)`. Same fix on
+  `UserOrganizationSettingService::update()` and `::delete()`, which each gain a
+  `$key` after `$userId`/`$orgId`.
+- **`billingSchedules->addTag()` / `removeTag()` removed.** Billing schedules
+  have no tagging endpoints; both methods targeted a path that does not exist.
+  (The `tag_ids` include and filter are unrelated and still work.)
+- **`Contract\StateActionRequiredTypes` phantom cases removed.**
+  `RECEIVER_RECEIPT_CONFIRMATION_REQUIRED`, `SENDER_SIGNATURE_REQUIRED` and
+  `SENDER_RECEIPT_CONFIRMATION_REQUIRED` were mirrored from a commented-out block
+  upstream and were never real values. `PARTIES_SIGNATURES_REQUIRED` is the only
+  case the API has ever emitted.
+
 ## [2.3.0] - 2026-07-23
 
 Create a billing schedule directly from a subscription package (with an optional

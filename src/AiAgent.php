@@ -8,6 +8,7 @@ namespace Enlivy;
  * Represents an AI Agent in the Enlivy API.
  *
  * @property string $id
+ * @property string $object
  * @property string $slug
  * @property string $type Either 'standard' or 'pipeline'
  * @property array $title_lang_map
