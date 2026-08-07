@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\Organization\BankTransaction;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasImports;
+use Enlivy\Service\Concern\HasResumableImports;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
@@ -15,8 +16,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing bank transactions.
- *
  * @method BankTransaction restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class BankTransactionService extends AbstractService
@@ -24,6 +23,7 @@ class BankTransactionService extends AbstractService
     use HasRestore;
     use HasTagging;
     use HasImports;
+    use HasResumableImports;
     use HasIncludes;
     use HasFilters;
 
@@ -50,22 +50,11 @@ class BankTransactionService extends AbstractService
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
+        'is_connected',
     ];
 
     /**
-     * List all bank transactions.
-     *
-     * Resource-specific filters:
-     * - `state` (string: backlog|classified|connected|connected_partially|danger|trashed)
-     * - `direction` (string: inbound|outbound) - Transaction direction
-     * - `connection_entity_type` (string: invoice|receipt|bank_transaction|user|payslip) - Required with connection_entity_id
-     * - `connection_entity_id` (string) - Required with connection_entity_type
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
-     *
      * @return Collection<BankTransaction>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

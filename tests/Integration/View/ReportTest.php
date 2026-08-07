@@ -9,14 +9,9 @@ use Enlivy\Organization\Report;
 use Enlivy\Organization\ReportSchema;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Report-related endpoints.
- */
 class ReportTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Reports
-    // -------------------------------------------------------------------------
 
     public function testListReports(): void
     {
@@ -56,9 +51,7 @@ class ReportTest extends IntegrationTestCase
         $this->assertEquals($reportId, $report->id);
     }
 
-    // -------------------------------------------------------------------------
     // Report Schemas
-    // -------------------------------------------------------------------------
 
     public function testListReportSchemas(): void
     {

@@ -9,14 +9,9 @@ use Enlivy\Organization\Invoice;
 use Enlivy\Organization\InvoicePrefix;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Invoice-related endpoints.
- */
 class InvoiceTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Invoices
-    // -------------------------------------------------------------------------
 
     public function testListInvoices(): void
     {
@@ -113,9 +108,7 @@ class InvoiceTest extends IntegrationTestCase
         $this->assertNotNull($invoice->line_items);
     }
 
-    // -------------------------------------------------------------------------
     // Invoice Prefixes
-    // -------------------------------------------------------------------------
 
     public function testListInvoicePrefixes(): void
     {

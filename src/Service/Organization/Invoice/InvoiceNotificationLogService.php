@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing invoice notification logs.
- *
  * @method InvoiceNotificationLog restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class InvoiceNotificationLogService extends AbstractService
@@ -39,16 +37,7 @@ class InvoiceNotificationLogService extends AbstractService
     ];
 
     /**
-     * List all invoice notification logs.
-     *
-     * Resource-specific filters:
-     * - `organization_invoice_id` (string) - Filter by invoice
-     * - `types` (string|array) - Filter by notification type (comma-separated or array; see `Enums\Invoice\NotificationLogTypes`)
-     * - `created_at_from` / `created_at_to` (datetime) - Sent date range
-     *
      * @return Collection<InvoiceNotificationLog>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

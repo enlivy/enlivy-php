@@ -34,8 +34,6 @@ final class WebhookEvent
     }
 
     /**
-     * Construct a verified webhook event.
-     *
      * Verifies the HMAC-SHA256 signature from the `Signature` header,
      * then parses the payload into a WebhookEvent.
      *

@@ -24,8 +24,6 @@ class EnlivyObject implements \ArrayAccess, \JsonSerializable
     }
 
     /**
-     * Construct an object from API response data.
-     *
      * If the data contains an 'object' field that maps to a known resource type,
      * the appropriate typed class will be instantiated instead of EnlivyObject.
      *
@@ -122,9 +120,6 @@ class EnlivyObject implements \ArrayAccess, \JsonSerializable
         return $result;
     }
 
-    /**
-     * Get only the values that have been modified since construction.
-     */
     public function serializeUnsavedValues(): array
     {
         $result = [];

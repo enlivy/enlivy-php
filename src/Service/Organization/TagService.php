@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing tags.
- *
  * @method Tag restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class TagService extends AbstractService
@@ -34,13 +32,9 @@ class TagService extends AbstractService
     public const array AVAILABLE_FILTERS = [];
 
     /**
-     * List all tags.
-     *
      * Supports global filters only (q, ids, page, per_page, order_by, order, deleted, tag_ids).
      *
      * @return Collection<Tag>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

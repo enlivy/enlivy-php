@@ -9,14 +9,9 @@ use Enlivy\Organization\Task;
 use Enlivy\Organization\TaskStatus;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Task-related endpoints.
- */
 class TaskTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Tasks
-    // -------------------------------------------------------------------------
 
     public function testListTasks(): void
     {
@@ -56,9 +51,7 @@ class TaskTest extends IntegrationTestCase
         $this->assertEquals($taskId, $task->id);
     }
 
-    // -------------------------------------------------------------------------
     // Task Statuses
-    // -------------------------------------------------------------------------
 
     public function testListTaskStatuses(): void
     {

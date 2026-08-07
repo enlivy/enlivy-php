@@ -11,14 +11,9 @@ use Enlivy\Organization\ReusableContent;
 use Enlivy\Organization\File;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Content-related endpoints (Guidelines, Playbooks, Files).
- */
 class ContentTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Guidelines
-    // -------------------------------------------------------------------------
 
     public function testListGuidelines(): void
     {
@@ -49,9 +44,7 @@ class ContentTest extends IntegrationTestCase
         $this->assertEquals($guidelineId, $guideline->id);
     }
 
-    // -------------------------------------------------------------------------
     // Playbooks
-    // -------------------------------------------------------------------------
 
     public function testListPlaybooks(): void
     {
@@ -82,9 +75,7 @@ class ContentTest extends IntegrationTestCase
         $this->assertEquals($playbookId, $playbook->id);
     }
 
-    // -------------------------------------------------------------------------
     // Reusable Content
-    // -------------------------------------------------------------------------
 
     public function testListReusableContent(): void
     {
@@ -115,9 +106,7 @@ class ContentTest extends IntegrationTestCase
         $this->assertEquals($contentId, $content->id);
     }
 
-    // -------------------------------------------------------------------------
     // Files
-    // -------------------------------------------------------------------------
 
     public function testListFiles(): void
     {

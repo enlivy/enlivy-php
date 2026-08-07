@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing payslips.
- *
  * @method Payslip restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class PayslipService extends AbstractService
@@ -50,18 +48,7 @@ class PayslipService extends AbstractService
     ];
 
     /**
-     * List all payslips.
-     *
-     * Resource-specific filters:
-     * - `status` (string: pending|approval_required|rejected|approved|paid)
-     * - `paid_at_from` / `paid_at_to` (datetime) - Paid date range
-     * - `issued_at_from` / `issued_at_to` (datetime) - Issued date range
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
-     *
      * @return Collection<Payslip>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

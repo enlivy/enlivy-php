@@ -11,9 +11,6 @@ use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing OAuth authorizations.
- */
 class OAuthAuthorizationService extends AbstractService
 {
     use HasFilters;
@@ -57,8 +54,6 @@ class OAuthAuthorizationService extends AbstractService
     }
 
     /**
-     * Approve a pending consent request.
-     *
      * `organizations` is required. `scopes` is optional and narrows the grant to a subset of what
      * the client asked for; omit it to grant everything requested.
      */

@@ -24,8 +24,56 @@ User roles determine what an organization user can do:
 | `can_be_invoiced` | User can receive invoices (customer) |
 | `can_be_invoicing` | User can send invoices (sender identity) |
 | `can_use_backoffice` | User can access the backoffice |
+| `has_full_backoffice_access` | Role holds every ability, present and future |
 | `can_be_payrolled` | User can receive payslips |
 | `is_business_entity` | User is a company (vs individual) |
+
+#### Full Back-Office Access
+
+`has_full_backoffice_access` is a standing grant rather than a saved list, so a role
+carrying it picks up abilities added in later releases without being edited.
+
+```php
+$admin = $client->userRoles->create([
+    'name' => 'Administrator',
+    'can_use_backoffice' => true,
+    'has_full_backoffice_access' => true,
+]);
+```
+
+Three rules follow from it being a grant, all enforced server-side:
+
+- It requires `can_use_backoffice`. Sending it without — or switching
+  `can_use_backoffice` off on a role that already has it — is a 422.
+- Only the organization owner and platform administrators may **grant** it.
+  Anyone who may edit roles can take it away, and can re-save a role that
+  already has it.
+- `$client->userRoleAbilities->sync()` is rejected for such a role. There is
+  nothing to store; the abilities it would write would never be read.
+
+Abilities are addressed by **name**, and the endpoints answer with a plain list
+rather than a paginated resource:
+
+```php
+$abilities = $client->userRoleAbilities->list($roleId);
+
+foreach ($abilities->toArray() as $row) {
+    echo $row['ability'] . "\n";
+}
+
+$client->userRoleAbilities->sync($roleId, [
+    'abilities' => ['invoices.manage', 'products.manage'],
+]);
+
+$client->userRoleAbilities->delete($roleId, [
+    'abilities' => ['products.manage'],
+]);
+```
+
+Listing reports what the role **answers**, not what it stores, so a full-access
+role returns the whole ability list rather than an empty set. Those stand-in
+entries carry `id => null` because no row backs them — which is also why removal
+addresses abilities by name.
 
 ### Business Entity vs Individual
 
@@ -517,13 +565,18 @@ $addresses = $client->userAddresses->list([
 | `phone_number_country_code` | string | Phone country code |
 | `address_line_1` | string | Street address line 1 |
 | `address_line_2` | string | Street address line 2 |
-| `address_city` | string | City |
-| `address_county` | string | County/Province |
-| `address_state` | string | State |
+| `address_city` | string\|null | City |
+| `address_county` | string\|null | County/Province |
+| `address_state` | string\|null | State |
 | `address_zip_code` | string | Postal/ZIP code |
 | `address_iso_3166` | string | ISO 3166-2 subdivision code |
 | `locale` | string | Language locale (e.g., 'en', 'ro') |
-| `timezone` | string | Timezone (e.g., 'Europe/Bucharest') |
+| `timezone` | string\|null | Timezone (e.g., 'Europe/Bucharest') |
+
+`address_city`, `address_county`, `address_state` and `timezone` accept `null` — send it to clear a
+value that no longer applies. Plenty of countries have no county or state layer at all, so requiring
+one made those addresses unstorable. On the organization itself, `address_county`, `address_state`
+and `timezone` are clearable the same way.
 | `birthdate` | string | Birth date (YYYY-MM-DD) |
 | `organization_type` | string | Company type (SRL, SA, etc.) |
 | `information` | object | Country-specific personal info (JSON) |

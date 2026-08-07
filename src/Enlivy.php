@@ -16,76 +16,34 @@ namespace Enlivy;
  */
 final class Enlivy
 {
-    /**
-     * SDK version.
-     */
-    public const string VERSION = '2.4.0';
+    public const string VERSION = '2.5.0';
 
-    /**
-     * Default API base URL.
-     */
     public const string DEFAULT_API_BASE = 'https://api.enlivy.com';
 
-    /**
-     * The API key to use for requests.
-     */
     private static ?string $apiKey = null;
 
-    /**
-     * OAuth client ID.
-     */
     private static ?string $clientId = null;
 
-    /**
-     * OAuth client secret.
-     */
     private static ?string $clientSecret = null;
 
-    /**
-     * OAuth access token.
-     */
     private static ?string $accessToken = null;
 
-    /**
-     * OAuth refresh token.
-     */
     private static ?string $refreshToken = null;
 
-    /**
-     * Default organization ID for all requests.
-     */
     private static ?string $organizationId = null;
 
-    /**
-     * Base URL for the Enlivy API.
-     */
     private static string $apiBase = self::DEFAULT_API_BASE;
 
-    /**
-     * Whether to verify SSL certificates.
-     */
     private static bool $verifySslCerts = true;
 
-    /**
-     * Path to CA bundle file.
-     */
     private static ?string $caBundlePath = null;
 
-    /**
-     * Maximum number of request retries.
-     */
     private static int $maxNetworkRetries = 2;
 
     private static bool $enableTelemetry = true;
 
-    /**
-     * Request timeout in seconds.
-     */
     private static int $timeout = 30;
 
-    /**
-     * Client portal session token.
-     */
     private static ?string $portalToken = null;
 
     /**
@@ -95,177 +53,111 @@ final class Enlivy
      */
     private static $onTokenRefresh = null;
 
-    /**
-     * Get the API key.
-     */
     public static function getApiKey(): ?string
     {
         return self::$apiKey;
     }
 
-    /**
-     * Set the API key for API requests.
-     */
     public static function setApiKey(?string $apiKey): void
     {
         self::$apiKey = $apiKey;
     }
 
-    /**
-     * Get the OAuth client ID.
-     */
     public static function getClientId(): ?string
     {
         return self::$clientId;
     }
 
-    /**
-     * Set the OAuth client ID.
-     */
     public static function setClientId(?string $clientId): void
     {
         self::$clientId = $clientId;
     }
 
-    /**
-     * Get the OAuth client secret.
-     */
     public static function getClientSecret(): ?string
     {
         return self::$clientSecret;
     }
 
-    /**
-     * Set the OAuth client secret.
-     */
     public static function setClientSecret(?string $clientSecret): void
     {
         self::$clientSecret = $clientSecret;
     }
 
-    /**
-     * Get the OAuth access token.
-     */
     public static function getAccessToken(): ?string
     {
         return self::$accessToken;
     }
 
-    /**
-     * Set the OAuth access token.
-     */
     public static function setAccessToken(?string $accessToken): void
     {
         self::$accessToken = $accessToken;
     }
 
-    /**
-     * Get the OAuth refresh token.
-     */
     public static function getRefreshToken(): ?string
     {
         return self::$refreshToken;
     }
 
-    /**
-     * Set the OAuth refresh token.
-     */
     public static function setRefreshToken(?string $refreshToken): void
     {
         self::$refreshToken = $refreshToken;
     }
 
-    /**
-     * Get the default organization ID.
-     */
     public static function getOrganizationId(): ?string
     {
         return self::$organizationId;
     }
 
-    /**
-     * Set the default organization ID for all requests.
-     */
     public static function setOrganizationId(?string $organizationId): void
     {
         self::$organizationId = $organizationId;
     }
 
-    /**
-     * Get the client portal session token.
-     */
     public static function getPortalToken(): ?string
     {
         return self::$portalToken;
     }
 
-    /**
-     * Set the client portal session token.
-     */
     public static function setPortalToken(?string $portalToken): void
     {
         self::$portalToken = $portalToken;
     }
 
-    /**
-     * Get the API base URL.
-     */
     public static function getApiBase(): string
     {
         return self::$apiBase;
     }
 
-    /**
-     * Set the API base URL.
-     */
     public static function setApiBase(string $apiBase): void
     {
         self::$apiBase = $apiBase;
     }
 
-    /**
-     * Get whether SSL certificates are verified.
-     */
     public static function getVerifySslCerts(): bool
     {
         return self::$verifySslCerts;
     }
 
-    /**
-     * Set whether to verify SSL certificates.
-     */
     public static function setVerifySslCerts(bool $verify): void
     {
         self::$verifySslCerts = $verify;
     }
 
-    /**
-     * Get the path to the CA bundle file.
-     */
     public static function getCaBundlePath(): ?string
     {
         return self::$caBundlePath;
     }
 
-    /**
-     * Set the path to the CA bundle file.
-     */
     public static function setCaBundlePath(?string $path): void
     {
         self::$caBundlePath = $path;
     }
 
-    /**
-     * Get the maximum number of network retries.
-     */
     public static function getMaxNetworkRetries(): int
     {
         return self::$maxNetworkRetries;
     }
 
-    /**
-     * Set the maximum number of network retries.
-     */
     public static function setMaxNetworkRetries(int $maxRetries): void
     {
         self::$maxNetworkRetries = $maxRetries;
@@ -285,25 +177,17 @@ final class Enlivy
         self::$enableTelemetry = $enable;
     }
 
-    /**
-     * Get the request timeout in seconds.
-     */
     public static function getTimeout(): int
     {
         return self::$timeout;
     }
 
-    /**
-     * Set the request timeout in seconds.
-     */
     public static function setTimeout(int $timeout): void
     {
         self::$timeout = $timeout;
     }
 
     /**
-     * Get the token refresh callback.
-     *
      * @return callable|null
      */
     public static function getOnTokenRefresh(): ?callable
@@ -312,8 +196,6 @@ final class Enlivy
     }
 
     /**
-     * Set the token refresh callback.
-     *
      * Called when OAuth tokens are refreshed.
      * Signature: fn(string $accessToken, string $refreshToken): void
      */
@@ -408,8 +290,6 @@ final class Enlivy
     }
 
     /**
-     * Get all current configuration as an array.
-     *
      * @return array<string, mixed>
      */
     public static function toArray(): array

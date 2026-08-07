@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing files.
- *
  * @method File restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class FileService extends AbstractService

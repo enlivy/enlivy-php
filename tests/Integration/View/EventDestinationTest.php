@@ -9,14 +9,9 @@ use Enlivy\Organization\EventDestination;
 use Enlivy\Organization\Tag;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Event Destination and Tag-related endpoints.
- */
 class EventDestinationTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Event Destinations
-    // -------------------------------------------------------------------------
 
     public function testListEventDestinations(): void
     {
@@ -47,9 +42,7 @@ class EventDestinationTest extends IntegrationTestCase
         $this->assertEquals($destinationId, $destination->id);
     }
 
-    // -------------------------------------------------------------------------
     // Tags
-    // -------------------------------------------------------------------------
 
     public function testListTags(): void
     {

@@ -27,9 +27,6 @@ class ServiceIntegrationStripeService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, 'service-integration/stripe/detected-currencies'), $params, $opts);
     }
 
-    /**
-     * Create an external bank account on the connected Stripe account.
-     */
     public function createBankAccount(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

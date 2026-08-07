@@ -517,6 +517,26 @@ $companySig = $client->contractSignatures->create([
 ]);
 ```
 
+### Signing Evidence
+
+Alongside the `evidence_*` blocks, a signature can carry `signature_events_log` — the ordered trail
+of what the signer did while signing, which is what makes the evidence reconstructable later.
+
+Send it as an array of entries:
+
+```php
+$client->contractSignatures->update('org_cs_xxx', [
+    'signature_events_log' => [
+        ['event' => 'document_opened', 'event_label' => 'Document opened', 'timestamp' => '2026-08-05T09:14:02.113Z'],
+        ['event' => 'terms_scrolled', 'event_label' => 'Scrolled to end', 'timestamp' => '2026-08-05T09:16:41.008Z'],
+        ['event' => 'signature_drawn', 'event_label' => 'Signature drawn', 'timestamp' => '2026-08-05T09:17:12.550Z'],
+    ],
+]);
+```
+
+`event`, `event_label` and `timestamp` are all required on every entry. If your signing surface
+already writes its own trail, upload it as a file instead — `txt`, `md`, `json` or `csv`.
+
 ### List Signatures for Contract
 
 ```php

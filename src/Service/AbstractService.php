@@ -50,17 +50,12 @@ abstract class AbstractService
         return $orgId;
     }
 
-    /**
-     * Build an organization-scoped path.
-     */
     protected function orgPath(string $orgId, string $resource): string
     {
         return "/organizations/{$orgId}/{$resource}";
     }
 
     /**
-     * Make a request and return an EnlivyObject (or typed resource).
-     *
      * @template T of EnlivyObject
      * @param class-string<T>|null $resourceClass Override the default resource class
      * @return T|EnlivyObject
@@ -91,8 +86,6 @@ abstract class AbstractService
     }
 
     /**
-     * Make a request and return a Collection (paginated list).
-     *
      * @template T of EnlivyObject
      * @param class-string<T>|null $resourceClass The class for items in the collection
      * @return Collection<T>
@@ -110,9 +103,6 @@ abstract class AbstractService
         return $this->client->getRequestor()->requestCollection($method, $path, $params, $opts, $class);
     }
 
-    /**
-     * Make a request and return raw binary content.
-     */
     protected function requestRaw(
         string $method,
         string $path,

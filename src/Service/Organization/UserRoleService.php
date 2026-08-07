@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing user roles.
- *
  * @method UserRole restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class UserRoleService extends AbstractService

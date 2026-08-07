@@ -10,9 +10,6 @@ use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing user API tokens.
- */
 class UserTokenService extends AbstractService
 {
     use HasFilters;

@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing user addresses.
- */
 class UserAddressService extends AbstractService
 {
     use HasIncludes;

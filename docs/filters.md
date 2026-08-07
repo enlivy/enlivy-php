@@ -39,6 +39,7 @@ These filters are available on **every** list endpoint:
 | `order` | string (`asc`\|`desc`) | Sort direction (default: `desc`) |
 | `page` | integer | Pagination page number |
 | `per_page` | integer (max: 50) | Items per page (default: 30) |
+| `limit` | integer | Cap results on a search (`q`) query |
 | `deleted` | integer (`-1`\|`0`\|`1`) | `-1` = include deleted, `0` = active only, `1` = deleted only |
 | `tag_ids` | string (comma-separated) | Filter by tag IDs |
 
@@ -96,7 +97,7 @@ $filters = $client->invoices::AVAILABLE_FILTERS;
 // Global filters (same on every service)
 use Enlivy\Service\Concern\HasFilters;
 $globals = HasFilters::GLOBAL_FILTERS;
-// ['q', 'q_in', 'ids', 'order_by', 'order', 'page', 'per_page', 'deleted', 'tag_ids']
+// ['q', 'q_in', 'ids', 'order_by', 'order', 'page', 'per_page', 'limit', 'deleted', 'tag_ids']
 ```
 
 ## Date Range Filters
@@ -221,6 +222,7 @@ $invoices = $client->invoices->list([
 | `direction` | `inbound`, `outbound` |
 | `connection_entity_type` | `invoice`, `receipt`, `bank_transaction`, `user`, `payslip` |
 | `connection_entity_id` | string |
+| `is_connected` | bool |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
@@ -284,6 +286,7 @@ $invoices = $client->invoices->list([
 | `organization_user_id` | string |
 | `organization_user_role_id` | string |
 | `organization_project_id` | string |
+| `reported_by_organization_user_id` | string |
 | `report_date_from`, `report_date_to` | date (Y-m-d) |
 
 ### Content
@@ -320,6 +323,7 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
+| `title`, `description` | string |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
@@ -424,8 +428,28 @@ following.
 |--------|------|
 | `type` | `full`, `accounting_saga` |
 
+### Catalog
+
+**`products`**
+
+| Filter | Type |
+|--------|------|
+| `is_sold` | boolean |
+| `name`, `description` | string |
+
+### Name / Title / Description Only
+
+These accept the record's own label fields alongside the global filters. Which pair applies
+depends on what the resource calls its label:
+
+| Service | Filters |
+|---------|---------|
+| `prospectStatuses`, `contractStatuses`, `taskStatuses`, `reportSchemas`, `resourceBundles` | `title`, `description` |
+| `taxClasses`, `payslipSchemas` | `name`, `description` |
+| `bankTransactionCostTypes` | `title` |
+
 ### Services with Global Filters Only
 
-The following services accept only global filters (q, ids, page, per_page, order_by, order, deleted, tag_ids):
+The following services accept only global filters (q, q_in, ids, page, per_page, limit, order_by, order, deleted, tag_ids):
 
-`bankAccounts`, `bankTransactionCostTypes`, `contractPrefixes`, `contractSignatures`, `contractStatuses`, `files`, `products`, `payslipSchemas`, `reportSchemas`, `reportSchemaFields`, `receiptPrefixes`, `tags`, `tasks`, `taskStatuses`, `userAddresses`, `userRoles`, `notifications`, `eventDestinations`, `prospectStatuses`, `prospectActivities`, `apiCredentials`, `resourceBundles`, `taxClasses`, `taxTypes`, `taxFilingJurisdictions`, `organizations`
+`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `oauthAuthorizations`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`, `tenantBillingPaymentMethods`, `userRoles`, `userTokens`

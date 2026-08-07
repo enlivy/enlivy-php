@@ -13,10 +13,9 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing the payment methods used to pay the organization's
- * Enlivy subscription (tenant-billing invoices).
- *
- * These belong to Enlivy SRL's mirror user, not the tenant organization's own users.
+ * The cards the organization pays its own Enlivy subscription with — not the
+ * payment methods its customers pay it with. Those live on
+ * {@see \Enlivy\Service\Organization\UserPaymentMethodService}.
  */
 class TenantBillingPaymentMethodService extends AbstractService
 {
@@ -37,8 +36,6 @@ class TenantBillingPaymentMethodService extends AbstractService
 
     /**
      * @return Collection<UserPaymentMethod>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
@@ -59,9 +56,6 @@ class TenantBillingPaymentMethodService extends AbstractService
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
-    /**
-     * Create a Stripe SetupIntent for collecting a new card off-session.
-     */
     public function setupIntent(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

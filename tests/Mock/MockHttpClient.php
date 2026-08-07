@@ -8,9 +8,6 @@ use Enlivy\ApiResponse;
 use Enlivy\Exception\ApiException;
 use Enlivy\HttpClient\HttpClientInterface;
 
-/**
- * Mock HTTP client for testing.
- */
 final class MockHttpClient implements HttpClientInterface
 {
     /** @var list<array{method: string, url: string, headers: array, params: ?array}> */

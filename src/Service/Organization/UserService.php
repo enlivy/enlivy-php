@@ -8,6 +8,9 @@ use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\User;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasImportColumnDetection;
+use Enlivy\Service\Concern\HasImports;
+use Enlivy\Service\Concern\HasResumableImports;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
@@ -15,14 +18,15 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing organization users.
- *
  * @method User restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class UserService extends AbstractService
 {
     use HasRestore;
     use HasTagging;
+    use HasImports;
+    use HasResumableImports;
+    use HasImportColumnDetection;
     use HasIncludes;
     use HasFilters;
 
@@ -48,11 +52,7 @@ class UserService extends AbstractService
     ];
 
     /**
-     * List all organization users.
-     *
      * @return Collection<User>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

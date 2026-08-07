@@ -12,9 +12,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing an organization user's payment methods.
- */
 class UserPaymentMethodService extends AbstractService
 {
     use HasIncludes;
@@ -39,8 +36,6 @@ class UserPaymentMethodService extends AbstractService
 
     /**
      * @return Collection<UserPaymentMethod>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(string $userId, array $params = [], ?RequestOptions $opts = null): Collection
     {

@@ -92,6 +92,7 @@ Detailed guides with code examples for every feature:
 | [OAuth Server](docs/oauth.md) | OAuth 2.0 server for third-party app integrations |
 | [Includes (Eager Loading)](docs/includes.md) | Load related resources in a single request |
 | [Filters](docs/filters.md) | Search, sort, paginate, and filter list endpoints |
+| [Sandboxes](docs/sandboxes.md) | Mirror an organization to test against, with outbound calls blocked |
 
 ### Billing & Invoicing
 
@@ -130,6 +131,7 @@ Detailed guides with code examples for every feature:
 |-------|-------------|
 | [Reports](docs/organization/reports.md) | Dynamic reports with custom schemas |
 | [Files](docs/organization/files.md) | File uploads and attachments |
+| [Data Imports](docs/organization/data-imports.md) | Bulk-load products, users, prospects, and transactions from CSV |
 
 ### Integrations
 

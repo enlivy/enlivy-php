@@ -9,20 +9,20 @@ use Enlivy\EnlivyObject;
 use Enlivy\Organization\Prospect;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasImports;
+use Enlivy\Service\Concern\HasResumableImports;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing prospects.
- *
  * @method Prospect restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ProspectService extends AbstractService
 {
     use HasRestore;
     use HasImports;
+    use HasResumableImports;
     use HasIncludes;
     use HasFilters;
 
@@ -61,23 +61,7 @@ class ProspectService extends AbstractService
     ];
 
     /**
-     * List all prospects.
-     *
-     * Resource-specific filters:
-     * - `organization_prospect_status_id` (string) - Filter by prospect status
-     * - `assigned_organization_user_id` (string) - Filter by assigned user
-     * - `source_type` (string: inbound|outbound) - Lead source type
-     * - `email` (string) - Filter by email address
-     * - `state_qualified_at_from` / `state_qualified_at_to` (datetime) - Qualified date range
-     * - `state_disqualified_at_from` / `state_disqualified_at_to` (datetime) - Disqualified date range
-     * - `state_won_at_from` / `state_won_at_to` (datetime) - Won date range
-     * - `state_lost_at_from` / `state_lost_at_to` (datetime) - Lost date range
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
-     *
      * @return Collection<Prospect>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
@@ -90,8 +74,6 @@ class ProspectService extends AbstractService
     }
 
     /**
-     * Retrieve a prospect by ID.
-     *
      * @param array{
      *     organization_id?: string,
      *     include?: string[],
@@ -106,8 +88,6 @@ class ProspectService extends AbstractService
     }
 
     /**
-     * Create a new prospect.
-     *
      * @param array{
      *     organization_id?: string,
      *     title?: string,
@@ -138,8 +118,6 @@ class ProspectService extends AbstractService
     }
 
     /**
-     * Update a prospect.
-     *
      * @param array{
      *     organization_id?: string,
      *     title?: string,
@@ -160,9 +138,6 @@ class ProspectService extends AbstractService
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    /**
-     * Delete a prospect.
-     */
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): Prospect
     {
         $this->validateIncludes($params);
@@ -171,9 +146,6 @@ class ProspectService extends AbstractService
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    /**
-     * Get the prospect board (kanban view).
-     */
     public function board(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);

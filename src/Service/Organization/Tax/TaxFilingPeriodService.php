@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing tax filing periods.
- *
  * @method TaxFilingPeriod restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class TaxFilingPeriodService extends AbstractService

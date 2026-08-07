@@ -28,9 +28,6 @@ abstract class IntegrationTestCase extends TestCase
 {
     protected static ?EnlivyClient $client = null;
 
-    /**
-     * Get or create the shared client instance.
-     */
     protected function getClient(): EnlivyClient
     {
         if (self::$client === null) {
@@ -40,9 +37,6 @@ abstract class IntegrationTestCase extends TestCase
         return self::$client;
     }
 
-    /**
-     * Create a fresh client instance (for tests that need isolation).
-     */
     protected function createClient(): EnlivyClient
     {
         return new EnlivyClient([
@@ -52,9 +46,6 @@ abstract class IntegrationTestCase extends TestCase
         ]);
     }
 
-    /**
-     * Get a required environment variable or skip the test.
-     */
     protected function getRequiredEnv(string $name): string
     {
         $value = getenv($name);
@@ -69,9 +60,6 @@ abstract class IntegrationTestCase extends TestCase
         return $value;
     }
 
-    /**
-     * Get an optional environment variable with a default.
-     */
     protected function getEnv(string $name, string $default = ''): string
     {
         $value = getenv($name);
@@ -79,26 +67,17 @@ abstract class IntegrationTestCase extends TestCase
         return ($value !== false && $value !== '') ? $value : $default;
     }
 
-    /**
-     * Get the organization ID from environment.
-     */
     protected function getOrganizationId(): string
     {
         return $this->getRequiredEnv('ENLIVY_ORGANIZATION_ID');
     }
 
-    /**
-     * Assert that a response has the expected object type.
-     */
     protected function assertObjectType(string $expected, object $object): void
     {
         $this->assertObjectHasProperty('object', $object);
         $this->assertEquals($expected, $object->object);
     }
 
-    /**
-     * Assert that an ID has the expected prefix.
-     */
     protected function assertIdPrefix(string $prefix, string $id): void
     {
         $this->assertStringStartsWith(
@@ -112,7 +91,6 @@ abstract class IntegrationTestCase extends TestCase
     {
         parent::setUp();
 
-        // Reset global state before each test
         Enlivy::reset();
     }
 }

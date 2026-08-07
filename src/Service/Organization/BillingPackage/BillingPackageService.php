@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing billing packages.
- *
  * @method BillingPackage restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class BillingPackageService extends AbstractService
@@ -47,17 +45,7 @@ class BillingPackageService extends AbstractService
     ];
 
     /**
-     * List all billing packages.
-     *
-     * Resource-specific filters:
-     * - `is_active` (bool) - Filter by active packages
-     * - `type` (string) - Filter by package type
-     * - `organization_project_id` (string) - Filter by project
-     * - `only_available` (bool) - Show only available packages
-     *
      * @return Collection<BillingPackage>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
@@ -110,8 +98,6 @@ class BillingPackageService extends AbstractService
     }
 
     /**
-     * Download the billing package as a document.
-     *
      * Accepts optional `layout` and `locale` query params.
      */
     public function download(string $id, array $params = [], ?RequestOptions $opts = null): string

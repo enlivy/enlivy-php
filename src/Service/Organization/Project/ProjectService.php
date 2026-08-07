@@ -15,8 +15,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing projects.
- *
  * @method Project restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ProjectService extends AbstractService
@@ -42,14 +40,12 @@ class ProjectService extends AbstractService
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
+        'title',
+        'description',
     ];
 
     /**
-     * List all projects.
-     *
      * @return Collection<Project>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

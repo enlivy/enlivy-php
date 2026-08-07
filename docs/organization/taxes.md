@@ -93,6 +93,11 @@ $taxClass = $client->taxClasses->retrieve('org_tax_class_xxx', [
 ]);
 ```
 
+`retrieve()` resolves any id the list handed out, including the platform-wide defaults the
+organization has not overridden — so a row taken from `list()` can always be read back. The same
+holds for `taxRates->retrieve()`. Update and delete still resolve only within the organization, so
+a platform row can be read but not edited through them.
+
 ## Tax Rates
 
 Tax rates define the percentage applied, with support for conditions and

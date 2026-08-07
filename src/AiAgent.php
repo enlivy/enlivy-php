@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Enlivy;
 
 /**
- * Represents an AI Agent in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string $slug

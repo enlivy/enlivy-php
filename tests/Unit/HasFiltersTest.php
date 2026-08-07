@@ -65,6 +65,38 @@ final class HasFiltersTest extends TestCase
         $this->assertSame('tag_1,tag_2', $request['params']['tag_ids']);
     }
 
+    public function testLimitGlobalFilterPasses(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->invoices->list([
+            'q' => 'Acme Corp',
+            'limit' => 10,
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame(10, $request['params']['limit']);
+    }
+
+    /**
+     * The label fields are real filters on these services, not just `q_in`
+     * targets — rejecting them client-side blocked a call the API accepts.
+     */
+    public function testLabelFiltersPassOnServicesThatDeclareThem(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+        $this->client->taxClasses->list(['name' => 'Standard', 'description' => 'default']);
+        $this->assertSame('Standard', $this->httpClient->getLastRequest()['params']['name']);
+
+        $this->httpClient->addResponse(200, ['data' => []]);
+        $this->client->taskStatuses->list(['title' => 'In Progress']);
+        $this->assertSame('In Progress', $this->httpClient->getLastRequest()['params']['title']);
+
+        $this->httpClient->addResponse(200, ['data' => []]);
+        $this->client->bankTransactions->list(['is_connected' => true]);
+        $this->assertTrue($this->httpClient->getLastRequest()['params']['is_connected']);
+    }
+
     public function testResourceSpecificFilterPasses(): void
     {
         $this->httpClient->addResponse(200, ['data' => []]);
@@ -158,7 +190,6 @@ final class HasFiltersTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown filter(s): direction');
 
-        // Tags service has no resource-specific filters
         $this->client->tags->list([
             'direction' => 'outbound',
         ]);

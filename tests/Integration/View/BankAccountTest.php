@@ -9,14 +9,9 @@ use Enlivy\Organization\BankAccount;
 use Enlivy\Organization\BankTransaction;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for BankAccount-related endpoints.
- */
 class BankAccountTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Bank Accounts
-    // -------------------------------------------------------------------------
 
     public function testListBankAccounts(): void
     {
@@ -56,9 +51,7 @@ class BankAccountTest extends IntegrationTestCase
         $this->assertEquals($bankAccountId, $bankAccount->id);
     }
 
-    // -------------------------------------------------------------------------
     // Bank Transactions
-    // -------------------------------------------------------------------------
 
     public function testListBankTransactions(): void
     {

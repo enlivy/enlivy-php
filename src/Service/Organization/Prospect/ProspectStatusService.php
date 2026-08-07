@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing prospect statuses.
- *
  * @method ProspectStatus restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ProspectStatusService extends AbstractService
@@ -34,7 +32,10 @@ class ProspectStatusService extends AbstractService
         'paths',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'title',
+        'description',
+    ];
 
     /**
      * @return Collection<ProspectStatus>

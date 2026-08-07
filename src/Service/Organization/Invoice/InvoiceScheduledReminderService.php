@@ -34,17 +34,9 @@ class InvoiceScheduledReminderService extends AbstractService
     ];
 
     /**
-     * List the reminders scheduled inside a window.
-     *
-     * Filters:
-     * - `from` (datetime) - Window start; defaults to now
-     * - `to` (datetime) - Window end; defaults to 30 days out, capped at 366 days from now
-     * - `type` (string: email_reminder_upcoming|email_reminder_overdue) - Only this reminder type
-     * - `organization_invoice_id` (string) - Only reminders for this invoice
-     *
-     * Each row carries `organization_invoice_id`, `organization_invoice_number`, `type`,
-     * `scheduled_for`, `sequence`, `due_at`, `total`, `currency` and `recipient_email`.
-     * The response `meta` echoes the window actually walked (`from`, `to`, `count`).
+     * `from` defaults to now and `to` to 30 days out, capped at 366. The window
+     * is clamped server-side, so read `meta.to` back rather than assuming the
+     * one you asked for was honoured.
      *
      * @return Collection<EnlivyObject>
      */

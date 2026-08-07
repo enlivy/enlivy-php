@@ -7,8 +7,6 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents a File in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string|null $uploaded_by_user_id

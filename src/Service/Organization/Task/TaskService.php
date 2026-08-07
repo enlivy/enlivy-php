@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing tasks.
- *
  * @method Task restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class TaskService extends AbstractService

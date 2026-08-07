@@ -1,3 +1,95 @@
+# Upgrading to 2.5.0
+
+`2.5.0` is a **minor** release. Almost all of it is additive. Three things are
+worth a look before you upgrade: one renamed request parameter, one service whose
+return types changed because they were wrong, and a set of validation rules that
+tightened server-side.
+
+## `misc->determineTaxRateId()` renamed `state` to `iso_3166`
+
+The parameter takes an ISO 3166-2 subdivision code, which is what the rest of the
+address surface already called it.
+
+```php
+// Before
+$rate = $client->misc->determineTaxRateId([
+    'country_code' => 'US',
+    'state' => 'CA',
+    'zip_code' => '94103',
+]);
+
+// After
+$rate = $client->misc->determineTaxRateId([
+    'country_code' => 'US',
+    'iso_3166' => 'US-CA',
+    'zip_code' => '94103',
+]);
+```
+
+Parameters are pass-through arrays, so the SDK signature is unchanged — only the
+key you send. This is a wire break in a minor release, deliberately: the endpoint
+is a pass-through helper with no typed surface and no prior documentation, so a
+major bump would have cost every consumer an upgrade for a problem none of them
+had. If you cannot change the key yet, pin `2.4.x`.
+
+## `userRoleAbilities` return types changed
+
+All three methods were typed against a record resource the endpoints never
+return, so **none of them worked**: `sync()` and `delete()` raised a `TypeError`
+on every call, and `list()` handed back a `Collection` whose `getData()` was
+always empty. They now return `EnlivyObject` holding the real payload.
+
+```php
+// Now works. Walk the list with toArray() or array access.
+$abilities = $client->userRoleAbilities->list('org_role_xxx');
+
+foreach ($abilities->toArray() as $row) {
+    echo $row['ability'] . "\n";
+}
+
+$client->userRoleAbilities->sync('org_role_xxx', ['abilities' => ['invoices.manage']]);
+$client->userRoleAbilities->delete('org_role_xxx', ['abilities' => ['invoices.manage']]);
+```
+
+Nothing that worked before changes, because nothing worked before. If you wrote
+around the breakage — catching the `TypeError`, or reading the collection's
+numeric keys — remove that workaround.
+
+One behavioural note: a role with the new `has_full_backoffice_access` reports the
+**whole** ability list rather than an empty one, as stand-in entries whose `id` is
+`null`. Remove abilities by name, not by id.
+
+## New 422s on payloads that used to slip past
+
+No SDK change is needed for these, but a payload that the API quietly tolerated
+may now be rejected:
+
+- **Reorder endpoints** (tasks, task statuses, prospect statuses) reject ids
+  belonging to another organization instead of ignoring them.
+- **`is_stuck_threshold_days`** on prospect statuses must be an integer.
+- **`convert_to_currency`** on billing-schedule analytics is now actually
+  validated — the rule behind it never applied before.
+- **Bank-transaction imports** accept only statement uploads and Stripe charge
+  pulls. If you were sending a product, user or prospect import type to that
+  lane, move to `$client->products`, `$client->organizationUsers` or
+  `$client->prospects`, which now have their own import endpoints.
+
+## Filters that used to be rejected now go through
+
+`limit` is accepted on every list endpoint, and thirteen services regained
+filters the API had always accepted (`title`/`description`, `name`/`description`,
+`is_connected`, `reported_by_organization_user_id` — see the CHANGELOG for the
+table). This only *loosens* client-side validation, so no working call changes.
+If you built a workaround — dropping the key before calling, or catching
+`InvalidArgumentException` — you can remove it.
+
+## Optional: clearable address fields
+
+`address_county`, `address_state` and `timezone` now accept `null` on
+organizations and organization users, as does `address_city` on organization
+users. Nothing to change unless you were working around the inability to clear
+them.
+
 # Upgrading to 2.4.0
 
 `2.4.0` is a **minor** release. It does remove two methods, three enum cases and

@@ -7,8 +7,6 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents a Reusable Content in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string $organization_id

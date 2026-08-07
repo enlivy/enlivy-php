@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing bank transaction cost types.
- *
  * @method BankTransactionCostType restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class BankTransactionCostTypeService extends AbstractService
@@ -34,7 +32,9 @@ class BankTransactionCostTypeService extends AbstractService
         'tag_ids',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'title',
+    ];
 
     /**
      * @return Collection<BankTransactionCostType>

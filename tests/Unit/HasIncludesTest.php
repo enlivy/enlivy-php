@@ -33,7 +33,6 @@ final class HasIncludesTest extends TestCase
         ]);
 
         $request = $this->httpClient->getLastRequest();
-        // Array format is normalized to comma-separated string
         $this->assertSame('organization,organization_prospect_status', $request['params']['include']);
     }
 

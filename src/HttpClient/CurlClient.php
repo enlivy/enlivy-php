@@ -128,9 +128,6 @@ final class CurlClient implements HttpClientInterface
         return [$body, $parsedHeaders, $statusCode];
     }
 
-    /**
-     * Check if any param value is a CURLFile (file upload).
-     */
     private function hasFileUpload(array $params): bool
     {
         foreach ($params as $value) {

@@ -8,9 +8,6 @@ use Enlivy\Collection;
 use Enlivy\Organization\Product;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Product-related endpoints.
- */
 class ProductTest extends IntegrationTestCase
 {
     public function testListProducts(): void

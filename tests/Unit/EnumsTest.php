@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace Enlivy\Tests\Unit;
 
+use Enlivy\Enums\BillingPackage\PortalDiscoveryMode;
+use Enlivy\Enums\BillingSchedule\Statuses as BillingScheduleStatuses;
 use Enlivy\Enums\Concern\EnumValues;
+use Enlivy\Enums\Receipt\Directions as ReceiptDirections;
+use Enlivy\Enums\Receipt\Sources as ReceiptSources;
+use Enlivy\Enums\Import\StopReasons;
 use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
+use Enlivy\Enums\Organization\Environments;
 use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Payslip\Fields as PayslipFields;
@@ -42,6 +48,27 @@ final class EnumsTest extends TestCase
         $this->assertSame(
             ['seller_not_registered', 'outside_scope', 'domestic', 'eu_reverse_charge', 'eu_business_without_vat_id', 'eu_consumer'],
             TaxApplicabilityReasons::values(),
+        );
+        $this->assertSame(['live', 'sandbox'], Environments::values());
+        $this->assertSame(['inbound', 'outbound'], ReceiptDirections::values());
+        $this->assertSame(['uploaded', 'generated'], ReceiptSources::values());
+        $this->assertSame(['disabled', 'request', 'checkout'], PortalDiscoveryMode::values());
+        $this->assertSame(
+            ['usage_limit', 'ai_limit', 'consecutive_failures', 'file_unreadable'],
+            StopReasons::values(),
+        );
+        $this->assertSame(
+            [
+                'pending',
+                'active',
+                'payment_method_required',
+                'subscription_required',
+                'paused',
+                'cancelling',
+                'completed',
+                'cancelled',
+            ],
+            BillingScheduleStatuses::values(),
         );
     }
 
@@ -82,6 +109,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(102, $count, 'Expected at least 102 mirrored enums');
+        $this->assertGreaterThanOrEqual(107, $count, 'Expected at least 107 mirrored enums');
     }
 }

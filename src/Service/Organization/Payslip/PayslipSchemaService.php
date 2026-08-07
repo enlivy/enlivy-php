@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing payslip schemas.
- *
  * @method PayslipSchema restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class PayslipSchemaService extends AbstractService
@@ -30,7 +28,10 @@ class PayslipSchemaService extends AbstractService
         'organization',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'name',
+        'description',
+    ];
 
     /**
      * @return Collection<PayslipSchema>

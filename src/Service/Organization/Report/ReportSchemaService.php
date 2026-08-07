@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing report schemas.
- *
  * @method ReportSchema restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ReportSchemaService extends AbstractService
@@ -32,7 +30,10 @@ class ReportSchemaService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'title',
+        'description',
+    ];
 
     /**
      * @return Collection<ReportSchema>

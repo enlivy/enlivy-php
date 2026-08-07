@@ -7,8 +7,6 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents a Billing Package Subscription Term (a cadence-length variant) in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string $organization_id

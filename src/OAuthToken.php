@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Enlivy;
 
 /**
- * Represents an OAuth Token in the Enlivy API.
- *
  * @property string $id
  * @property string $user_id
  * @property string $client_id

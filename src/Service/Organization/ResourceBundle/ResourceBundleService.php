@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing resource bundles.
- */
 class ResourceBundleService extends AbstractService
 {
     use HasIncludes;
@@ -25,7 +22,10 @@ class ResourceBundleService extends AbstractService
         'organization',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'title',
+        'description',
+    ];
 
     /**
      * @return Collection<ResourceBundle>

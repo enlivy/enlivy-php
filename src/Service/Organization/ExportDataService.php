@@ -12,9 +12,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing export data.
- */
 class ExportDataService extends AbstractService
 {
     use HasDownload;

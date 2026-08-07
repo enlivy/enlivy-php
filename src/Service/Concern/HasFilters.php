@@ -21,6 +21,7 @@ trait HasFilters
         'order',
         'page',
         'per_page',
+        'limit',
         'deleted',
         'tag_ids',
     ];

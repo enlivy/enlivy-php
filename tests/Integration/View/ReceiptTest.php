@@ -9,14 +9,9 @@ use Enlivy\Organization\Receipt;
 use Enlivy\Organization\ReceiptPrefix;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Receipt-related endpoints.
- */
 class ReceiptTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Receipts
-    // -------------------------------------------------------------------------
 
     public function testListReceipts(): void
     {
@@ -56,9 +51,7 @@ class ReceiptTest extends IntegrationTestCase
         $this->assertEquals($receiptId, $receipt->id);
     }
 
-    // -------------------------------------------------------------------------
     // Receipt Prefixes
-    // -------------------------------------------------------------------------
 
     public function testListReceiptPrefixes(): void
     {

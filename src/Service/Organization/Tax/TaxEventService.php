@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing tax events (the tax subledger).
- *
  * @method TaxEvent restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class TaxEventService extends AbstractService

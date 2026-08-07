@@ -3,6 +3,137 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.5.0] - 2026-08-08
+
+CSV imports for products and organization users, imports that can be resumed
+where they stopped, and sandbox organizations to rehearse all of it against.
+
+### Added
+
+- **Sandbox organizations.**
+  `$client->organizations->createSandbox('org_xxx', ['name' => '...'])` returns a
+  second organization that mirrors the live one's configuration — legal identity,
+  locales, currencies, and the whole tax configuration (registrations, filing
+  jurisdictions and types, classes with their rates) — but never reaches the
+  outside world. Charges, outbound mail and third-party calls fail loudly there
+  rather than silently doing nothing. Records are not copied, and connected
+  credentials are not inherited. Sandboxes do not nest, and an organization may
+  hold only a small number at a time. See [docs/sandboxes.md](docs/sandboxes.md).
+- **`environment` on `Organization`** — `live` or `sandbox`, backed by the new
+  `Enlivy\Enums\Organization\Environments`.
+- **Product imports.** `$client->products` gains the full import surface:
+  `importDetectColumns()`, `importCreate()`, `importList()`, `importRetrieve()`
+  and `importResume()`. Maps CSV columns by position onto product fields,
+  including per-currency price columns and per-locale name/description/unit/note
+  columns, with `dry_run` and `match_existing`.
+- **Organization-user imports.** The same surface on
+  `$client->organizationUsers`, able to carry people and companies in one file:
+  give the business rows their own role via
+  `default_business_organization_user_role_id` plus something to sort on, and the
+  import splits them as it reads.
+- **Resumable imports.** `importResume()` on `$client->products`,
+  `$client->organizationUsers`, `$client->prospects` and
+  `$client->bankTransactions` continues a run that stopped short of the end of
+  its file, starting at `summary_json.resume_from_row`. It starts a new job
+  against the same file; the original keeps its own logs and counters. Billing
+  schedules have no resume endpoint, so the method is deliberately absent there.
+- **`Enlivy\Enums\Import\StopReasons`** — `usage_limit`, `ai_limit`,
+  `consecutive_failures`, `file_unreadable`. Read `summary_json.is_resumable`
+  rather than testing the reason yourself.
+- **Column detection.** `importDetectColumns(['headers' => [...]])` on products
+  and organization users proposes a `field_position_*` mapping from a CSV header
+  row, so an operator can review it before the upload.
+- **New docs.** [Data Imports](docs/organization/data-imports.md) documents the
+  whole import lifecycle, which had no coverage before this release.
+- **`has_full_backoffice_access` on `UserRole`** — a standing grant of every
+  ability, present and future, rather than a stored list. Requires
+  `can_use_backoffice`; only the organization owner and platform administrators
+  may grant it.
+- **`sent_cc` on `InvoiceNotificationLog`** — the addresses copied on an invoice
+  email, alongside the existing `sent_to`.
+- **`subscription_required`** added to `Enlivy\Enums\BillingSchedule\Statuses` —
+  a schedule held because the subscription backing it went inactive.
+- **`signature_events_log`** on contract-signature create and update: the ordered
+  trail of what a signer did while signing, as an array of
+  `{event, event_label, timestamp}` entries or an uploaded `txt`/`md`/`json`/`csv`
+  file.
+- **`use_default_mailer`** on `misc->testEmail()`, and
+  `phone_number_country_code` on the user phone update.
+- **Invoice writes** accept `organization_bank_account` and
+  `organization_receiver_user_address` blocks; update also accepts
+  `organization_sender_user` / `organization_receiver_user`.
+- **`_action`** is now a declared parameter on file create (`completed`).
+- **Three enums that were public but never mirrored** —
+  `Enlivy\Enums\Receipt\Directions` (`inbound`, `outbound`),
+  `Enlivy\Enums\Receipt\Sources` (`uploaded`, `generated`) and
+  `Enlivy\Enums\BillingPackage\PortalDiscoveryMode` (`disabled`, `request`,
+  `checkout`). The SDK already handed these values back on `Receipt::$direction`,
+  `Receipt::$source` and `BillingPackage::$portal_discovery_mode`; only the
+  enums were missing.
+
+### Changed
+
+- **`misc->determineTaxRateId()` renamed its `state` parameter to `iso_3166`**
+  (string, max 10) — it takes an ISO 3166-2 subdivision code, which is what the
+  rest of the address surface already used. This is a wire break shipped in a
+  minor release, deliberately: the endpoint is an undocumented pass-through
+  helper with no typed surface, so a major bump would have cost every consumer an
+  upgrade for a problem none of them had. Parameters are pass-through arrays, so
+  the SDK signature is unchanged — rename the key you send.
+- **Clearable address fields.** `address_county`, `address_state` and `timezone`
+  now accept `null` on both organizations and organization users, as does
+  `address_city` on organization users. Many countries have no county or state
+  layer, and requiring one made those addresses unstorable.
+- **Tax classes and rates resolve platform ids on retrieve.**
+  `taxClasses->retrieve()` and `taxRates->retrieve()` now read back any id the
+  matching `list()` handed out, including the platform-wide defaults an
+  organization has not overridden. Update and delete are unchanged and still
+  resolve only within the organization.
+- **Role abilities report what the role answers, not what it stores.**
+  `userRoleAbilities->list()` returns the whole ability list for a role holding
+  full back-office access, as stand-in entries whose `id` is `null`. Adding
+  abilities to such a role is rejected — there would be nothing to read them.
+- **Reorder endpoints now validate ownership.** Task, task-status and
+  prospect-status reorder reject ids belonging to another organization with a
+  422 rather than ignoring them.
+- **`convert_to_currency` on billing-schedule analytics is now enforced.** The
+  rule behind it never applied before, so a malformed value used to pass through.
+- **Prospect-status `is_stuck_threshold_days` must be an integer**, and project
+  member `organization_user_id` is now length-checked. Both surface as 422s on
+  payloads that previously slipped past.
+- **Bank-transaction imports accept only their own types** — statement uploads
+  and Stripe charge pulls. Product, user and prospect imports have their own
+  endpoints; sending those types to the bank lane is now a 422.
+
+### Fixed
+
+- **`limit` was rejected on every list endpoint.** It is a global filter the API
+  accepts everywhere — it caps results on a search (`q`) query — but it was
+  missing from `HasFilters::GLOBAL_FILTERS`, so the SDK threw
+  `InvalidArgumentException` before the request went out. Now accepted on all
+  list endpoints.
+- **Thirteen services rejected filters the API accepts.** Each declares the
+  filter in the API's own published contract, so passing it was a client-side
+  failure only:
+
+  | Service | Filters restored |
+  |---------|------------------|
+  | `prospectStatuses`, `contractStatuses`, `taskStatuses`, `reportSchemas`, `resourceBundles`, `projects` | `title`, `description` |
+  | `taxClasses`, `payslipSchemas`, `products` | `name`, `description` |
+  | `bankTransactionCostTypes` | `title` |
+  | `bankTransactions` | `is_connected` |
+  | `reports` | `reported_by_organization_user_id` |
+
+- **`userRoleAbilities` was unusable.** All three methods were typed against a
+  record resource the endpoints never return: they answer with a plain list of
+  ability rows (and a status payload on delete). `sync()` and `delete()` raised a
+  `TypeError` on every call, and `list()` returned a `Collection` whose `getData()`
+  was always empty. All three now return `EnlivyObject` carrying the real payload
+  — walk it with `toArray()` or array access. Nothing that worked before changes,
+  because nothing worked before.
+- **`docs/filters.md` listed `products` as accepting global filters only** — it
+  has an `is_sold` filter, now documented in its own section.
+
 ## [2.4.0] - 2026-07-29
 
 Scheduled payment reminders, everything that references a contract, consent you

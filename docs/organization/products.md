@@ -462,3 +462,4 @@ try {
 - [Invoices](invoices.md) - Use products in invoices
 - [Taxes](taxes.md) - Configure tax classes for products
 - [Proposals](proposals.md) - Use products in proposals
+- [Data Imports](data-imports.md) - Bulk-load the catalog from a CSV file

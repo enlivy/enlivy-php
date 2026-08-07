@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing contract prefixes.
- *
  * @method ContractPrefix restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ContractPrefixService extends AbstractService

@@ -7,7 +7,9 @@ namespace Enlivy\Tests\Unit;
 use Enlivy\Collection;
 use Enlivy\EnlivyClient;
 use Enlivy\EnlivyObject;
+use Enlivy\Enums\Organization\Environments;
 use Enlivy\Exception\InvalidArgumentException;
+use Enlivy\Organization;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\ContractConnection;
 use Enlivy\Organization\Prospect;
@@ -51,7 +53,6 @@ final class ServiceTest extends TestCase
         $this->assertInstanceOf(Collection::class, $result);
         $this->assertCount(2, $result);
 
-        // Verify items are typed Prospect objects
         $first = $result->first();
         $this->assertInstanceOf(Prospect::class, $first);
 
@@ -175,7 +176,6 @@ final class ServiceTest extends TestCase
     {
         $client = new EnlivyClient([
             'api_key' => '1|test_token',
-            // No organization_id
             'http_client' => $this->httpClient,
         ]);
 
@@ -193,11 +193,9 @@ final class ServiceTest extends TestCase
 
         $client = new EnlivyClient([
             'api_key' => '1|test_token',
-            // No organization_id
             'http_client' => $this->httpClient,
         ]);
 
-        // Organizations service doesn't require org_id
         $result = $client->organizations->list();
 
         $this->assertInstanceOf(Collection::class, $result);
@@ -230,7 +228,6 @@ final class ServiceTest extends TestCase
             ],
         ]);
 
-        // Use a service that returns EnlivyObject (like board)
         $result = $this->client->prospects->board();
 
         $this->assertInstanceOf(EnlivyObject::class, $result);
@@ -426,6 +423,142 @@ final class ServiceTest extends TestCase
         $request = $this->httpClient->getLastRequest();
         $this->assertSame('GET', $request['method']);
         $this->assertStringContainsString('/organizations/org_default/contracts/org_cont_1/connections', $request['url']);
+    }
+
+    public function testProductImportLifecycleHitsTheProductImportPaths(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => ['field_position_alias' => 1, 'field_position_price' => 3],
+        ]);
+        $this->client->products->importDetectColumns(['headers' => ['SKU', 'Name', 'Price']]);
+        $this->assertStringContainsString(
+            '/organizations/org_default/products/imports/detect-columns',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, [
+            'data' => ['id' => 'org_pd_1', 'type' => 'product_import'],
+        ]);
+        $import = $this->client->products->importCreate(['start_from_row' => 2]);
+        $this->assertInstanceOf(EnlivyObject::class, $import);
+        $this->assertStringContainsString(
+            '/organizations/org_default/products/imports',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, [
+            'data' => ['id' => 'org_pd_1', 'summary_json' => ['stop_reason' => 'usage_limit']],
+        ]);
+        $this->client->products->importRetrieve('org_pd_1');
+        $this->assertStringContainsString(
+            '/organizations/org_default/products/imports/org_pd_1',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pd_1']]);
+        $this->client->products->importResume('org_pd_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString(
+            '/organizations/org_default/products/imports/org_pd_1/resume',
+            $request['url'],
+        );
+    }
+
+    public function testOrganizationUserImportsResolveUnderTheUsersPath(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pd_2']]);
+
+        $this->client->organizationUsers->importCreate(['start_from_row' => 2]);
+
+        $this->assertStringContainsString(
+            '/organizations/org_default/users/imports',
+            $this->httpClient->getLastRequest()['url'],
+        );
+    }
+
+    public function testBankTransactionAndProspectImportsAreResumable(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pd_3']]);
+        $this->client->bankTransactions->importResume('org_pd_3');
+        $this->assertStringContainsString(
+            '/organizations/org_default/bank-transactions/imports/org_pd_3/resume',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pd_4']]);
+        $this->client->prospects->importResume('org_pd_4');
+        $this->assertStringContainsString(
+            '/organizations/org_default/prospects/imports/org_pd_4/resume',
+            $this->httpClient->getLastRequest()['url'],
+        );
+    }
+
+    /**
+     * Billing-schedule imports are create/list/retrieve only — there is no
+     * resume route behind them, so the method must not exist on that service.
+     */
+    public function testBillingScheduleImportsAreNotResumable(): void
+    {
+        $this->assertTrue(method_exists($this->client->billingSchedules, 'importCreate'));
+        $this->assertFalse(method_exists($this->client->billingSchedules, 'importResume'));
+        $this->assertFalse(method_exists($this->client->billingSchedules, 'importDetectColumns'));
+    }
+
+    public function testCreateSandboxReturnsATypedSandboxOrganization(): void
+    {
+        $this->httpClient->addResponse(201, [
+            'data' => [
+                'id' => 'org_2',
+                'object' => 'organization',
+                'organization_id' => 'org_1',
+                'environment' => 'sandbox',
+                'name' => 'Acme Sandbox',
+            ],
+        ]);
+
+        $sandbox = $this->client->organizations->createSandbox('org_1', ['name' => 'Acme Sandbox']);
+
+        $this->assertInstanceOf(Organization::class, $sandbox);
+        $this->assertSame(Environments::SANDBOX->value, $sandbox->environment);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/organizations/org_1/sandboxes', $request['url']);
+    }
+
+    /**
+     * The abilities endpoints answer with a plain list, not a record resource —
+     * the typed return these carried before could only ever raise a TypeError.
+     */
+    public function testUserRoleAbilitiesReturnTheRawAbilityList(): void
+    {
+        $this->httpClient->addResponse(200, [
+            ['id' => null, 'organization_user_role_id' => 'org_role_1', 'ability' => 'invoices.manage'],
+            ['id' => null, 'organization_user_role_id' => 'org_role_1', 'ability' => 'products.manage'],
+        ]);
+
+        $abilities = $this->client->userRoleAbilities->list('org_role_1');
+
+        $this->assertInstanceOf(EnlivyObject::class, $abilities);
+        $this->assertCount(2, $abilities->toArray());
+        $this->assertStringContainsString(
+            '/organizations/org_default/user-roles/org_role_1/abilities',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(201, [
+            ['id' => 'org_ura_1', 'ability' => 'invoices.manage'],
+        ]);
+        $synced = $this->client->userRoleAbilities->sync('org_role_1', ['abilities' => ['invoices.manage']]);
+        $this->assertInstanceOf(EnlivyObject::class, $synced);
+        $this->assertSame('POST', $this->httpClient->getLastRequest()['method']);
+
+        $this->httpClient->addResponse(200, ['status' => 'ok']);
+        $removed = $this->client->userRoleAbilities->delete('org_role_1', ['abilities' => ['invoices.manage']]);
+        $this->assertSame('ok', $removed->status);
+        $this->assertSame('DELETE', $this->httpClient->getLastRequest()['method']);
     }
 
     public function testOAuthAuthorizationUpdateSendsPatch(): void

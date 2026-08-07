@@ -16,8 +16,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing playbooks.
- *
  * @method Playbook restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class PlaybookService extends AbstractService
@@ -50,15 +48,7 @@ class PlaybookService extends AbstractService
     ];
 
     /**
-     * List all playbooks.
-     *
-     * Resource-specific filters:
-     * - `parent_organization_playbook_id` (string) - Filter by parent playbook
-     * - `organization_project_id` (string) - Filter by project
-     *
      * @return Collection<Playbook>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing prospect activities.
- *
  * @method ProspectActivity restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ProspectActivityService extends AbstractService

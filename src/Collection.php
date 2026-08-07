@@ -64,8 +64,6 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Iterate every item across all pages, fetching follow-up pages lazily.
-     *
      * @return \Generator<int, T>
      */
     public function autoPagingIterator(): \Generator
@@ -96,8 +94,6 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Refresh collection from API data with typed items.
-     *
      * @template TItem of EnlivyObject
      * @param array<string, mixed> $data The raw API response
      * @param class-string<TItem>|null $itemClass The class to use for items in the data array
@@ -127,9 +123,6 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
         }
     }
 
-    /**
-     * Convert a value for storage, using EnlivyObject for nested objects.
-     */
     private static function convertValueStatic(mixed $value): mixed
     {
         if (is_array($value)) {
@@ -147,8 +140,6 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Get the data items in this collection.
-     *
      * @return list<T>
      */
     public function getData(): array
@@ -226,17 +217,12 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
         return new \ArrayIterator($this->getData());
     }
 
-    /**
-     * Check if the collection is empty.
-     */
     public function isEmpty(): bool
     {
         return $this->count() === 0;
     }
 
     /**
-     * Get the first item in the collection, or null if empty.
-     *
      * @return T|null
      */
     public function first(): ?EnlivyObject
@@ -247,8 +233,6 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
     }
 
     /**
-     * Get the last item in the collection, or null if empty.
-     *
      * @return T|null
      */
     public function last(): ?EnlivyObject

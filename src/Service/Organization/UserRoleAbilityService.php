@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Enlivy\Service\Organization;
 
-use Enlivy\Collection;
-use Enlivy\Organization\UserRoleAbility;
+use Enlivy\EnlivyObject;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing user role abilities.
+ * These endpoints answer with a plain list of ability rows, not a paginated
+ * resource, so every method returns the raw payload — walk it with `toArray()`.
+ * Abilities are addressed by name under `abilities`; there is no id to pass.
  */
 class UserRoleAbilityService extends AbstractService
 {
@@ -20,30 +21,32 @@ class UserRoleAbilityService extends AbstractService
     public const array AVAILABLE_FILTERS = [];
 
     /**
-     * @return Collection<UserRoleAbility>
+     * Reports what the role answers, not what it stores: a role with full
+     * back-office access returns every ability, as entries whose `id` is null.
      */
-    public function list(string $roleId, array $params = [], ?RequestOptions $opts = null): Collection
+    public function list(string $roleId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Collection<UserRoleAbility> */
-        return $this->requestCollection('GET', $this->orgPath($orgId, "user-roles/{$roleId}/abilities"), $params, $opts);
+        return $this->request('GET', $this->orgPath($orgId, "user-roles/{$roleId}/abilities"), $params, $opts);
     }
 
-    public function sync(string $roleId, array $params, ?RequestOptions $opts = null): UserRoleAbility
+    /**
+     * Additive — names the role already holds are ignored. Rejected for a role
+     * with full back-office access, which stores no rows of its own.
+     */
+    public function sync(string $roleId, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var UserRoleAbility */
         return $this->request('POST', $this->orgPath($orgId, "user-roles/{$roleId}/abilities"), $params, $opts);
     }
 
-    public function delete(string $roleId, array $params = [], ?RequestOptions $opts = null): UserRoleAbility
+    public function delete(string $roleId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var UserRoleAbility */
         return $this->request('DELETE', $this->orgPath($orgId, "user-roles/{$roleId}/abilities"), $params, $opts);
     }
 }

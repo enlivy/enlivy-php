@@ -16,8 +16,6 @@ use Enlivy\Util\RequestOptions;
 class DiscoveryService extends AbstractService
 {
     /**
-     * List all available API resources.
-     *
      * Returns a lightweight index of resources with endpoint counts.
      */
     public function list(?RequestOptions $opts = null): EnlivyObject
@@ -26,8 +24,6 @@ class DiscoveryService extends AbstractService
     }
 
     /**
-     * Get detailed metadata for a specific resource.
-     *
      * Returns field definitions, endpoints, includes, and broadcast info.
      *
      * @param string $name Resource name (e.g. 'organization_invoices')
@@ -37,9 +33,6 @@ class DiscoveryService extends AbstractService
         return $this->request('GET', '/discovery', ['resource' => $name], $opts);
     }
 
-    /**
-     * List all available Client Portal resources.
-     */
     public function portalList(?RequestOptions $opts = null): EnlivyObject
     {
         return $this->request('GET', '/discovery/organization-user-client-portal', null, $opts);

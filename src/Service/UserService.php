@@ -10,9 +10,6 @@ use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing users.
- */
 class UserService extends AbstractService
 {
     use HasIncludes;

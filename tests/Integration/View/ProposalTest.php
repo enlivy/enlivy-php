@@ -9,14 +9,9 @@ use Enlivy\Organization\Proposal;
 use Enlivy\Organization\Offer;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Proposal and Offer-related endpoints.
- */
 class ProposalTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Proposals
-    // -------------------------------------------------------------------------
 
     public function testListProposals(): void
     {
@@ -72,9 +67,7 @@ class ProposalTest extends IntegrationTestCase
         $this->assertInstanceOf(Proposal::class, $proposal);
     }
 
-    // -------------------------------------------------------------------------
     // Offers
-    // -------------------------------------------------------------------------
 
     public function testListOffers(): void
     {

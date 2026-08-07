@@ -23,8 +23,6 @@ trait HasEventTrails
     ];
 
     /**
-     * List event-trail entries for this resource type.
-     *
      * Filters: `subject_id`, `event_type`, `origin`, `occurred_from`, `occurred_to`.
      *
      * @return Collection<EventTrail>

@@ -13,14 +13,9 @@ use Enlivy\Organization\TaxRegistration;
 use Enlivy\Organization\TaxType;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Tax-related endpoints.
- */
 class TaxTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Tax Classes
-    // -------------------------------------------------------------------------
 
     public function testListTaxClasses(): void
     {
@@ -51,9 +46,7 @@ class TaxTest extends IntegrationTestCase
         $this->assertEquals($taxClassId, $taxClass->id);
     }
 
-    // -------------------------------------------------------------------------
     // Tax Rates
-    // -------------------------------------------------------------------------
 
     public function testListTaxRates(): void
     {
@@ -84,9 +77,7 @@ class TaxTest extends IntegrationTestCase
         $this->assertEquals($taxRateId, $taxRate->id);
     }
 
-    // -------------------------------------------------------------------------
     // Tax Types
-    // -------------------------------------------------------------------------
 
     public function testListTaxTypes(): void
     {
@@ -117,9 +108,7 @@ class TaxTest extends IntegrationTestCase
         $this->assertEquals($taxTypeId, $taxType->id);
     }
 
-    // -------------------------------------------------------------------------
     // Tax Registrations
-    // -------------------------------------------------------------------------
 
     public function testListTaxRegistrations(): void
     {
@@ -156,9 +145,7 @@ class TaxTest extends IntegrationTestCase
         $this->assertNotNull($suggested);
     }
 
-    // -------------------------------------------------------------------------
     // Tax Events
-    // -------------------------------------------------------------------------
 
     public function testListTaxEvents(): void
     {
@@ -188,9 +175,7 @@ class TaxTest extends IntegrationTestCase
         $this->assertEquals($id, $event->id);
     }
 
-    // -------------------------------------------------------------------------
     // Tax Filing Periods
-    // -------------------------------------------------------------------------
 
     public function testListTaxFilingPeriods(): void
     {

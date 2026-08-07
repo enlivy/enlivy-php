@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing tax classes.
- *
  * @method TaxClass restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class TaxClassService extends AbstractService
@@ -31,7 +29,10 @@ class TaxClassService extends AbstractService
         'tax_rates_overview',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'name',
+        'description',
+    ];
 
     /**
      * @return Collection<TaxClass>

@@ -7,8 +7,6 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents an Invoice in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string $organization_id

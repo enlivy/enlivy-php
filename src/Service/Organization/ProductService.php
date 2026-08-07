@@ -7,6 +7,9 @@ namespace Enlivy\Service\Organization;
 use Enlivy\Collection;
 use Enlivy\Organization\Product;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasImportColumnDetection;
+use Enlivy\Service\Concern\HasImports;
+use Enlivy\Service\Concern\HasResumableImports;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasTagging;
 use Enlivy\Service\Concern\HasFilters;
@@ -14,14 +17,15 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing products.
- *
  * @method Product restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ProductService extends AbstractService
 {
     use HasRestore;
     use HasTagging;
+    use HasImports;
+    use HasResumableImports;
+    use HasImportColumnDetection;
     use HasIncludes;
     use HasFilters;
 
@@ -37,6 +41,8 @@ class ProductService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'is_sold',
+        'name',
+        'description',
     ];
 
     /**

@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing project members.
- */
 class ProjectMemberService extends AbstractService
 {
     use HasIncludes;
@@ -32,14 +29,7 @@ class ProjectMemberService extends AbstractService
     ];
 
     /**
-     * List all project members.
-     *
-     * Resource-specific filters:
-     * - `member_role` (string: team_member|contractor|client|prospect) - Filter by member role
-     *
      * @return Collection<ProjectMember>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
     {

@@ -16,8 +16,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing billing schedules.
- *
  * @method BillingSchedule restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class BillingScheduleService extends AbstractService
@@ -59,26 +57,11 @@ class BillingScheduleService extends AbstractService
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
+        'name',
     ];
 
     /**
-     * List all billing schedules.
-     *
-     * Resource-specific filters:
-     * - `status` (string: pending|active|cancelled)
-     * - `direction` (string: inbound|outbound)
-     * - `organization_sender_user_id` (string) - Filter by sender user
-     * - `organization_receiver_user_id` (string) - Filter by receiver user
-     * - `organization_contract_id` (string) - Filter by contract
-     * - `organization_bank_account_id` (string) - Filter by bank account
-     * - `starts_at_from` / `starts_at_to` (datetime) - Start date range
-     * - `ends_at_from` / `ends_at_to` (datetime) - End date range
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
-     *
      * @return Collection<BillingSchedule>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
@@ -99,8 +82,6 @@ class BillingScheduleService extends AbstractService
     }
 
     /**
-     * Create a billing schedule from raw phases/payments.
-     *
      * Composes an explicit schedule only. To create one from a subscription
      * billing package use {@see self::fromBillingPackage()} — the package fields
      * (`organization_billing_package_id`, `organization_billing_package_subscription_term_id`,

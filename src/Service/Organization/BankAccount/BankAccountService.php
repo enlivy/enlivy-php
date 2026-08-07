@@ -15,8 +15,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing bank accounts.
- *
  * @method BankAccount restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class BankAccountService extends AbstractService

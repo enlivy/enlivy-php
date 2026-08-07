@@ -10,14 +10,9 @@ use Enlivy\Organization\ContractPrefix;
 use Enlivy\Organization\ContractStatus;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Contract-related endpoints.
- */
 class ContractTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Contracts
-    // -------------------------------------------------------------------------
 
     public function testListContracts(): void
     {
@@ -66,9 +61,7 @@ class ContractTest extends IntegrationTestCase
         $this->assertEquals($contractId, $contract->id);
     }
 
-    // -------------------------------------------------------------------------
     // Contract Prefixes
-    // -------------------------------------------------------------------------
 
     public function testListContractPrefixes(): void
     {
@@ -83,9 +76,7 @@ class ContractTest extends IntegrationTestCase
         }
     }
 
-    // -------------------------------------------------------------------------
     // Contract Statuses
-    // -------------------------------------------------------------------------
 
     public function testListContractStatuses(): void
     {

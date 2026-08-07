@@ -191,8 +191,6 @@ final class ObjectTypes
     ];
 
     /**
-     * Get the PHP class for a given object type.
-     *
      * @return class-string<ApiResource>|null
      */
     public static function getClass(string $objectType): ?string
@@ -201,8 +199,6 @@ final class ObjectTypes
     }
 
     /**
-     * Register a custom object type mapping.
-     *
      * @param class-string<ApiResource> $class
      */
     public static function register(string $objectType, string $class): void
@@ -210,9 +206,6 @@ final class ObjectTypes
         self::$typeMap[$objectType] = $class;
     }
 
-    /**
-     * Check if an object type is registered.
-     */
     public static function has(string $objectType): bool
     {
         return isset(self::$typeMap[$objectType]);

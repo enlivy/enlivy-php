@@ -10,9 +10,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing invitation codes.
- */
 class InvitationCodeService extends AbstractService
 {
     use HasIncludes;

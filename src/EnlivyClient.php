@@ -7,8 +7,6 @@ namespace Enlivy;
 use Enlivy\Service;
 
 /**
- * Enlivy API Client.
- *
  * Global services:
  * @property Service\AuthenticationService $authentication
  * @property Service\OrganizationService $organizations

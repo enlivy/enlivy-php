@@ -22,9 +22,6 @@ final class ApiRequestor
         private readonly int $timeout = 30,
     ) {}
 
-    /**
-     * Make an API request and return the parsed response.
-     */
     public function request(
         string $method,
         string $path,
@@ -75,8 +72,6 @@ final class ApiRequestor
     }
 
     /**
-     * Make an API request and return a Collection (paginated list).
-     *
      * @template T of EnlivyObject
      * @param class-string<T>|null $resourceClass The class for items in the collection
      * @return Collection<T>
@@ -101,9 +96,6 @@ final class ApiRequestor
         return $collection;
     }
 
-    /**
-     * Make a raw request for binary content (file downloads).
-     */
     public function requestRaw(
         string $method,
         string $path,

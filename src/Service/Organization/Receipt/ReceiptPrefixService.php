@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing receipt prefixes.
- *
  * @method ReceiptPrefix restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ReceiptPrefixService extends AbstractService

@@ -20,8 +20,6 @@ class BaseEnlivyClient implements EnlivyClientInterface
     private readonly CoreServiceFactory $serviceFactory;
 
     /**
-     * Create a new Enlivy client.
-     *
      * When config is empty or missing values, falls back to Enlivy::get*() global config.
      *
      * @param array{

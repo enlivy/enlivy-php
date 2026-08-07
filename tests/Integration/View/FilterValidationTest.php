@@ -21,13 +21,8 @@ use Enlivy\Tests\Integration\IntegrationTestCase;
  */
 class FilterValidationTest extends IntegrationTestCase
 {
-    // =========================================================================
     // Helpers
-    // =========================================================================
 
-    /**
-     * List a resource with global filters and verify the API responds.
-     */
     private function assertGlobalFiltersWork(string $serviceName): void
     {
         $service = $this->getClient()->{$serviceName};
@@ -41,9 +36,6 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertInstanceOf(Collection::class, $collection);
     }
 
-    /**
-     * List a resource with resource-specific filters and verify the API responds.
-     */
     private function assertResourceFiltersWork(string $serviceName, array $filters): void
     {
         $service = $this->getClient()->{$serviceName};
@@ -56,9 +48,6 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertInstanceOf(Collection::class, $collection);
     }
 
-    /**
-     * Test that an unknown filter is caught by the SDK before hitting the API.
-     */
     private function assertInvalidFilterThrows(string $serviceName): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -67,9 +56,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Invoicing
-    // =========================================================================
 
     public function testInvoiceGlobalFilters(): void
     {
@@ -127,9 +114,7 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertGlobalFiltersWork('invoiceNotificationLogs');
     }
 
-    // =========================================================================
     // CRM
-    // =========================================================================
 
     public function testProspectGlobalFilters(): void
     {
@@ -239,9 +224,7 @@ class FilterValidationTest extends IntegrationTestCase
         );
     }
 
-    // =========================================================================
     // Contracts
-    // =========================================================================
 
     public function testContractGlobalFilters(): void
     {
@@ -262,9 +245,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Banking
-    // =========================================================================
 
     public function testBankTransactionGlobalFilters(): void
     {
@@ -290,9 +271,7 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertGlobalFiltersWork('bankAccounts');
     }
 
-    // =========================================================================
     // Billing & Offers
-    // =========================================================================
 
     public function testBillingScheduleGlobalFilters(): void
     {
@@ -337,9 +316,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Payroll
-    // =========================================================================
 
     public function testPayslipGlobalFilters(): void
     {
@@ -353,9 +330,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Reports
-    // =========================================================================
 
     public function testReportGlobalFilters(): void
     {
@@ -370,9 +345,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Content & Files
-    // =========================================================================
 
     public function testGuidelineGlobalFilters(): void
     {
@@ -404,9 +377,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Users & Projects
-    // =========================================================================
 
     public function testOrganizationUserGlobalFilters(): void
     {
@@ -426,9 +397,7 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Tasks & Tags
-    // =========================================================================
 
     public function testTaskGlobalFilters(): void
     {
@@ -445,9 +414,7 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertInvalidFilterThrows('tags');
     }
 
-    // =========================================================================
     // Global Services
-    // =========================================================================
 
     public function testOrganizationGlobalFilters(): void
     {

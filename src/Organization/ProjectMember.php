@@ -7,8 +7,6 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents a Project Member in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string|null $unique_id

@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing reusable content.
- */
 class ReusableContentService extends AbstractService
 {
     use HasIncludes;
@@ -35,17 +32,7 @@ class ReusableContentService extends AbstractService
     ];
 
     /**
-     * List all reusable content.
-     *
-     * Resource-specific filters:
-     * - `scope` (string) - Filter by scope
-     * - `entity_type` (string: contract|playbook) - Filter by entity type
-     * - `created_at_from` / `created_at_to` (datetime) - Created date range
-     * - `updated_at_from` / `updated_at_to` (datetime) - Updated date range
-     *
      * @return Collection<ReusableContent>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

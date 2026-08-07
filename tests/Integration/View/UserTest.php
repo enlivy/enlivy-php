@@ -9,14 +9,9 @@ use Enlivy\Organization\User as OrganizationUser;
 use Enlivy\Organization\UserRole;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Organization User-related endpoints.
- */
 class UserTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Organization Users
-    // -------------------------------------------------------------------------
 
     public function testListOrganizationUsers(): void
     {
@@ -90,9 +85,7 @@ class UserTest extends IntegrationTestCase
         $this->assertInstanceOf(OrganizationUser::class, $user);
     }
 
-    // -------------------------------------------------------------------------
     // User Roles
-    // -------------------------------------------------------------------------
 
     public function testListUserRoles(): void
     {

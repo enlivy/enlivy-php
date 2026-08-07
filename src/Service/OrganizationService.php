@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing organizations.
- */
 class OrganizationService extends AbstractService
 {
     use HasIncludes;
@@ -88,6 +85,16 @@ class OrganizationService extends AbstractService
 
         /** @var Organization */
         return $this->request('POST', "/organizations/restore/{$id}", $params, $opts);
+    }
+
+    /**
+     * Returns a mirror organization whose outbound calls — charges, mail,
+     * third-party services — are blocked rather than silently skipped.
+     */
+    public function createSandbox(string $id, array $params, ?RequestOptions $opts = null): Organization
+    {
+        /** @var Organization */
+        return $this->request('POST', "/organizations/{$id}/sandboxes", $params, $opts);
     }
 
     public function summary(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject

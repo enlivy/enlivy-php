@@ -8,9 +8,6 @@ use Enlivy\Collection;
 use Enlivy\Organization\Project;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Project-related endpoints.
- */
 class ProjectTest extends IntegrationTestCase
 {
     public function testListProjects(): void

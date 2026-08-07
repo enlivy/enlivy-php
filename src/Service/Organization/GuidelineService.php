@@ -16,8 +16,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing guidelines.
- *
  * @method Guideline restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class GuidelineService extends AbstractService
@@ -48,14 +46,7 @@ class GuidelineService extends AbstractService
     ];
 
     /**
-     * List all guidelines.
-     *
-     * Resource-specific filters:
-     * - `organization_project_id` (string) - Filter by project
-     *
      * @return Collection<Guideline>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

@@ -14,8 +14,6 @@ final class WebhookSignature
     public const string HEADER_NAME = 'Signature';
 
     /**
-     * Verify a webhook signature.
-     *
      * The Enlivy API signs webhooks using HMAC-SHA256 of the raw JSON payload
      * and sends the hex-encoded hash in the `Signature` header.
      *

@@ -840,6 +840,16 @@ $sent = $client->invoiceNotificationLogs->list([
 ]);
 ```
 
+Each entry records where the mail actually went: `sent_to` for the recipient and `sent_cc` for the
+copied addresses, so a log answers "who received this?" on its own.
+
+```php
+foreach ($sent->getData() as $log) {
+    $copies = implode(', ', $log->sent_cc ?? []);
+    echo "{$log->type} -> {$log->sent_to}" . ($copies !== '' ? " (cc {$copies})" : '') . "\n";
+}
+```
+
 ### What is about to be sent
 
 `invoiceScheduledReminders` projects the reminders still to come. Nothing is stored: rows are

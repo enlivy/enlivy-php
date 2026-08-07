@@ -35,9 +35,6 @@ class PaymentMethodService extends AbstractPortalService
         return $this->request('POST', $this->portalPath($orgId, 'payment-methods'), $params, $opts);
     }
 
-    /**
-     * Create a Stripe SetupIntent for adding a new card from the portal.
-     */
     public function setupIntent(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

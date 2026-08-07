@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing tax filing jurisdictions.
- */
 class TaxFilingJurisdictionService extends AbstractService
 {
     use HasIncludes;

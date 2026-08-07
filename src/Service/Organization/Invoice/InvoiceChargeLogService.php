@@ -36,15 +36,7 @@ class InvoiceChargeLogService extends AbstractService
     ];
 
     /**
-     * List invoice charge logs.
-     *
-     * Resource-specific filters:
-     * - `organization_invoice_id` (string) - Filter by invoice
-     * - `status` (string) - Filter by charge log status (comma-separated)
-     *
      * @return Collection<InvoiceChargeLog>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

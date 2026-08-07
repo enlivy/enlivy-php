@@ -68,7 +68,7 @@ set. A selection relevant to recently added features:
 | `BillingPackage\SubscriptionTermStatuses` | `active`, `archived` |
 | `BillingPackage\ProrationPolicy` | `none`, `prorate_immediately`, `prorate_next_invoice` |
 | `BillingSchedule\PhaseFrequency` | `weekly`, `biweekly`, `monthly`, `every_3_months`, `every_6_months`, `yearly` |
-| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `paused`, `cancelling`, `completed`, `cancelled` |
+| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `subscription_required`, `paused`, `cancelling`, `completed`, `cancelled` |
 | `Payment\RefundStatus` | `succeeded`, `failed`, `pending` |
 | `BillingPackage\ContractSectionContentSources` | `standard`, `reusable_content`, `purchase_items`, `purchase_terms`, `purchase_summary`, `product_list`, `purchased_product_list` |
 | `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
@@ -76,6 +76,15 @@ set. A selection relevant to recently added features:
 | `NetworkExchange\DocumentTypeCodes` | `380` (commercial invoice), `381` (credit note) |
 | `Invoice\NotificationLogTypes` | `network_exchange_auto_push`, `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue` |
 | `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `personalization` |
+| `Organization\Environments` | `live`, `sandbox` |
+| `Import\StopReasons` | `usage_limit`, `ai_limit`, `consecutive_failures`, `file_unreadable` |
+| `Receipt\Directions` | `inbound`, `outbound` |
+| `Receipt\Sources` | `uploaded`, `generated` |
+| `BillingPackage\PortalDiscoveryMode` | `disabled`, `request`, `checkout` |
+
+> `Import\StopReasons` describes why a [data import](organization/data-imports.md)
+> stopped short of the end of its file. Only `file_unreadable` cannot be resumed;
+> read `summary_json.is_resumable` rather than testing the reason yourself.
 
 > `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
 > and `CARD` (`card`).

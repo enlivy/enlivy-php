@@ -8,9 +8,6 @@ use Enlivy\Service\AbstractService;
 
 abstract class AbstractPortalService extends AbstractService
 {
-    /**
-     * Build a client-portal-scoped path.
-     */
     protected function portalPath(string $orgId, string $resource): string
     {
         return $this->portalRootPath("organizations/{$orgId}/{$resource}");

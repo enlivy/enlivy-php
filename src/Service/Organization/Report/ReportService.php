@@ -13,8 +13,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing reports.
- *
  * @method Report restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ReportService extends AbstractService
@@ -42,17 +40,11 @@ class ReportService extends AbstractService
         'organization_project_id',
         'report_date_from',
         'report_date_to',
+        'reported_by_organization_user_id',
     ];
 
     /**
-     * List all reports.
-     *
-     * Resource-specific filters:
-     * - `report_date_from` / `report_date_to` (date, Y-m-d) - Report date range
-     *
      * @return Collection<Report>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

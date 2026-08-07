@@ -9,9 +9,6 @@ use Enlivy\OAuthToken;
 use Enlivy\Service\AbstractService;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing OAuth tokens.
- */
 class OAuthTokenService extends AbstractService
 {
     public function create(array $params, ?RequestOptions $opts = null): OAuthToken

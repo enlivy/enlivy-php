@@ -47,8 +47,6 @@ class TenantBillingInvoiceService extends AbstractService
 
     /**
      * @return Collection<Invoice>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

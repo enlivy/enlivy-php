@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing proposals.
- *
  * @method Proposal restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ProposalService extends AbstractService
@@ -56,19 +54,7 @@ class ProposalService extends AbstractService
     ];
 
     /**
-     * List all proposals.
-     *
-     * Resource-specific filters:
-     * - `status` (string: draft|sent|viewed|accepted|rejected|expired)
-     * - `currency` (string) - Filter by currency code (3 chars, e.g. EUR)
-     * - `organization_project_id` (string) - Filter by project
-     * - `organization_billing_package_id` (string) - Filter by billing package
-     * - `organization_prospect_id` (string) - Filter by prospect
-     * - `organization_receiver_user_id` (string) - Filter by receiver user
-     *
      * @return Collection<Proposal>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

@@ -13,9 +13,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing invoice network exchanges.
- */
 class InvoiceNetworkExchangeService extends AbstractService
 {
     use HasTagging;
@@ -44,15 +41,7 @@ class InvoiceNetworkExchangeService extends AbstractService
     ];
 
     /**
-     * List all invoice network exchanges.
-     *
-     * Resource-specific filters:
-     * - `organization_invoice_id` (string) - Filter by invoice
-     * - `invoice_state` (string: any|attached|unattached) - Filter by attachment state
-     *
      * @return Collection<InvoiceNetworkExchange>
-     *
-     * @see HasFilters::GLOBAL_FILTERS for global filters (q, ids, page, per_page, etc.)
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {

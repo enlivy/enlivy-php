@@ -11,14 +11,9 @@ use Enlivy\Organization\ProspectStatus;
 use Enlivy\Organization\ProspectActivity;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
-/**
- * Integration tests for Prospect/CRM-related endpoints.
- */
 class ProspectTest extends IntegrationTestCase
 {
-    // -------------------------------------------------------------------------
     // Prospects
-    // -------------------------------------------------------------------------
 
     public function testListProspects(): void
     {
@@ -85,9 +80,7 @@ class ProspectTest extends IntegrationTestCase
         $this->assertIsArray($board->columns);
     }
 
-    // -------------------------------------------------------------------------
     // Prospect Statuses
-    // -------------------------------------------------------------------------
 
     public function testListProspectStatuses(): void
     {
@@ -118,9 +111,7 @@ class ProspectTest extends IntegrationTestCase
         $this->assertEquals($statusId, $status->id);
     }
 
-    // -------------------------------------------------------------------------
     // Prospect Activities
-    // -------------------------------------------------------------------------
 
     public function testListProspectActivities(): void
     {

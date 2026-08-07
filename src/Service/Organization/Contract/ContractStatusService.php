@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing contract statuses.
- *
  * @method ContractStatus restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ContractStatusService extends AbstractService
@@ -33,7 +31,10 @@ class ContractStatusService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'title',
+        'description',
+    ];
 
     /**
      * @return Collection<ContractStatus>

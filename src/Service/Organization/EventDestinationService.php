@@ -80,8 +80,6 @@ class EventDestinationService extends AbstractService
     }
 
     /**
-     * List event subscriptions across the organization's destinations.
-     *
      * @return Collection<EventSubscription>
      */
     public function subscriptions(array $params = [], ?RequestOptions $opts = null): Collection
@@ -92,8 +90,6 @@ class EventDestinationService extends AbstractService
     }
 
     /**
-     * List delivery attempts across the organization's destinations.
-     *
      * Filters: `organization_event_destination_id`, `event`, `status`,
      * `created_at_from`/`created_at_to`, `updated_at_from`/`updated_at_to`.
      *

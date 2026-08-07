@@ -11,9 +11,6 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-/**
- * Service for managing report schema fields.
- */
 class ReportSchemaFieldService extends AbstractService
 {
     use HasIncludes;

@@ -83,7 +83,6 @@ final class ClientTest extends TestCase
         ]);
 
         $this->assertInstanceOf(ProspectService::class, $client->prospects);
-        // Same instance on repeated access
         $this->assertSame($client->prospects, $client->prospects);
     }
 
@@ -94,7 +93,6 @@ final class ClientTest extends TestCase
             'organization_id' => 'org_test',
         ]);
 
-        // Test a sampling of services
         $services = [
             'prospects',
             'invoices',
@@ -123,7 +121,6 @@ final class ClientTest extends TestCase
             'http_client' => $mockClient,
         ]);
 
-        // Accessing prospects and making a request should use our mock
         $client->prospects->list();
 
         $this->assertSame(1, $mockClient->getRequestCount());

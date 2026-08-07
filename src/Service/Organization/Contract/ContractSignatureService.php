@@ -14,8 +14,6 @@ use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
- * Service for managing contract signatures.
- *
  * @method ContractSignature restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ContractSignatureService extends AbstractService
@@ -87,8 +85,6 @@ class ContractSignatureService extends AbstractService
     }
 
     /**
-     * Send a signing invitation to the signer.
-     *
      * @param array{message?: string|null, method?: 'email'|'sms'|null} $params
      *   - `message` (optional): Custom message to include in the signing invitation
      *   - `method` (optional): Notification channel — `'email'`, `'sms'`, or `null` (auto-detect)

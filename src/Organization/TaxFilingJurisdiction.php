@@ -7,8 +7,6 @@ namespace Enlivy\Organization;
 use Enlivy\ApiResource;
 
 /**
- * Represents a Tax Filing Jurisdiction in the Enlivy API.
- *
  * @property string $id
  * @property string $object
  * @property string $organization_id

@@ -19,9 +19,7 @@ use Enlivy\Tests\Integration\IntegrationTestCase;
  */
 class IncludeValidationTest extends IntegrationTestCase
 {
-    // =========================================================================
     // Helper
-    // =========================================================================
 
     /**
      * List a resource and retrieve the first record with all available includes.
@@ -56,9 +54,6 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertNotNull($result->id, "Retrieve with all includes should return a valid record for {$serviceName}");
     }
 
-    /**
-     * Test that invalid includes throw an InvalidArgumentException at SDK level.
-     */
     private function assertInvalidIncludeThrows(string $serviceName): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -67,9 +62,7 @@ class IncludeValidationTest extends IntegrationTestCase
         ]);
     }
 
-    // =========================================================================
     // Invoicing
-    // =========================================================================
 
     public function testInvoiceAllIncludes(): void
     {
@@ -105,9 +98,7 @@ class IncludeValidationTest extends IntegrationTestCase
         }
     }
 
-    // =========================================================================
     // CRM
-    // =========================================================================
 
     public function testProspectAllIncludes(): void
     {
@@ -124,9 +115,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('prospectStatuses');
     }
 
-    // =========================================================================
     // Contracts
-    // =========================================================================
 
     public function testContractAllIncludes(): void
     {
@@ -143,9 +132,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('contractPrefixes');
     }
 
-    // =========================================================================
     // Users & Roles
-    // =========================================================================
 
     public function testOrganizationUserAllIncludes(): void
     {
@@ -157,27 +144,21 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('userRoles');
     }
 
-    // =========================================================================
     // Projects
-    // =========================================================================
 
     public function testProjectAllIncludes(): void
     {
         $this->assertAllIncludesWork('projects');
     }
 
-    // =========================================================================
     // Products
-    // =========================================================================
 
     public function testProductAllIncludes(): void
     {
         $this->assertAllIncludesWork('products');
     }
 
-    // =========================================================================
     // Banking
-    // =========================================================================
 
     public function testBankAccountAllIncludes(): void
     {
@@ -194,9 +175,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('bankTransactionCostTypes');
     }
 
-    // =========================================================================
     // Tax
-    // =========================================================================
 
     public function testTaxClassAllIncludes(): void
     {
@@ -213,9 +192,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('taxTypes');
     }
 
-    // =========================================================================
     // Payroll
-    // =========================================================================
 
     public function testPayslipAllIncludes(): void
     {
@@ -227,9 +204,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('payslipSchemas');
     }
 
-    // =========================================================================
     // Reports
-    // =========================================================================
 
     public function testReportAllIncludes(): void
     {
@@ -241,9 +216,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('reportSchemas');
     }
 
-    // =========================================================================
     // Content & Files
-    // =========================================================================
 
     public function testFileAllIncludes(): void
     {
@@ -260,9 +233,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('playbooks');
     }
 
-    // =========================================================================
     // Tasks
-    // =========================================================================
 
     public function testTaskAllIncludes(): void
     {
@@ -274,9 +245,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('taskStatuses');
     }
 
-    // =========================================================================
     // Tags & Event Destinations
-    // =========================================================================
 
     public function testTagAllIncludes(): void
     {
@@ -288,9 +257,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('eventDestinations');
     }
 
-    // =========================================================================
     // Billing & Offers
-    // =========================================================================
 
     public function testBillingScheduleAllIncludes(): void
     {
@@ -307,9 +274,7 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('proposals');
     }
 
-    // =========================================================================
     // Global Services
-    // =========================================================================
 
     public function testOrganizationAllIncludes(): void
     {
