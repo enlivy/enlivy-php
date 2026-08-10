@@ -100,6 +100,7 @@ use Enlivy\Service;
  * @property Service\Organization\SettingLocalizationService $settingLocalizations
  * @property Service\Organization\PreferenceService $preferences
  * @property Service\Organization\NotificationService $notifications
+ * @property Service\Organization\BlockedIdentifierService $blockedIdentifiers
  *
  * Organization-scoped services - Event Delivery & Export:
  * @property Service\Organization\EventDestinationService $eventDestinations

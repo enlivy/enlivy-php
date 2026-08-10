@@ -15,6 +15,7 @@ use Enlivy\Organization\ApiCredential;
 use Enlivy\Organization\BankAccount;
 use Enlivy\Organization\BankTransaction;
 use Enlivy\Organization\BankTransactionCostType;
+use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\Contract;
 use Enlivy\Organization\ContractConnection;
@@ -127,6 +128,7 @@ final class ObjectTypes
         'bank_account' => BankAccount::class,
         'bank_transaction' => BankTransaction::class,
         'bank_transaction_cost_type' => BankTransactionCostType::class,
+        'blocked_identifier' => BlockedIdentifier::class,
         'billing_schedule' => BillingSchedule::class,
 
         // Organization-scoped: Contracts

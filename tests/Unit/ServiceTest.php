@@ -7,10 +7,13 @@ namespace Enlivy\Tests\Unit;
 use Enlivy\Collection;
 use Enlivy\EnlivyClient;
 use Enlivy\EnlivyObject;
+use Enlivy\Enums\BlockedIdentifier\Sources;
+use Enlivy\Enums\BlockedIdentifier\Types;
 use Enlivy\Enums\Organization\Environments;
 use Enlivy\Exception\InvalidArgumentException;
 use Enlivy\Organization;
 use Enlivy\Organization\BillingSchedule;
+use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\ContractConnection;
 use Enlivy\Organization\Prospect;
 use Enlivy\Tests\Mock\MockHttpClient;
@@ -559,6 +562,83 @@ final class ServiceTest extends TestCase
         $removed = $this->client->userRoleAbilities->delete('org_role_1', ['abilities' => ['invoices.manage']]);
         $this->assertSame('ok', $removed->status);
         $this->assertSame('DELETE', $this->httpClient->getLastRequest()['method']);
+    }
+
+    public function testBlockedIdentifierCrudResolvesUnderTheOrganization(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [[
+                'id' => 'org_bi_1',
+                'object' => 'blocked_identifier',
+                'source' => 'platform',
+                'type' => 'email_domain',
+                'value' => 'spam.example',
+                'normalized_value' => 'spam.example',
+            ]],
+        ]);
+
+        $rows = $this->client->blockedIdentifiers->list([
+            'type' => ['email', 'email_domain'],
+            'source' => Sources::ALL->value,
+        ]);
+
+        $this->assertInstanceOf(BlockedIdentifier::class, $rows->getData()[0]);
+        $this->assertSame('platform', $rows->getData()[0]->source);
+        $this->assertStringContainsString(
+            '/organizations/org_default/blocked-identifiers',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(201, [
+            'data' => ['id' => 'org_bi_2', 'object' => 'blocked_identifier', 'type' => 'email'],
+        ]);
+        $created = $this->client->blockedIdentifiers->create([
+            'type' => Types::EMAIL->value,
+            'value' => 'blocked@example.com',
+            'reason' => 'chargeback',
+        ]);
+        $this->assertInstanceOf(BlockedIdentifier::class, $created);
+        $this->assertSame('POST', $this->httpClient->getLastRequest()['method']);
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_bi_2', 'object' => 'blocked_identifier']]);
+        $this->client->blockedIdentifiers->delete('org_bi_2');
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('DELETE', $request['method']);
+        $this->assertStringContainsString('/blocked-identifiers/org_bi_2', $request['url']);
+    }
+
+    public function testBlockedIdentifierListRejectsAnUnknownFilter(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->client->blockedIdentifiers->list(['value' => 'spam.example']);
+    }
+
+    public function testDetermineIsBlockedHelpersHitTheMiscPlane(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'is_blocked' => true,
+            'type' => 'email_domain',
+            'source' => 'platform',
+            'value' => 'spam.example',
+            'reason' => null,
+        ]);
+
+        $answer = $this->client->misc->determineIsEmailBlocked(['value' => 'x@spam.example']);
+
+        $this->assertTrue($answer->is_blocked);
+        $this->assertSame('email_domain', $answer->type);
+        $this->assertStringContainsString(
+            '/organizations/org_default/misc/determine-is-email-blocked',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, ['is_blocked' => false]);
+        $this->client->misc->determineIsPhoneNumberBlocked(['value' => '0746047047', 'country_code' => 'RO']);
+        $this->assertStringContainsString(
+            '/organizations/org_default/misc/determine-is-phone-number-blocked',
+            $this->httpClient->getLastRequest()['url'],
+        );
     }
 
     public function testOAuthAuthorizationUpdateSendsPatch(): void

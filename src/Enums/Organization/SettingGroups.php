@@ -18,6 +18,7 @@ enum SettingGroups: string
     case CONTRACTS = 'contracts';
     case SALES = 'sales';
     case USERS = 'users';
+    case BLOCKED_IDENTIFIERS = 'blocked_identifiers';
     case EMAIL = 'email';
     case STRIPE_CONNECT = 'stripe_connect';
     case NETWORK_EXCHANGE = 'network_exchange';

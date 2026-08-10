@@ -3,6 +3,56 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.6.0] - 2026-08-10
+
+Blocklists: keep an email, an email domain, or a phone number out of an
+organization. Additive throughout.
+
+### Added
+
+- **Blocked identifiers.** `$client->blockedIdentifiers` — list, retrieve,
+  create, update, delete against
+  `organizations/{org}/blocked-identifiers`. New resource
+  `Enlivy\Organization\BlockedIdentifier`. Filters `type` (array) and `source`;
+  `organization` include.
+
+  Two lists are enforced together: the platform-wide list Enlivy maintains and
+  the organization's own. `source` defaults to the organization's rows; pass
+  `all` to see the platform entries alongside them. Platform rows are
+  read-only. `value` is validated against the shape `type` implies and must be
+  unique within the organization; `normalized_value` is derived server-side and
+  is what matching actually runs on, so a number stored as `+40 746 047 047`
+  is still found by its digits alone.
+
+- **Check a value without submitting a form.**
+  `misc->determineIsEmailBlocked(['value' => ...])` and
+  `misc->determineIsPhoneNumberBlocked(['value' => ..., 'country_code' => ...])`
+  answer `{ is_blocked, type, source, value, reason }`. Everything but
+  `is_blocked` is null when nothing matched. An email can match as itself or by
+  its domain — `type` says which rule caught it.
+
+- **`Enlivy\Enums\BlockedIdentifier\Types`** — `email`, `email_domain`,
+  `phone_number`. **`Enlivy\Enums\BlockedIdentifier\Sources`** —
+  `organization`, `platform`, `all`. `ALL` is a filter directive on the list
+  endpoint, not a value a stored row carries.
+
+- **`Organization\SettingGroups`** gains `blocked_identifiers`.
+
+- **New docs:** [Blocked Identifiers](docs/organization/blocked-identifiers.md).
+
+### Changed
+
+- **Blocking is enforced on the inbound surface.** New-user registration and
+  customer-portal session creation now reject a blocked email, and registration
+  rejects a blocked phone number. These are pass-through endpoints, so no SDK
+  signature changes — expect a 422 where a record used to be created. Existing
+  records are not affected; adding an entry does not remove them.
+
+- **Prospect-activity event payloads** delivered to event destinations now
+  carry `prospect_name` and `prospect_email` flattened onto the activity, so a
+  message template can name the prospect without subscribing to the
+  `organization_prospect` include.
+
 ## [2.5.0] - 2026-08-08
 
 CSV imports for products and organization users, imports that can be resumed

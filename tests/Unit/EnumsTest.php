@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Enlivy\Tests\Unit;
 
 use Enlivy\Enums\BillingPackage\PortalDiscoveryMode;
+use Enlivy\Enums\BlockedIdentifier\Sources as BlockedIdentifierSources;
+use Enlivy\Enums\BlockedIdentifier\Types as BlockedIdentifierTypes;
 use Enlivy\Enums\BillingSchedule\Statuses as BillingScheduleStatuses;
 use Enlivy\Enums\Concern\EnumValues;
 use Enlivy\Enums\Receipt\Directions as ReceiptDirections;
@@ -50,6 +52,14 @@ final class EnumsTest extends TestCase
             TaxApplicabilityReasons::values(),
         );
         $this->assertSame(['live', 'sandbox'], Environments::values());
+        $this->assertSame(
+            ['email', 'email_domain', 'phone_number'],
+            BlockedIdentifierTypes::values(),
+        );
+        $this->assertSame(
+            ['organization', 'platform', 'all'],
+            BlockedIdentifierSources::values(),
+        );
         $this->assertSame(['inbound', 'outbound'], ReceiptDirections::values());
         $this->assertSame(['uploaded', 'generated'], ReceiptSources::values());
         $this->assertSame(['disabled', 'request', 'checkout'], PortalDiscoveryMode::values());
@@ -109,6 +119,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(107, $count, 'Expected at least 107 mirrored enums');
+        $this->assertGreaterThanOrEqual(109, $count, 'Expected at least 109 mirrored enums');
     }
 }

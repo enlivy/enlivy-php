@@ -111,6 +111,7 @@ Detailed guides with code examples for every feature:
 |-------|-------------|
 | [Prospects](docs/organization/prospects.md) | Sales pipeline, lead tracking, and CRM |
 | [Organization Users](docs/organization/users.md) | Customers, employees, and roles |
+| [Blocked Identifiers](docs/organization/blocked-identifiers.md) | Keep an email, domain, or phone number out of your organization |
 | [Projects](docs/organization/projects.md) | Projects, team members, and permissions |
 
 ### Contracts

@@ -12,6 +12,7 @@ use Enlivy\Service\Organization\ApiCredentialService;
 use Enlivy\Service\Organization\BankAccount\BankAccountDataService;
 use Enlivy\Service\Organization\BankAccount\BankAccountService;
 use Enlivy\Service\Organization\BankAccount\BankTransactionCostTypeService;
+use Enlivy\Service\Organization\BlockedIdentifierService;
 use Enlivy\Service\Organization\BankAccount\BankTransactionService;
 use Enlivy\Service\Organization\BillingScheduleService;
 use Enlivy\Service\Organization\Contract\ContractPrefixService;
@@ -146,6 +147,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'bankAccounts' => BankAccountService::class,
             'bankTransactions' => BankTransactionService::class,
             'bankTransactionCostTypes' => BankTransactionCostTypeService::class,
+            'blockedIdentifiers' => BlockedIdentifierService::class,
             'bankAccountData' => BankAccountDataService::class,
             'billingSchedules' => BillingScheduleService::class,
 

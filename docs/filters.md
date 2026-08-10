@@ -428,6 +428,15 @@ following.
 |--------|------|
 | `type` | `full`, `accounting_saga` |
 
+### Blocked Identifiers
+
+**`blockedIdentifiers`**
+
+| Filter | Type |
+|--------|------|
+| `source` | `organization` (default), `platform`, `all` |
+| `type` | array of `email`, `email_domain`, `phone_number` |
+
 ### Catalog
 
 **`products`**

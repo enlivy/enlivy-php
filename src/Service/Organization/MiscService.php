@@ -55,6 +55,33 @@ class MiscService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-is-tax-charged'), $params, $opts);
     }
 
+    /**
+     * Check an email against the blocklist without submitting a form. Answers
+     * `{ is_blocked, type, source, value, reason }`; every field but
+     * `is_blocked` is null when nothing matched.
+     *
+     * A blocked address matches either as itself or by its domain, so `type`
+     * tells you which rule caught it.
+     */
+    public function determineIsEmailBlocked(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-is-email-blocked'), $params, $opts);
+    }
+
+    /**
+     * Same answer shape as {@see self::determineIsEmailBlocked()}. Pass
+     * `country_code` when `value` is not in international form — matching is
+     * done on the normalized number, not the string you send.
+     */
+    public function determineIsPhoneNumberBlocked(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-is-phone-number-blocked'), $params, $opts);
+    }
+
     public function testEmail(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

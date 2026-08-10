@@ -1,3 +1,41 @@
+# Upgrading to 2.6.0
+
+`2.6.0` is a **minor** release and purely additive to the SDK. No signatures
+change and nothing is removed. One behavioural note is worth knowing before you
+upgrade.
+
+## Blocking is enforced on inbound endpoints
+
+Once an organization has blocked identifiers, these endpoints reject a match
+with a 422 instead of creating the record:
+
+- new-user registration — blocked email or blocked phone number
+- customer-portal session creation — blocked email
+
+Both are pass-through endpoints, so there is nothing to change in your calls.
+If you create users or portal sessions on behalf of an organization, handle
+`ValidationException` there as you would any other rule.
+
+```php
+use Enlivy\Exception\ValidationException;
+
+try {
+    $session = $client->userClientPortalSessions->create([...]);
+} catch (ValidationException $e) {
+    $errors = $e->errors(); // ['email' => ['...']]
+}
+```
+
+Check a value up front if you would rather not rely on the failure:
+
+```php
+$answer = $client->misc->determineIsEmailBlocked(['value' => $email]);
+if ($answer->is_blocked) { /* ... */ }
+```
+
+Adding an entry does not remove records that already exist — review those
+separately.
+
 # Upgrading to 2.5.0
 
 `2.5.0` is a **minor** release. Almost all of it is additive. Three things are

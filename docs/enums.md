@@ -75,12 +75,17 @@ set. A selection relevant to recently added features:
 | `ExportData\Types` | `full`, `accounting_saga` |
 | `NetworkExchange\DocumentTypeCodes` | `380` (commercial invoice), `381` (credit note) |
 | `Invoice\NotificationLogTypes` | `network_exchange_auto_push`, `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue` |
-| `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `personalization` |
+| `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `blocked_identifiers`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `personalization` |
 | `Organization\Environments` | `live`, `sandbox` |
 | `Import\StopReasons` | `usage_limit`, `ai_limit`, `consecutive_failures`, `file_unreadable` |
+| `BlockedIdentifier\Types` | `email`, `email_domain`, `phone_number` |
+| `BlockedIdentifier\Sources` | `organization`, `platform`, `all` |
 | `Receipt\Directions` | `inbound`, `outbound` |
 | `Receipt\Sources` | `uploaded`, `generated` |
 | `BillingPackage\PortalDiscoveryMode` | `disabled`, `request`, `checkout` |
+
+> `BlockedIdentifier\Sources::ALL` is a filter directive on the list endpoint,
+> not a value a stored row carries — a row is always `organization` or `platform`.
 
 > `Import\StopReasons` describes why a [data import](organization/data-imports.md)
 > stopped short of the end of its file. Only `file_unreadable` cannot be resumed;
