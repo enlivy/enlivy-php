@@ -192,6 +192,15 @@ $invoices = $client->invoices->list([
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
+**`prospectActivities`**
+
+| Filter | Type |
+|--------|------|
+| `organization_prospect_id` | string |
+| `organization_report_id` | string |
+| `organization_file_id` | string |
+| `performed_by_organization_user_id` | string |
+
 ### Contracts
 
 **`contracts`**

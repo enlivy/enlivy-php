@@ -706,6 +706,20 @@ echo "Contract restored: {$contract->title}\n";
 |-------|-------------|
 | `locale` | Contract locale (defaults to organization locale). Must be an active locale in the organization. |
 
+### Read-Only Fields
+
+| Field | Description |
+|-------|-------------|
+| `content_locked_at` | When the contract's content was frozen; `null` while it can still be edited |
+
+A contract's body is locked once it has been signed, so that what was agreed cannot drift from what
+was signed. Treat a non-null `content_locked_at` as "edits to the content will be rejected" rather
+than testing signature state yourself.
+
+Each signature records `signed_document_hash` — a digest of the exact document that party signed.
+Two signatures on the same contract carrying different hashes means the content changed between
+them, which is the question the hash exists to answer.
+
 ### Conditional Required Fields
 
 | Field | Condition |

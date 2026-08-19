@@ -29,6 +29,7 @@ class ProspectActivityService extends AbstractService
         'organization_prospect',
         'performed_by_organization_user',
         'organization_report',
+        'organization_file',
         'organization_prospect_status_path',
         'created_by_user',
         'deleted_by_user',
@@ -37,6 +38,7 @@ class ProspectActivityService extends AbstractService
     public const array AVAILABLE_FILTERS = [
         'organization_prospect_id',
         'organization_report_id',
+        'organization_file_id',
         'performed_by_organization_user_id',
     ];
 

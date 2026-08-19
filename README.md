@@ -133,6 +133,7 @@ Detailed guides with code examples for every feature:
 | [Reports](docs/organization/reports.md) | Dynamic reports with custom schemas |
 | [Files](docs/organization/files.md) | File uploads and attachments |
 | [Data Imports](docs/organization/data-imports.md) | Bulk-load products, users, prospects, and transactions from CSV |
+| [Trash](docs/organization/trashed-items.md) | See what soft-deleted records are still held, and empty them early |
 
 ### Integrations
 

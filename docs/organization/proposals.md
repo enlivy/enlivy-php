@@ -515,6 +515,21 @@ Returned on read, not writable:
 | `can_create_billing_schedule` | boolean | Whether a billing schedule can still be created from this (accepted subscription) proposal |
 | `has_unsigned_required_contracts` | boolean | Whether required contracts remain unsigned |
 | `billed_currency` | string\|null | Currency the proposal is billed in |
+| `outcome_mode` | string\|null | What the proposal settles into — see below |
+
+`outcome_mode` is inherited from the billing package the proposal was built from, or set once on
+`create()` for a custom proposal. It is rejected on `update()`: what a document settles into is
+decided when it is written, not renegotiated afterwards.
+
+Only `sale` produces revenue and therefore a fiscal document. `funding` (share subscriptions, loans,
+capital contributions, grants) and `agreement` (NDAs, framework agreements, term sheets) settle
+without an invoice being issued. See
+[Billing Packages — Outcome Mode](billing-packages.md#outcome-mode) for the full table, and the
+`Enlivy\Enums\BillingPackage\OutcomeMode` enum for the values.
+
+`Proposal\Statuses` gained `agreed`, the terminal state for a non-`sale` proposal: it is reached from
+`accepted` once no required contract is still outstanding, and it is where such a proposal stops —
+there is no payment or invoice for it to progress to. A `sale` proposal never reaches it.
 
 ## Complete Example: Proposal Workflow
 

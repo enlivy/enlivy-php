@@ -21,6 +21,7 @@ use Enlivy\ApiResource;
  * @property string $direction
  * @property string $status
  * @property string|null $payment_method
+ * @property string $invoice_issue_trigger
  * @property string $currency
  * @property float|null $total
  * @property float|null $paid_total

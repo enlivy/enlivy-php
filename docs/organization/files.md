@@ -179,6 +179,22 @@ $file = $client->files->update('org_file_xxx', [
 echo "Updated: {$file->name}\n";
 ```
 
+### Time-limiting public access
+
+A public file can carry a deadline. Once it passes, the file stops being publicly reachable — no separate call is needed to withdraw it.
+
+```php
+$client->files->update('org_file_xxx', [
+    'is_public' => true,
+    'public_access_expires_at' => '2026-12-31T23:59:59Z',
+]);
+
+// Remove the deadline; the file stays public until you say otherwise
+$client->files->update('org_file_xxx', ['public_access_expires_at' => null]);
+```
+
+`public_access_expires_at` must be in the future. It is only meaningful on a public file, and reads back as `null` when no deadline is set.
+
 ## Deleting a File
 
 ```php
@@ -231,11 +247,16 @@ echo "File in folder: {$file->name}\n";
 
 ## Supported File Extensions
 
-Common supported extensions include:
-- Documents: `pdf`, `doc`, `docx`, `xls`, `xlsx`, `ppt`, `pptx`
-- Images: `jpg`, `jpeg`, `png`, `gif`, `webp`
-- Archives: `zip`, `rar`
+The allow-list is exact — an extension outside it is rejected at upload:
+
+- Documents: `pdf`, `doc`, `docx`, `xls`, `xlsx`
+- Images: `jpg`, `jpeg`, `png`, `gif`
+- Video: `mp4`, `mov`, `webm`
+- Audio: `mp3`, `m4a`
+- Archives: `zip`
 - Text: `txt`, `csv`
+
+The upload is also checked after the bytes land: the `Content-Type` you send on the presigned PUT must match the extension you claimed. Set it from the file itself rather than hard-coding one, and note that a rejected upload is deleted rather than kept.
 
 ## Field Reference
 
@@ -255,6 +276,15 @@ Common supported extensions include:
 | `description` | string | No | File description |
 | `parent_organization_files_id` | string | No | Parent folder ID |
 | `context` | string | No | Categorization context |
+
+### Update Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | No | Display name |
+| `description` | string | No | File description |
+| `is_public` | bool | No | Whether the file is publicly reachable |
+| `public_access_expires_at` | string | No | When public access lapses; must be in the future, `null` clears it |
 
 ### Include Options
 

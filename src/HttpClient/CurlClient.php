@@ -81,8 +81,8 @@ final class CurlClient implements HttpClientInterface
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
                 $curlHeaders[] = 'Content-Type: application/json';
             }
-        } elseif ($method === 'GET' && $params !== null && $params !== []) {
-            $url .= '?' . http_build_query($params);
+        } else {
+            $url = self::appendQuery($method, $url, $params);
         }
 
         $curlOpts = [
@@ -126,6 +126,20 @@ final class CurlClient implements HttpClientInterface
         $parsedHeaders = $this->parseHeaders($rawHeaders);
 
         return [$body, $parsedHeaders, $statusCode];
+    }
+
+    /**
+     * Params for a verb that carries no body travel on the query string. DELETE is included
+     * deliberately: proxies and servers are entitled to drop a DELETE body, so a filter sent
+     * that way could silently vanish and widen the request it was meant to narrow.
+     */
+    private static function appendQuery(string $method, string $url, ?array $params): string
+    {
+        if ($params === null || $params === []) {
+            return $url;
+        }
+
+        return $url . (str_contains($url, '?') ? '&' : '?') . http_build_query($params);
     }
 
     private function hasFileUpload(array $params): bool

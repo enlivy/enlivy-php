@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Enlivy\Tests\Unit;
 
+use Enlivy\Enums\BillingPackage\ContractPartySelections;
+use Enlivy\Enums\BillingPackage\ContractPartySources;
+use Enlivy\Enums\BillingPackage\OutcomeMode;
 use Enlivy\Enums\BillingPackage\PortalDiscoveryMode;
+use Enlivy\Enums\BillingPackage\TierPriceType;
 use Enlivy\Enums\BlockedIdentifier\Sources as BlockedIdentifierSources;
 use Enlivy\Enums\BlockedIdentifier\Types as BlockedIdentifierTypes;
+use Enlivy\Enums\BillingSchedule\InvoiceIssueTrigger;
 use Enlivy\Enums\BillingSchedule\Statuses as BillingScheduleStatuses;
 use Enlivy\Enums\Concern\EnumValues;
 use Enlivy\Enums\Receipt\Directions as ReceiptDirections;
@@ -18,6 +23,7 @@ use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Payslip\Fields as PayslipFields;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
+use Enlivy\Enums\Proposal\Statuses as ProposalStatuses;
 use Enlivy\Enums\Tax\TaxApplicabilityReasons;
 use Enlivy\Enums\Tax\TaxEventDirections;
 use Enlivy\Enums\TenantBilling\BillingCycles;
@@ -72,14 +78,32 @@ final class EnumsTest extends TestCase
                 'pending',
                 'active',
                 'payment_method_required',
-                'subscription_required',
+                'payment_failed',
                 'paused',
-                'cancelling',
                 'completed',
                 'cancelled',
             ],
             BillingScheduleStatuses::values(),
         );
+        $this->assertSame(['on_generation', 'on_payment'], InvoiceIssueTrigger::values());
+        $this->assertSame(['sale', 'funding', 'agreement'], OutcomeMode::values());
+        $this->assertSame(['fixed', 'percent_of_baseline'], TierPriceType::values());
+        $this->assertSame(['standard', 'custom'], ContractPartySelections::values());
+        $this->assertSame(
+            ['sender', 'receiver', 'assigned', 'stated'],
+            ContractPartySources::values(),
+        );
+        $this->assertContains('agreed', ProposalStatuses::values());
+    }
+
+    /**
+     * The two cases upstream retired in 2.7.0. Pinned so a well-meaning restore has to
+     * argue with a test rather than silently re-introduce a status the API never sends.
+     */
+    public function testRetiredBillingScheduleStatusesStayRemoved(): void
+    {
+        $this->assertNotContains('subscription_required', BillingScheduleStatuses::values());
+        $this->assertNotContains('cancelling', BillingScheduleStatuses::values());
     }
 
     /**
@@ -119,6 +143,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(109, $count, 'Expected at least 109 mirrored enums');
+        $this->assertGreaterThanOrEqual(114, $count, 'Expected at least 114 mirrored enums');
     }
 }

@@ -68,7 +68,8 @@ set. A selection relevant to recently added features:
 | `BillingPackage\SubscriptionTermStatuses` | `active`, `archived` |
 | `BillingPackage\ProrationPolicy` | `none`, `prorate_immediately`, `prorate_next_invoice` |
 | `BillingSchedule\PhaseFrequency` | `weekly`, `biweekly`, `monthly`, `every_3_months`, `every_6_months`, `yearly` |
-| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `subscription_required`, `paused`, `cancelling`, `completed`, `cancelled` |
+| `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `payment_failed`, `paused`, `completed`, `cancelled` |
+| `BillingSchedule\InvoiceIssueTrigger` | `on_generation`, `on_payment` |
 | `Payment\RefundStatus` | `succeeded`, `failed`, `pending` |
 | `BillingPackage\ContractSectionContentSources` | `standard`, `reusable_content`, `purchase_items`, `purchase_terms`, `purchase_summary`, `product_list`, `purchased_product_list` |
 | `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
@@ -83,6 +84,10 @@ set. A selection relevant to recently added features:
 | `Receipt\Directions` | `inbound`, `outbound` |
 | `Receipt\Sources` | `uploaded`, `generated` |
 | `BillingPackage\PortalDiscoveryMode` | `disabled`, `request`, `checkout` |
+| `BillingPackage\OutcomeMode` | `sale`, `funding`, `agreement` |
+| `BillingPackage\TierPriceType` | `fixed`, `percent_of_baseline` |
+| `BillingPackage\ContractPartySelections` | `standard`, `custom` |
+| `BillingPackage\ContractPartySources` | `sender`, `receiver`, `assigned`, `stated` |
 
 > `BlockedIdentifier\Sources::ALL` is a filter directive on the list endpoint,
 > not a value a stored row carries — a row is always `organization` or `platform`.
@@ -93,6 +98,20 @@ set. A selection relevant to recently added features:
 
 > `Proposal\PaymentMethodKind` cases are now `BANK_TRANSFER` (`bank_transfer`)
 > and `CARD` (`card`).
+
+> `BillingSchedule\Statuses` dropped `subscription_required` and `cancelling` in
+> 2.7.0 — the API no longer sends either, and neither ever reached a production
+> row. `cancelling` was a second spelling of `cancel_effective_at`, so a schedule
+> the customer has asked to end stays `active` until it reaches `cancelled`.
+> `subscription_required` stamped the organization's entitlement onto its schedule
+> rows and has no replacement — the payments cron reads that entitlement directly.
+> `payment_failed` is new: a schedule whose card keeps refusing stops minting
+> cycles. See [UPGRADING](../UPGRADING.md).
+
+> `BillingPackage\OutcomeMode` decides whether a proposal built from the package
+> ever produces a fiscal document: only `sale` does. `funding` (share subscriptions,
+> loans, grants) and `agreement` (NDAs, framework agreements) settle without an
+> invoice, so the charge pipeline never issues one.
 
 ## Tax
 

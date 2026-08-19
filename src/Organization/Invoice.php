@@ -68,6 +68,10 @@ use Enlivy\ApiResource;
  * @property string|null $deleted_at
  * @property string|null $organization_user_payment_method_id
  * @property string|null $payment_provider_reference
+ * @property string|null $charge_first_failed_at Present only on API-charged invoices
+ * @property int|null $charge_retry_count Present only on API-charged invoices
+ * @property string|null $next_charge_retry_at Present only on API-charged invoices
+ * @property string|null $charge_retry_exhausted_at Present only on API-charged invoices
  */
 class Invoice extends ApiResource
 {

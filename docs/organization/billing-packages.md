@@ -112,6 +112,81 @@ $package = $client->billingPackages->create([
 echo "Billing package created: {$package->id}\n";
 ```
 
+## Outcome Mode
+
+`outcome_mode` decides what a proposal built from the package settles into — and therefore whether
+money moving ever produces a fiscal document:
+
+| Mode | Settles into | Issues an invoice |
+|------|--------------|-------------------|
+| `sale` (default) | Revenue | Yes |
+| `funding` | Equity or a liability — share subscriptions, convertible loans, capital contributions, grants | No |
+| `agreement` | Nothing monetary — NDAs, framework agreements, term sheets | No |
+
+```php
+use Enlivy\Enums\BillingPackage\OutcomeMode;
+
+$client->billingPackages->create([
+    // ...
+    'outcome_mode' => OutcomeMode::FUNDING->value,
+]);
+```
+
+Only `sale` issues fiscal documents. Money arriving against a `funding` package lands on the balance
+sheet and sits outside the scope of VAT, so invoicing it would misstate the books — the charge
+pipeline declines to issue rather than issuing a zero-rated document.
+
+A customer deposit is usually an advance against a future supply, which *is* a taxable event: use
+`sale` for it. Reserve `funding` for a genuinely refundable deposit never applied to the price.
+
+The mode carries onto the proposal built from the package and is read-only there.
+
+## Quantity Price Tiers
+
+A line the customer chooses a quantity for can be priced on a ladder rather than a flat unit price.
+Set the ladder on a group item, on a payment-plan phase line item, or both:
+
+```php
+use Enlivy\Enums\BillingPackage\TierPriceType;
+
+'quantity_price_tiers' => [
+    'price_type' => TierPriceType::FIXED->value,
+    'tiers' => [
+        ['min_quantity' => 1,  'price' => 100],
+        ['min_quantity' => 10, 'price' => 90],
+        ['min_quantity' => 50, 'price' => 75],
+    ],
+],
+```
+
+| `price_type` | Each row carries | Meaning |
+|--------------|------------------|---------|
+| `fixed` | `price` | The unit price at that quantity, frozen as typed |
+| `percent_of_baseline` | `discount_percent` | A discount off the product's catalog price, so the ladder follows the catalog |
+
+Rows must ascend by `min_quantity`, which starts at 1. A row carrying the key the other `price_type`
+expects is rejected rather than ignored — a `fixed` ladder may not carry `discount_percent`, and
+vice versa. `discount_percent` is capped at 100.
+
+Phase line items additionally declare whether a quantity may be chosen at all:
+
+| Field | Description |
+|-------|-------------|
+| `allow_quantity` | Whether the customer picks a quantity for this line |
+| `min_quantity` | Lowest selectable quantity (at least 1) |
+| `max_quantity` | Highest selectable quantity, or `null` for unbounded |
+| `quantity_price_tiers` | The ladder above, or `null` for flat pricing |
+
+How the chosen quantities are sent back depends on the package type:
+
+| Package type | Where quantities go |
+|--------------|---------------------|
+| `one_time` | `line_quantities` — payment-plan phase line items, by id |
+| `subscription` | `selected_group_items[].quantity` — group items, alongside the selection itself |
+
+Both are accepted on `proposals->fromBillingPackage()` and on a customer-portal claim. See
+[Creating a Proposal from a Billing Package](#creating-a-proposal-from-a-billing-package).
+
 ## Subscription Cadence Variants
 
 A `subscription` package carries one or more **subscription terms** (cadence variants), each
@@ -273,6 +348,79 @@ Templates also carry per-party identity blocks: `sender_rawd_lang_map` and
 `receiver_rawd_lang_map` (localizable raw party details rendered into the
 contract header), writable on `contract_templates[]` alongside the sections.
 
+### Naming a template's parties
+
+By default a template has the sender/receiver pairing every document has always had. Set
+`party_selection` to `custom` to declare the cast yourself — a three-way agreement, a witness, a
+guarantor:
+
+```php
+use Enlivy\Enums\BillingPackage\ContractPartySelections;
+use Enlivy\Enums\BillingPackage\ContractPartySources;
+
+$client->billingPackages->update('org_bp_xxx', [
+    'contract_templates' => [[
+        'id' => 'tpl_xxx',
+        'party_selection' => ContractPartySelections::CUSTOM->value,
+        'parties' => [
+            [
+                'source' => ContractPartySources::SENDER->value,
+                'referenced_as_lang_map' => ['en' => 'Provider'],
+                'role_lang_map' => ['en' => 'Service provider'],
+                'is_signature_required' => true,
+                'order' => 0,
+            ],
+            [
+                'source' => ContractPartySources::RECEIVER->value,
+                'referenced_as_lang_map' => ['en' => 'Client'],
+                'is_signature_required' => true,
+                'order' => 1,
+            ],
+            [
+                'source' => ContractPartySources::ASSIGNED->value,
+                'organization_user_id' => 'org_user_xxx',
+                'referenced_as_lang_map' => ['en' => 'Guarantor'],
+                'is_signature_required' => true,
+                'order' => 2,
+            ],
+        ],
+    ]],
+]);
+```
+
+| `source` | Whose identity fills the party |
+|----------|-------------------------------|
+| `sender` | The issuing organization's own registered identity |
+| `receiver` | Whoever the deal is with; the template names the role, not the person |
+| `assigned` | A specific organization user, named by `organization_user_id` |
+| `stated` | Nobody on file — the row states the identity itself |
+
+Every source fills the same way: a base identity is resolved, then any detail stated on the row wins
+over it. So `stated` is simply the case where the source contributes nothing, and any party may
+override individual fields (`first_name`, `organization_name`, `contact_email_address`, the
+`address_*` block, and the country's identity fields).
+
+`organization_user_id` is required for `assigned` and rejected for every other source.
+`referenced_as_lang_map` is required on every row — it is the name clauses address the party by, and
+the merge-field tag is derived from it per locale (read back as `merge_field_alias_lang_map`).
+
+Leaving `party_selection` at `standard` writes nothing to the party table, so the declared cast only
+becomes authoritative once you opt in. Send `_deleted => true` on a row to drop it.
+
+Reading the cast back needs no opt-in: `parties` is a **default include** on a contract template, so
+it arrives with the template whenever you retrieve the package with `contract_templates`. It is also
+listed as an available include, so it survives an explicit `include` list — but you do not have to
+ask for it.
+
+The customer-portal lane deliberately omits it. A template served through
+`$portal->billingPackages` carries its `sections` but never its `parties`: the declared cast names
+the contacts an organization pins to roles in its own documents, which is authoring state rather than
+something a customer browsing the catalog is answered with. Do not expect the key there.
+
+Rules that need the whole merged row — one sending party, one receiving party, a `stated` party
+complete enough to be named and invited — are checked on save rather than per field, so a partial
+resubmission is judged on what the template will actually hold.
+
 ### Previewing a Contract Template
 
 Render a preview of one of the package's contract templates. The optional `locale` must be one of
@@ -307,10 +455,24 @@ $proposal = $client->proposals->fromBillingPackage([
 
     // Optional sender
     'organization_sender_user_id' => 'org_user_xxx',
+
+    // Quantities for lines that allow one (see Quantity Price Tiers)
+    'line_quantities' => [
+        ['id' => 'org_bp_pppli_xxx', 'quantity' => 12],
+    ],
 ]);
 
 echo "Proposal created: {$proposal->id}\n";
 ```
+
+`line_quantities` names payment-plan phase line items by id and is honoured only for lines whose
+`allow_quantity` is true. Each `quantity` is at least 1, ids must be distinct, and the line must
+belong to this organization. Omit a line and it takes its own `min_quantity`.
+
+It applies to **one-time packages only**. A subscription package carries its quantities on
+`selected_group_items[].quantity` instead — same idea, different level of the tree, because a
+subscription's customer picks group items rather than plan lines. The same keys are accepted on a
+customer-portal claim.
 
 ## Creating a Billing Schedule from a Billing Package
 
@@ -390,6 +552,29 @@ payment method still generates the invoice (collect it manually) and reports `st
 
 > The same `meta.charge_result` / `meta.invoice_id` rides on `billingSchedules->create()`
 > (raw phases/payments) when a schedule is created `active` and due — read it the same way.
+
+### When the invoice is issued
+
+A schedule chooses when each cycle's invoice gets its number:
+
+```php
+use Enlivy\Enums\BillingSchedule\InvoiceIssueTrigger;
+
+$client->billingSchedules->update('org_bs_xxx', [
+    'invoice_issue_trigger' => InvoiceIssueTrigger::ON_PAYMENT->value,
+]);
+```
+
+| Trigger | Behaviour |
+|---------|-----------|
+| `on_generation` | The invoice is issued when the cycle generates it |
+| `on_payment` | The invoice is generated but stays unissued until the cycle is actually paid |
+
+Invoice numbers come from a gapless counter allocated the moment an invoice leaves its pre-live
+statuses, so `on_generation` burns a number on every cycle including the ones that fail to collect.
+Pick `on_payment` where an unused number in the sequence would be a problem.
+
+The field is writable on both `create()` and `update()`, and reads back on the schedule.
 
 > **Package fields are not accepted on `create()`.** The standard create endpoint composes
 > explicit `phases`/`payments` only; `organization_billing_package_id`,

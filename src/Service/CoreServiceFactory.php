@@ -70,6 +70,7 @@ use Enlivy\Service\Organization\SettingLocalizationService;
 use Enlivy\Service\Organization\SettingService;
 use Enlivy\Service\Organization\StripeWebhookCallbackService;
 use Enlivy\Service\Organization\TagService;
+use Enlivy\Service\Organization\TrashedItemsService;
 use Enlivy\Service\Organization\Task\TaskService;
 use Enlivy\Service\Organization\Task\TaskStatusService;
 use Enlivy\Service\Organization\TenantBilling\TenantBillingInvoiceService;
@@ -194,6 +195,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'settingLocalizations' => SettingLocalizationService::class,
             'preferences' => PreferenceService::class,
             'notifications' => NotificationService::class,
+            'trashedItems' => TrashedItemsService::class,
 
             // Org-scoped: Event Delivery & Export
             'eventDestinations' => EventDestinationService::class,

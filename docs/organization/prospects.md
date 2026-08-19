@@ -72,7 +72,11 @@ $prospect = $client->prospects->create([
     // Source tracking
     'source_type' => 'inbound', // inbound, outbound, referral, etc.
     'source_channel' => 'website',
+    'source_medium' => 'cpc',
     'source_campaign' => 'google-ads-q1',
+    'source_term' => 'accounting software',
+    'source_content' => 'hero-cta-b',
+    'source_click_id' => 'GCLID-xxx',
     'source_referrer_organization_user_id' => 'org_user_referrer_xxx', // Optional referrer
 
     // Pipeline position
@@ -506,8 +510,19 @@ echo "Restored: {$prospect->title}\n";
 | `summary` | string | Deal summary/notes |
 | `source_type` | string | Lead source type |
 | `source_channel` | string | Lead source channel |
+| `source_medium` | string | Delivery medium the lead arrived through, e.g. `cpc`, `email` |
 | `source_campaign` | string | Marketing campaign |
+| `source_term` | string | Paid keyword the click was bought on |
+| `source_content` | string | Which creative or link variant was clicked |
+| `source_click_id` | string | Ad-network click identifier, for matching spend back to the lead |
 | `source_referrer_organization_user_id` | string | Referrer user ID |
+
+The five `source_*` attribution fields are writable on the customer-portal lane too
+(`$portal->prospects->create()` / `->update()`), so a lead captured through a portal form carries the
+same attribution as one created through the back office.
+
+`source_channel` is capped at 100 characters on both lanes. The portal lane previously accepted 255
+and now matches the back office, so an over-long value that used to be stored is a 422.
 | `organization_prospect_status_id` | string | Pipeline status ID |
 | `assigned_organization_user_id` | string | Assigned sales rep ID |
 | `assigned_organization_project_id` | string | Assigned project ID |

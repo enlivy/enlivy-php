@@ -27,6 +27,7 @@ use Enlivy\ApiResource;
  * @property string|null $content_signature_disclaimer
  * @property string $direction
  * @property string|null $signed_by_all_parties_at
+ * @property string|null $content_locked_at
  * @property string|null $issued_at
  * @property string|null $ends_at
  * @property string|null $renewed_at

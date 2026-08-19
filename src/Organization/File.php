@@ -18,6 +18,7 @@ use Enlivy\ApiResource;
  * @property int|null $size
  * @property string|null $context
  * @property bool $is_public
+ * @property string|null $public_access_expires_at
  * @property string|null $file_url
  * @property string|null $deleted_at
  * @property string|null $deleted_by_user_id

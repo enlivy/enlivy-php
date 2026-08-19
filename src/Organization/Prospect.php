@@ -25,7 +25,11 @@ use Enlivy\ApiResource;
  * @property array|null $social_profiles
  * @property string|null $source_type
  * @property string|null $source_channel
+ * @property string|null $source_medium
  * @property string|null $source_campaign
+ * @property string|null $source_term
+ * @property string|null $source_content
+ * @property string|null $source_click_id
  * @property string|null $source_referrer_organization_user_id
  * @property string|null $summary
  * @property float|null $budget

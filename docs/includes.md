@@ -86,7 +86,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | Service | Includes |
 |---------|----------|
 | `prospects` | `organization`, `organization_prospect_status`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user` |
-| `prospectActivities` | `organization`, `organization_prospect`, `performed_by_organization_user`, `organization_report`, `organization_prospect_status_path`, `created_by_user`, `deleted_by_user` |
+| `prospectActivities` | `organization`, `organization_prospect`, `performed_by_organization_user`, `organization_report`, `organization_file`, `organization_prospect_status_path`, `created_by_user`, `deleted_by_user` |
 | `prospectStatuses` | `organization`, `deleted_by_user`, `paths` |
 
 ### Contracts

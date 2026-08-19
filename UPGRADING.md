@@ -1,3 +1,93 @@
+# Upgrading to 2.7.0
+
+`2.7.0` is a **minor** release and almost entirely additive, but it carries one
+deliberate source break: two `BillingSchedule\Statuses` cases were removed
+rather than left as values the API will never send again.
+
+## `BillingSchedule\Statuses` lost two cases
+
+`SUBSCRIPTION_REQUIRED` (`subscription_required`) and `CANCELLING`
+(`cancelling`) are gone, and `PAYMENT_FAILED` (`payment_failed`) is new. The
+full set is now:
+
+```
+pending · active · payment_method_required · payment_failed · paused · completed · cancelled
+```
+
+Referencing a removed constant is a fatal error, so grep for it before
+upgrading:
+
+```bash
+grep -rn "Statuses::CANCELLING\|Statuses::SUBSCRIPTION_REQUIRED\|'cancelling'\|'subscription_required'" src/
+```
+
+### What replaced them
+
+| Removed | What the API does now |
+|---------|-----------------------|
+| `cancelling` | It was a second spelling of `cancel_effective_at`. A schedule the customer has asked to end stays `active` until it reaches `cancelled`; read `cancel_effective_at` to know an end is pending. |
+| `subscription_required` | Nothing replaces it. It stamped the *organization's* entitlement onto every one of its schedule rows; the payments cron now reads that entitlement directly and declines to run, writing nothing. A schedule affected this way keeps whatever status it already had, and billing resumes on the next ordinary tick. |
+
+Neither value ever reached a production row, so a status you have actually seen
+in a response is unaffected.
+
+`PAYMENT_FAILED` is genuinely new rather than a rename: a schedule whose card
+keeps refusing now stops minting cycles instead of accumulating one unpaid
+invoice a month. It comes back when money moves or when a different card is
+attached.
+
+So a "is this schedule winding down?" check moves from the status to the date:
+
+```php
+// Before
+if ($schedule->status === Statuses::CANCELLING->value) { /* ... */ }
+
+// After
+if ($schedule->cancel_effective_at !== null && $schedule->status === Statuses::ACTIVE->value) {
+    // ...
+}
+```
+
+And a "is billing on hold?" check gains a case:
+
+```php
+$onHold = in_array($schedule->status, [
+    Statuses::PAYMENT_METHOD_REQUIRED->value,
+    Statuses::PAYMENT_FAILED->value,
+    Statuses::PAUSED->value,
+], true);
+```
+
+`payment_method_required` and `payment_failed` are both holds the customer can
+lift themselves by fixing how they pay; `paused` is not.
+
+If you persist the status string, note that rows written before the upgrade may
+still hold the retired values — `Statuses::tryFrom()` returns `null` for them
+rather than throwing.
+
+## `DELETE` parameters now reach the API
+
+The cURL transport previously dropped anything passed to a `DELETE` call: it
+was neither serialized into the body nor appended to the query string. Those
+params now travel on the query string, which is where the API reads them.
+
+If you were passing arguments to a delete call, they took no effect before and
+will take effect now. That is the intended behaviour, but it is a behaviour
+change — check any `delete()` call you pass params to.
+
+## `outcome_mode` is write-once on proposals
+
+`proposals->update()` rejects `outcome_mode`. Set it on `create()`, or inherit
+it from the billing package. Existing calls are unaffected unless you were
+sending it on update, which previously did nothing.
+
+## The file-extension list in the docs was wrong
+
+`ppt`, `pptx`, `rar` and `webp` were documented as supported but were never
+accepted by the API. Nothing changed in behaviour — if you relied on the docs,
+those uploads were already failing. See
+[Files](docs/organization/files.md#supported-file-extensions).
+
 # Upgrading to 2.6.0
 
 `2.6.0` is a **minor** release and purely additive to the SDK. No signatures

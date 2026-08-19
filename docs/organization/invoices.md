@@ -818,6 +818,19 @@ $invoice = $client->invoices->retrieve('org_inv_xxx', [
 ]);
 ```
 
+An invoice Enlivy charges also carries its retry state as scalars, so you can show where a failing
+collection stands without walking the logs:
+
+| Field | Description |
+|-------|-------------|
+| `charge_first_failed_at` | When collection first failed |
+| `charge_retry_count` | Attempts made so far |
+| `next_charge_retry_at` | When the next automatic attempt is due |
+| `charge_retry_exhausted_at` | When the retry ladder ran out; `null` while attempts remain |
+
+These four are present only on API-charged invoices — read them with `??` rather than assuming the
+keys exist.
+
 ## Payment Reminders
 
 An organization can chase unpaid invoices automatically — a nudge before the due date and follow-ups

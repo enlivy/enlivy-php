@@ -494,6 +494,26 @@ foreach ($activity as $event) {
 }
 ```
 
+## Change History
+
+Organization users carry an event trail — a read-only audit history of what changed on the record,
+when, and who did it:
+
+```php
+$trail = $client->organizationUsers->eventTrails([
+    'include' => 'changes,actor_organization_user',
+]);
+
+$entry = $client->organizationUsers->retrieveEventTrail('org_evt_trl_xxx', [
+    'include' => 'changes',
+]);
+```
+
+This is the same surface invoices, receipts and billing schedules expose — see
+[Event Trails](event-trails.md) for filters, event types and the field-level change shape. It is
+distinct from `activity()` above, which reports what the user did rather than what was done to their
+record.
+
 ## Tagging Customers
 
 ```php
@@ -570,8 +590,14 @@ $addresses = $client->userAddresses->list([
 | `address_state` | string\|null | State |
 | `address_zip_code` | string | Postal/ZIP code |
 | `address_iso_3166` | string | ISO 3166-2 subdivision code |
-| `locale` | string | Language locale (e.g., 'en', 'ro') |
+| `locale` | string | Language locale (e.g., 'en', 'ro'). Must be one the organization operates in — see below. |
 | `timezone` | string\|null | Timezone (e.g., 'Europe/Bucharest') |
+
+A user's `locale` must be one of the organization's own locales (its `locale` plus its
+`locale_list`); anything else is a 422 rather than a silently stored value. Widen the organization's
+`locale_list` first if you need a language it does not yet operate in. The same narrowing applies to
+a billing package's `locale` and `locale_list`. On update, a user already sitting on a locale the
+organization has since dropped may keep it.
 
 `address_city`, `address_county`, `address_state` and `timezone` accept `null` — send it to clear a
 value that no longer applies. Plenty of countries have no county or state layer at all, so requiring

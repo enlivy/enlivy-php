@@ -101,6 +101,7 @@ use Enlivy\Service;
  * @property Service\Organization\PreferenceService $preferences
  * @property Service\Organization\NotificationService $notifications
  * @property Service\Organization\BlockedIdentifierService $blockedIdentifiers
+ * @property Service\Organization\TrashedItemsService $trashedItems
  *
  * Organization-scoped services - Event Delivery & Export:
  * @property Service\Organization\EventDestinationService $eventDestinations

@@ -28,6 +28,7 @@ use Enlivy\ApiResource;
  * @property float $total
  * @property array|null $allowed_payment_methods
  * @property array|null $organization_bank_account_ids
+ * @property string|null $outcome_mode
  * @property string|null $currency_conversion_fee
  * @property bool $is_expired
  * @property bool $has_unsigned_required_contracts

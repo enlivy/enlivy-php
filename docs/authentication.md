@@ -325,10 +325,18 @@ echo "Store this securely - it cannot be retrieved later.\n";
 $token = $client->userTokens->update('user_xxx', 'pat_xxx', [
     'name' => 'Updated Token Name',
     'description' => 'Updated description',
+
+    // Re-scope an existing token without re-minting it
+    'abilities' => ['read'],
+    'organizations' => ['org_xxx'],
 ]);
 
 echo "Token updated: {$token->name}\n";
 ```
+
+`abilities` and `organizations` are editable after creation, so narrowing a token's reach no longer
+means issuing a new one and updating every caller. Both replace the existing set rather than merging
+into it — send the full list you want the token to end up with.
 
 ### Delete Token
 
@@ -352,6 +360,11 @@ echo "Token deleted\n";
 | `organizations` | array | No | Array of organization IDs to restrict access |
 | `custom_data` | object | No | Custom metadata object |
 
+#### Update Token Fields
+
+Same shape as create, minus `name` being mandatory: `name`, `description`, `abilities`,
+`organizations` and `custom_data` are all writable. The token value itself is never re-issued.
+
 #### Token Response Fields
 
 | Field | Type | Description |
@@ -361,6 +374,7 @@ echo "Token deleted\n";
 | `description` | string | Token description |
 | `token` | string | Masked token (last 5 chars visible) |
 | `abilities` | array | Token abilities |
+| `organizations` | array | Organization IDs the token is scoped to; empty when unscoped |
 | `custom_data` | object | Custom metadata |
 | `user_agent` | string | Last used user agent |
 | `last_used_at` | datetime | Last usage timestamp |

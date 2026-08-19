@@ -290,6 +290,29 @@ $registrations = $client->taxRegistrations->list([
 $suggested = $client->taxRegistrations->suggested();
 ```
 
+### Registration windows may not overlap
+
+A registration timeline is a sequence of windows, retired by setting `effective_to` rather than by
+deleting the row. Two windows for the same `country_code` and `tax_family` covering the same day are
+rejected with a 422: whether the seller was VAT-registered on a given date has to have one answer,
+and that answer reaches `is_tax_charged` and the exemption code on issued documents.
+
+```php
+// Close the current window before opening the next one
+$client->taxRegistrations->update($currentId, ['effective_to' => '2026-06-30']);
+$client->taxRegistrations->create([
+    'country_code'    => 'RO',
+    'tax_family'      => TaxFamilies::VAT->value,
+    'scheme'          => RegistrationSchemes::VAT_REGISTERED->value,
+    'effective_from'  => '2026-07-01',
+    // ...
+]);
+```
+
+An open-ended window (`effective_to => null`) covers every day from its start, so it collides with
+anything later until you close it. An edit that leaves the window and its country/family alone is
+never blocked by this rule — so an already-tangled timeline can still be corrected.
+
 A registration belongs to one tax family, and a scheme only means something inside its own —
 `vat_registered` on a payroll row is a 422. `vat` covers the VAT/OSS/IOSS schemes; `income_tax`
 covers `micro_enterprise`, `profit_tax` and `self_employed_income`; `payroll` covers `employer`.

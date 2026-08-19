@@ -8,6 +8,7 @@ use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\User;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasEventTrails;
 use Enlivy\Service\Concern\HasImportColumnDetection;
 use Enlivy\Service\Concern\HasImports;
 use Enlivy\Service\Concern\HasResumableImports;
@@ -24,6 +25,7 @@ class UserService extends AbstractService
 {
     use HasRestore;
     use HasTagging;
+    use HasEventTrails;
     use HasImports;
     use HasResumableImports;
     use HasImportColumnDetection;

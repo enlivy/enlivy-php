@@ -88,4 +88,26 @@ class TenantBillingService extends AbstractService
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/apply'), $params, $opts);
     }
+
+    /**
+     * Who the Enlivy subscription is billed to. `effective` resolves the identity actually used,
+     * whether or not an override is set.
+     */
+    public function billingIdentity(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/billing-identity'), $params, $opts);
+    }
+
+    /**
+     * Override the billed identity. A null `custom_identity_name` clears the override and returns
+     * billing to the operating organization.
+     */
+    public function updateBillingIdentity(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . '/billing-identity'), $params, $opts);
+    }
 }

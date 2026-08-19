@@ -18,6 +18,7 @@ use Enlivy\ApiResource;
  * @property string|null $signature_type
  * @property string|null $signature_source
  * @property bool $is_signed
+ * @property string|null $signed_document_hash
  * @property bool $has_signature_image
  * @property bool $has_signature_events_log
  * @property bool $has_evidence_authentication

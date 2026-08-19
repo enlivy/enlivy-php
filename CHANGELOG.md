@@ -3,6 +3,169 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.7.0] - 2026-08-19
+
+Public files that expire, quantity-tiered package pricing, contract templates
+that name their own parties, an organization-facing trash, and a proposal that
+can settle in a signature instead of an invoice.
+
+One source break, scoped as a minor release by the maintainer: two
+`BillingSchedule\Statuses` cases the API no longer sends have been removed
+rather than left as phantoms. See [UPGRADING](UPGRADING.md).
+
+### Added
+
+- **Trash.** `$client->trashedItems` — `list()` reports what soft-deleted
+  records are still held per entity (counts, reclaimable bytes, retention
+  window, when the sweep is entitled to take them), and `purge()` permanently
+  removes them ahead of that window. Both answer raw payloads rather than typed
+  records.
+
+  `purge(['entities' => [...]])` narrows to specific entity keys; omitting it
+  empties everything self-service can reach. Records held for statutory reasons
+  — invoices, proposals, receipts, payslips, contracts and signatures, billing
+  schedules, network exchanges, bank accounts and transactions, users,
+  organizations — are never reachable here whatever is passed, and appear in
+  `list()` with `purgeable => false`. Both calls need `organization.manage`.
+
+- **Billed identity for the Enlivy subscription.**
+  `tenantBilling->billingIdentity()` and `->updateBillingIdentity()` read and
+  override who the subscription is billed to, without changing the operating
+  organization. `effective` always resolves whoever is actually billed; sending
+  `custom_identity_name => null` clears the override. A stated name must arrive
+  with its country code, address line, city, subdivision and zip code.
+
+- **Retry a failed subscription charge.**
+  `tenantBillingInvoices->charge($id)` returns the refreshed `Invoice`, with the
+  attempt's outcome on the response meta as `charge_result`.
+
+- **Event trails on organization users.** `organizationUsers->eventTrails()` and
+  `->retrieveEventTrail()`, the same read-only audit surface invoices, receipts
+  and billing schedules already expose.
+
+- **Public files can carry a deadline.** `files->update()` accepts
+  `public_access_expires_at`; once it passes, public access lapses without a
+  further call. Must be in the future; `null` clears it. Reads back on the
+  `File` resource.
+
+- **Quantity price tiers on billing packages.** Group items and payment-plan
+  phase line items accept `quantity_price_tiers`
+  (`{price_type, tiers: [{min_quantity, price|discount_percent}]}`). Line items
+  also accept `allow_quantity`, `min_quantity` and `max_quantity`. Chosen
+  quantities travel back on `proposals->fromBillingPackage()` and on a portal
+  claim — as `line_quantities` for a one-time package, and on
+  `selected_group_items[].quantity` for a subscription. New enum
+  `BillingPackage\TierPriceType` — `fixed`, `percent_of_baseline`.
+
+- **Contract templates can name their own parties.** A template accepts
+  `party_selection` and a `parties[]` cast. `parties` is a **default include**
+  on a contract template, so it arrives with the template rather than needing to
+  be requested — but it is deliberately absent from the customer-portal lane,
+  where a template carries its `sections` only. New enums
+  `BillingPackage\ContractPartySelections` (`standard`, `custom`) and
+  `BillingPackage\ContractPartySources` (`sender`, `receiver`, `assigned`,
+  `stated`).
+
+- **Outcome mode.** Billing packages and proposals accept `outcome_mode`. Only
+  `sale` produces revenue and therefore a fiscal document; `funding` (share
+  subscriptions, loans, capital contributions, grants) and `agreement` (NDAs,
+  framework agreements, term sheets) settle without one. New enum
+  `BillingPackage\OutcomeMode`. `Proposal\Statuses` gains `agreed`, the
+  terminal state such a proposal reaches from `accepted` once no required
+  contract is outstanding.
+
+- **`BillingSchedule\Statuses::PAYMENT_FAILED`.** A schedule whose card keeps
+  refusing now stops minting cycles rather than accumulating one unpaid invoice
+  a month, and comes back when money moves or a different card is attached.
+
+- **When a schedule's invoice is issued.** Billing schedules accept
+  `invoice_issue_trigger`. New enum `BillingSchedule\InvoiceIssueTrigger` —
+  `on_generation` issues with the cycle, `on_payment` waits until the cycle is
+  paid, so a failed collection does not burn a number in the gapless sequence.
+
+- **An API token's scope is now editable.** `userTokens->update()` accepts
+  `abilities` and `organizations`, so narrowing a token no longer means
+  re-minting it. Both replace the existing set. `UserToken` gains
+  `organizations`.
+
+- **Lead attribution.** `Prospect` gains `source_medium`, `source_term`,
+  `source_content` and `source_click_id`, writable on create and update — on the
+  customer-portal lane as well as the back office.
+
+- **Prospect activities can carry a file.** `organization_file_id` is writable,
+  filterable, and available as the `organization_file` include.
+
+- **Video and audio uploads.** `mp4`, `mov`, `webm`, `mp3` and `m4a` join the
+  file allow-list, so a call recording can be stored and attached to a prospect
+  activity.
+
+- **Charge retry state on invoices.** An API-charged `Invoice` exposes
+  `charge_first_failed_at`, `charge_retry_count`, `next_charge_retry_at` and
+  `charge_retry_exhausted_at`. Present only on invoices Enlivy charges.
+
+- **`Contract`** gains `content_locked_at`; **`ContractSignature`** gains
+  `signed_document_hash`, a digest of the exact document that party signed.
+
+- **New docs:** [Trash](docs/organization/trashed-items.md).
+
+### Changed
+
+- **`BillingSchedule\Statuses` no longer carries `subscription_required` or
+  `cancelling`, and gains `payment_failed`.** See Removed below and
+  [UPGRADING](UPGRADING.md).
+
+- **An organization only speaks the languages it operates in.** A user's
+  `locale`, and a billing package's `locale` and `locale_list`, must now be one
+  of the organization's own locales — a 422 where the value used to be stored.
+  Widen the organization's `locale_list` first. On update, a user already
+  sitting on a locale the organization has since dropped keeps it.
+
+- **Tax registration windows may not overlap.** Two registrations for the same
+  `country_code` and `tax_family` covering the same day are now rejected with a
+  422. Whether a seller was registered on a given date has to have one answer —
+  it reaches `is_tax_charged` and the exemption code on issued documents. Close
+  the current window with `effective_to` before opening the next. An edit that
+  leaves the window and its scope alone is never blocked, so an already-tangled
+  timeline can still be corrected.
+
+- **`source_channel` is capped at 100 characters on the customer-portal lane**,
+  matching the back office, which already enforced it. A portal-created prospect
+  with a longer value now gets a 422 instead of storing it.
+
+- **A signed contract's content is frozen.** `content_locked_at` is stamped when
+  the contract is signed; edits to the content are rejected from then on.
+
+- **`outcome_mode` is write-once on proposals** — accepted on `create()`,
+  rejected on `update()`.
+
+### Removed
+
+- **`BillingSchedule\Statuses::SUBSCRIPTION_REQUIRED` and
+  `::CANCELLING`.** The API no longer sends either value, and neither ever
+  reached a production row. `cancelling` was a second spelling of
+  `cancel_effective_at` — a schedule the customer has asked to end stays
+  `active` until it reaches `cancelled`. `subscription_required` stamped the
+  organization's entitlement onto its schedule rows and has no replacement; the
+  payments cron reads that entitlement directly and writes nothing. Referencing
+  either constant is a fatal — see [UPGRADING](UPGRADING.md).
+
+### Fixed
+
+- **`DELETE` request parameters were silently dropped.** The cURL transport put
+  params on the query string for `GET` and in the body for
+  `POST`/`PUT`/`PATCH`, but did neither for `DELETE`, so anything passed to a
+  delete call never reached the wire. This matters for
+  `trashedItems->purge(['entities' => ...])`, where a vanished filter would
+  have widened an irreversible purge to everything. `DELETE` params now travel
+  on the query string, as the API reads them.
+
+- **The documented file-extension list was wrong.** `ppt`, `pptx`, `rar` and
+  `webp` were never accepted by the API. The list now matches the actual
+  allow-list, and notes the post-upload `Content-Type` check.
+
+- **`docs/filters.md` had no `prospectActivities` section** despite the service
+  declaring filters. Added, including the new `organization_file_id`.
+
 ## [2.6.0] - 2026-08-10
 
 Blocklists: keep an email, an email domain, or a phone number out of an

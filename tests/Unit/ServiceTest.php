@@ -15,6 +15,8 @@ use Enlivy\Organization;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\ContractConnection;
+use Enlivy\Organization\EventTrail;
+use Enlivy\Organization\Invoice;
 use Enlivy\Organization\Prospect;
 use Enlivy\Tests\Mock\MockHttpClient;
 use Enlivy\Util\RequestOptions;
@@ -652,5 +654,108 @@ final class ServiceTest extends TestCase
         $request = $this->httpClient->getLastRequest();
         $this->assertSame('PATCH', $request['method']);
         $this->assertStringContainsString('/oauth/authorizations/oauth_cua_1', $request['url']);
+    }
+
+    public function testTrashedItemsReportsInventoryAndPurges(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'total_items' => 12,
+            'reclaimable_bytes' => 4096,
+            'entities' => [
+                ['entity' => 'files', 'count' => 12, 'purgeable' => true],
+                ['entity' => 'invoices', 'count' => 3, 'purgeable' => false],
+            ],
+        ]);
+
+        $inventory = $this->client->trashedItems->list();
+
+        $this->assertSame(12, $inventory->total_items);
+        $this->assertStringContainsString(
+            '/organizations/org_default/trashed-items',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, ['deleted' => 12, 'blocked' => 0, 'errored' => 0, 'entities' => []]);
+        $result = $this->client->trashedItems->purge(['entities' => ['files', 'tags']]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('DELETE', $request['method']);
+        $this->assertSame(12, $result->deleted);
+        $this->assertSame(['entities' => ['files', 'tags']], $request['params']);
+    }
+
+    public function testTenantBillingIdentityReadAndUpdate(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => ['is_custom' => false, 'custom_identity_name' => null, 'effective' => ['name' => 'Acme']],
+        ]);
+
+        $identity = $this->client->tenantBilling->billingIdentity();
+
+        $this->assertFalse($identity->is_custom);
+        $this->assertStringContainsString(
+            '/organizations/org_default/tenant-billing/billing-identity',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, ['data' => ['is_custom' => true]]);
+        $this->client->tenantBilling->updateBillingIdentity(['custom_identity_name' => null]);
+
+        $this->assertSame('PUT', $this->httpClient->getLastRequest()['method']);
+    }
+
+    public function testTenantBillingInvoiceChargeReturnsTypedInvoice(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => ['id' => 'org_inv_1', 'object' => 'invoice', 'charge_retry_count' => 2],
+            'meta' => ['charge_result' => ['status' => 'succeeded']],
+        ]);
+
+        $invoice = $this->client->tenantBillingInvoices->charge('org_inv_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertInstanceOf(Invoice::class, $invoice);
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString(
+            '/organizations/org_default/tenant-billing/invoices/org_inv_1/charge',
+            $request['url'],
+        );
+    }
+
+    public function testOrganizationUsersExposeEventTrails(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [['id' => 'org_et_1', 'object' => 'event_trail', 'event_type' => 'updated']],
+            'meta' => ['pagination' => ['total' => 1, 'count' => 1, 'per_page' => 15, 'current_page' => 1, 'total_pages' => 1]],
+        ]);
+
+        $trails = $this->client->organizationUsers->eventTrails();
+
+        $this->assertInstanceOf(EventTrail::class, $trails->getData()[0]);
+        $this->assertStringContainsString(
+            '/organizations/org_default/users/event-trails',
+            $this->httpClient->getLastRequest()['url'],
+        );
+
+        $this->httpClient->addResponse(200, [
+            'data' => ['id' => 'org_et_1', 'object' => 'event_trail'],
+        ]);
+        $this->client->organizationUsers->retrieveEventTrail('org_et_1');
+        $this->assertStringContainsString(
+            '/organizations/org_default/users/event-trails/org_et_1',
+            $this->httpClient->getLastRequest()['url'],
+        );
+    }
+
+    public function testProspectActivityAcceptsTheFileInclude(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [['id' => 'org_pa_1', 'object' => 'prospect_activity', 'organization_file_id' => 'org_file_1']],
+            'meta' => ['pagination' => ['total' => 1, 'count' => 1, 'per_page' => 15, 'current_page' => 1, 'total_pages' => 1]],
+        ]);
+
+        $activities = $this->client->prospectActivities->list(['include' => 'organization_file']);
+
+        $this->assertSame('org_file_1', $activities->getData()[0]->organization_file_id);
     }
 }

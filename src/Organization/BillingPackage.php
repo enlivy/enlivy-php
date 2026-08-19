@@ -22,6 +22,7 @@ use Enlivy\ApiResource;
  * @property bool $customer_can_cancel
  * @property bool $customer_can_pause
  * @property string|null $portal_discovery_mode
+ * @property string|null $outcome_mode
  * @property string|null $portal_url
  * @property bool $is_expired
  * @property bool $is_available

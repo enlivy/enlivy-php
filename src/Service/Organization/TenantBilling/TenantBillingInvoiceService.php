@@ -73,4 +73,16 @@ class TenantBillingInvoiceService extends AbstractService
 
         return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/download"), $params, $opts);
     }
+
+    /**
+     * Retry collection on a subscription invoice whose charge failed. The outcome of the attempt is
+     * on the response meta as `charge_result`; the returned invoice is the refreshed record.
+     */
+    public function charge(string $id, array $params = [], ?RequestOptions $opts = null): Invoice
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Invoice */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/charge"), $params, $opts);
+    }
 }

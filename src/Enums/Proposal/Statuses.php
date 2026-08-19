@@ -15,6 +15,7 @@ enum Statuses: string
     case SENT = 'sent';
     case VIEWED = 'viewed';
     case ACCEPTED = 'accepted';
+    case AGREED = 'agreed';
     case FIRST_PAYMENT_PENDING = 'first_payment_pending';
     case ACTIVE = 'active';
     case COMPLETED = 'completed';
