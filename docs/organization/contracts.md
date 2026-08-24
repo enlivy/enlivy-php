@@ -291,6 +291,50 @@ $contract = $client->contracts->create([
 ]);
 ```
 
+## Party Identity
+
+How completely a contract needs a party described before it can be issued, set per party via
+`identity_requirement`. The levels are cumulative and follow what the document is *for*:
+
+| Requirement | Needs |
+|-------------|-------|
+| `contact` | Somewhere to write to — the default |
+| `identity_document` | Also the party's identity document |
+| `civil_registry` | Also the civil-registry data a company registry asks for |
+
+```php
+<?php
+
+$contract = $client->contracts->create([
+    // ...
+    'parties' => [
+        [
+            'organization_user_id' => 'org_user_xxx',
+            'party_type' => 'individual',
+            'party_country_code' => 'RO',
+            'identity_requirement' => 'civil_registry',
+            'party_citizenship' => 'RO',
+            'birthdate' => '1990-05-15',
+            'birthplace' => 'Cluj-Napoca',
+            // ...
+        ],
+    ],
+]);
+```
+
+Which identity fields a level actually means is per-country — the requirement names the tier, and the
+country supplies the fields. A company party carries no birth data, so `civil_registry` asks the same
+of it as `identity_document` does.
+
+`party_citizenship` is a 2-letter country code and `birthdate` must be in the past. The same three
+fields are stored on the customer as `citizenship`, `birthdate` and `birthplace` (see
+[Users](users.md)), so a party sourced from a customer arrives with them already filled.
+
+A billing package's contract template declares `identity_requirement` in advance, so a document
+generated from it arrives with the tier already set — see
+[Billing Packages](billing-packages.md). Values are in
+`Enlivy\Enums\Contract\PartyIdentityRequirements`.
+
 ## Listing Contracts
 
 ### Basic List

@@ -42,6 +42,7 @@ class ProposalService extends AbstractService
         'created_by_user',
         'deleted_by_user',
         'expired_by_user',
+        'stage_detail',
     ];
 
     public const array AVAILABLE_FILTERS = [

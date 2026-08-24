@@ -114,6 +114,7 @@ use Enlivy\Service;
  * Organization-scoped services - Billing:
  * @property Service\Organization\BillingPackage\BillingPackageService $billingPackages
  * @property Service\Organization\ProposalService $proposals
+ * @property Service\Organization\Proposal\ProposalNotificationLogService $proposalNotificationLogs
  * @property Service\Organization\TenantBilling\TenantBillingService $tenantBilling
  * @property Service\Organization\TenantBilling\TenantBillingTrialService $tenantBillingTrial
  * @property Service\Organization\TenantBilling\TenantBillingPaymentMethodService $tenantBillingPaymentMethods

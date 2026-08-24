@@ -60,7 +60,7 @@ tests/Integration/
     ├── BankAccountTest.php     # Bank accounts, transactions
     ├── ReportTest.php          # Reports, schemas
     ├── ContentTest.php         # Guidelines, playbooks, files
-    ├── ProposalTest.php        # Proposals, offers
+    ├── ProposalTest.php        # Proposals, billing packages, notification logs
     ├── EventDestinationTest.php # Event destinations, tags
     └── TaskTest.php            # Tasks, task statuses
 ```

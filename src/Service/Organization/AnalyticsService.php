@@ -80,6 +80,20 @@ class AnalyticsService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, "payslips/analytics/{$type}"), $params, $opts);
     }
 
+    public function prospects(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, 'prospects/analytics'), $params, $opts);
+    }
+
+    public function prospectsByType(string $type, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, "prospects/analytics/{$type}"), $params, $opts);
+    }
+
     public function receipts(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

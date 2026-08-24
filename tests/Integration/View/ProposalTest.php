@@ -6,7 +6,8 @@ namespace Enlivy\Tests\Integration\View;
 
 use Enlivy\Collection;
 use Enlivy\Organization\Proposal;
-use Enlivy\Organization\Offer;
+use Enlivy\Organization\BillingPackage;
+use Enlivy\Organization\ProposalNotificationLog;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
 class ProposalTest extends IntegrationTestCase
@@ -61,41 +62,58 @@ class ProposalTest extends IntegrationTestCase
 
         $proposal = $this->getClient()->proposals->retrieve(
             $proposals->data[0]->id,
-            ['include' => 'offer,recipients']
+            ['include' => 'billing_package,receiver_user']
         );
 
         $this->assertInstanceOf(Proposal::class, $proposal);
     }
 
-    // Offers
+    // Billing Packages
 
-    public function testListOffers(): void
+    public function testListBillingPackages(): void
     {
-        $offers = $this->getClient()->offers->list();
+        $packages = $this->getClient()->billingPackages->list();
 
-        $this->assertInstanceOf(Collection::class, $offers);
-        $this->assertIsArray($offers->data);
+        $this->assertInstanceOf(Collection::class, $packages);
+        $this->assertIsArray($packages->data);
 
-        if (count($offers->data) > 0) {
-            $offer = $offers->data[0];
-            $this->assertInstanceOf(Offer::class, $offer);
-            $this->assertIdPrefix('org_offr_', $offer->id);
-            $this->assertNotNull($offer->organization_id);
+        if (count($packages->data) > 0) {
+            $package = $packages->data[0];
+            $this->assertInstanceOf(BillingPackage::class, $package);
+            $this->assertIdPrefix('org_bp_', $package->id);
+            $this->assertNotNull($package->organization_id);
         }
     }
 
-    public function testRetrieveOffer(): void
+    public function testRetrieveBillingPackage(): void
     {
-        $offers = $this->getClient()->offers->list(['per_page' => 1]);
+        $packages = $this->getClient()->billingPackages->list(['per_page' => 1]);
 
-        if (count($offers->data) === 0) {
-            $this->markTestSkipped('No offers available for testing');
+        if (count($packages->data) === 0) {
+            $this->markTestSkipped('No billing packages available for testing');
         }
 
-        $offerId = $offers->data[0]->id;
-        $offer = $this->getClient()->offers->retrieve($offerId);
+        $packageId = $packages->data[0]->id;
+        $package = $this->getClient()->billingPackages->retrieve($packageId);
 
-        $this->assertInstanceOf(Offer::class, $offer);
-        $this->assertEquals($offerId, $offer->id);
+        $this->assertInstanceOf(BillingPackage::class, $package);
+        $this->assertEquals($packageId, $package->id);
+    }
+
+    // Notification Logs
+
+    public function testListProposalNotificationLogs(): void
+    {
+        $logs = $this->getClient()->proposalNotificationLogs->list();
+
+        $this->assertInstanceOf(Collection::class, $logs);
+        $this->assertIsArray($logs->data);
+
+        if (count($logs->data) > 0) {
+            $log = $logs->data[0];
+            $this->assertInstanceOf(ProposalNotificationLog::class, $log);
+            $this->assertNotNull($log->organization_proposal_id);
+            $this->assertIsBool($log->is_seller_notification);
+        }
     }
 }

@@ -28,12 +28,29 @@ class ProposalService extends AbstractPortalService
         return $this->request('GET', $this->portalPath($orgId, "proposals/{$id}"), $params, $opts);
     }
 
+    /**
+     * @param array{
+     *     organization_id?: string,
+     *     billed_currency?: string,
+     *     displayed_amount?: float,
+     * } $params
+     */
     public function accept(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Proposal */
         return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/accept"), $params, $opts);
+    }
+
+    /**
+     * Re-quote the held conversion for a proposal that settles in a currency other than its own.
+     */
+    public function refreshConversion(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/refresh-conversion"), $params, $opts);
     }
 
     public function reject(string $id, array $params = [], ?RequestOptions $opts = null): Proposal

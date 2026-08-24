@@ -183,7 +183,12 @@ $invoices = $client->invoices->list([
 |--------|------|
 | `organization_prospect_status_id` | string |
 | `assigned_organization_user_id` | string |
+| `assigned_organization_project_id` | string |
 | `source_type` | `inbound`, `outbound` |
+| `source_channel` | string |
+| `source_medium` | string |
+| `source_campaign` | string |
+| `is_stalled` | bool (rejected alongside a search query) |
 | `email` | string |
 | `state_qualified_at_from`, `state_qualified_at_to` | datetime |
 | `state_disqualified_at_from`, `state_disqualified_at_to` | datetime |
@@ -199,7 +204,10 @@ $invoices = $client->invoices->list([
 | `organization_prospect_id` | string |
 | `organization_report_id` | string |
 | `organization_file_id` | string |
+| `organization_prospect_status_path_id` | string |
 | `performed_by_organization_user_id` | string |
+| `activity_at_from`, `activity_at_to` | datetime |
+| `created_at_from`, `created_at_to` | datetime |
 
 ### Contracts
 
@@ -272,6 +280,14 @@ $invoices = $client->invoices->list([
 | `organization_billing_package_id` | string |
 | `organization_prospect_id` | string |
 | `organization_receiver_user_id` | string |
+
+**`proposalNotificationLogs`**
+
+| Filter | Type |
+|--------|------|
+| `organization_proposal_id` | string |
+| `types` | `email`, `email_seller_viewed`, `email_seller_accepted`, `email_seller_rejected`, `email_seller_expired`, `email_seller_contract_generated` (comma-separated or array) |
+| `created_at_from`, `created_at_to` | datetime |
 
 ### Payroll
 

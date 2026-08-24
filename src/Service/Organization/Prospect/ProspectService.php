@@ -38,6 +38,7 @@ class ProspectService extends AbstractService
         'source_referrer_organization_user',
         'created_by_user',
         'deleted_by_user',
+        'proposals',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -45,6 +46,10 @@ class ProspectService extends AbstractService
         'assigned_organization_user_id',
         'assigned_organization_project_id',
         'source_type',
+        'source_channel',
+        'source_medium',
+        'source_campaign',
+        'is_stalled',
         'email',
         'state_qualified_at_from',
         'state_qualified_at_to',

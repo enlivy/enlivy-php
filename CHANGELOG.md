@@ -3,6 +3,62 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.8.0] - 2026-08-24
+
+Proposals that quote in one currency and settle in another, a stage that reads
+across a proposal's whole chain, per-party identity tiers on contracts, and
+pipeline analytics for prospects.
+
+Purely additive — no method, enum case, property or constant removed.
+
+### Added
+
+- **Proposal notification logs.** `$client->proposalNotificationLogs` —
+  `list()` / `retrieve()` / `delete()` / `restore()` over every notice sent about
+  a proposal; rows carry `is_seller_notification`. New docs:
+  [Notification Logs](docs/organization/proposals.md#notification-logs).
+- **Prospect pipeline analytics.** `analytics->prospects()` and
+  `->prospectsByType($type)` for `summary`, `funnel`, `transitions`, `stalled`.
+  New docs: [Pipeline Analytics](docs/organization/prospects.md#pipeline-analytics).
+- **Settlement currency on proposals.** `allowed_currencies` and
+  `exchange_rate_guarantee` writable; resource adds `billed_conversion`,
+  `billed_currency_is_choosable`, `portal_url`. New docs:
+  [Settlement Currency](docs/organization/proposals.md#settlement-currency).
+- **Portal `proposals->refreshConversion($id)`** re-quotes a held rate;
+  `proposals->accept()` accepts `billed_currency` and `displayed_amount`.
+- **Proposal stage.** `stage` on the resource, plus a `stage_detail` include
+  carrying `awaits`, `blockers` and `pending_signatures`. New docs:
+  [Stages](docs/organization/proposals.md#stages).
+- **Currency pair on billing packages.** `currency` and `currency_list` writable
+  and read back; `exchange_rate_guarantee` sets when the rate fixes. New docs:
+  [Currencies](docs/organization/billing-packages.md#currencies).
+- **Contract party identity.** Parties accept `identity_requirement`,
+  `party_citizenship`, `birthdate`, `birthplace`; billing-package contract
+  template parties accept those plus `address_country_code`. New docs:
+  [Party Identity](docs/organization/contracts.md#party-identity).
+- **Organization users** accept and return `address_country_code`, `birthplace`
+  and `citizenship` — portal profile lane too.
+- **Prospect filters** `source_channel`, `source_medium`, `source_campaign`,
+  `is_stalled`, and a `proposals` include. `board()` narrows by
+  `assigned_organization_project_id` and a `created_at` window.
+- **Prospect activity filters** `organization_prospect_status_path_id`,
+  `activity_at_from/to`, `created_at_from/to`; resource adds
+  `from_organization_prospect_status_id` and `to_organization_prospect_status_id`.
+- **Five enums**: `Proposal\Stages`, `Proposal\StageActors`,
+  `Proposal\NotificationLogTypes`, `Contract\PartyIdentityRequirements`,
+  `BillingPackage\ExchangeRateGuarantees`.
+
+### Changed
+
+- `address_line_1` and `address_city` are now required when creating an
+  organization user whose role can be invoiced, and cannot be blanked on update
+  for such a user. Other roles are unaffected.
+
+### Fixed
+
+- `docs/includes.md` listed the proposals row without `subscription_term`; the
+  service has always accepted it.
+
 ## [2.7.0] - 2026-08-19
 
 Public files that expire, quantity-tiered package pricing, contract templates

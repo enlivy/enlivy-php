@@ -471,6 +471,8 @@ echo "Billing schedule created for proposal: {$proposal->id}\n";
 | `organization_billing_package_payment_plan_id` | string | Selected payment plan from billing package (one_time) |
 | `organization_billing_package_subscription_term_id` | string | Selected subscription cadence variant from billing package (subscription) |
 | `billed_currency` | string | Currency the accepted proposal is billed in (also returned on read) |
+| `allowed_currencies` | array | Currencies the proposal may settle in — `currency` and `billed_currency` must both be in it |
+| `exchange_rate_guarantee` | string | When the conversion rate is fixed: `invoice` or `acceptance` |
 | `organization_project_id` | string | Link to project |
 | `organization_sender_user_id` | string | Sender user ID |
 | `note_lang_map` | object | Note by language |
@@ -515,6 +517,10 @@ Returned on read, not writable:
 | `can_create_billing_schedule` | boolean | Whether a billing schedule can still be created from this (accepted subscription) proposal |
 | `has_unsigned_required_contracts` | boolean | Whether required contracts remain unsigned |
 | `billed_currency` | string\|null | Currency the proposal is billed in |
+| `billed_currency_is_choosable` | boolean | Whether the customer may still pick the settlement currency |
+| `billed_conversion` | object\|null | The held conversion — see [Settlement Currency](#settlement-currency) |
+| `portal_url` | string\|null | Customer-portal address for this proposal |
+| `stage` | string | Where the proposal sits — see [Stages](#stages) |
 | `outcome_mode` | string\|null | What the proposal settles into — see below |
 
 `outcome_mode` is inherited from the billing package the proposal was built from, or set once on
@@ -530,6 +536,142 @@ without an invoice being issued. See
 `Proposal\Statuses` gained `agreed`, the terminal state for a non-`sale` proposal: it is reached from
 `accepted` once no required contract is still outstanding, and it is where such a proposal stops —
 there is no payment or invoice for it to progress to. A `sale` proposal never reaches it.
+
+## Stages
+
+`status` records what the proposal row was last set to. `stage` answers the different question of
+where the whole thing is sitting, reading across the proposal, its contracts and their parties — so
+two proposals that are both `accepted` can report different stages.
+
+| Stage | Meaning |
+|-------|---------|
+| `drafting` | Not yet sent |
+| `awaiting_acceptance` | Sent, no answer yet |
+| `awaiting_contract` | Accepted; a required contract has not been generated |
+| `awaiting_signature` | Contract generated, signatures outstanding |
+| `awaiting_payment` | Signed; payment outstanding |
+| `closed` | Finished |
+| `rejected` | Declined |
+| `expired` | Lapsed |
+
+`closed`, `rejected` and `expired` are terminal. The `stage_detail` include adds whose move it is and
+what is missing:
+
+```php
+<?php
+
+$proposal = $client->proposals->retrieve('org_prop_xxx', [
+    'include' => ['stage_detail'],
+]);
+
+$detail = $proposal->stage_detail;
+
+echo $detail->stage;              // e.g. "awaiting_signature"
+echo $detail->awaits;             // organization | customer | third_party | several
+var_dump($detail->is_terminal);
+var_dump($detail->blockers);            // what stands in the way of generating a contract
+var_dump($detail->pending_signatures);  // parties who still owe a signature
+```
+
+`blockers` and `pending_signatures` are both empty whenever nothing stands in the way — including at
+every terminal stage — so an empty list is the positive signal too, not only the absence of a
+negative one. Keep the include off list calls: resolving it walks the whole contract cast per row.
+
+## Settlement Currency
+
+A proposal can be quoted in one currency and settled in another. `allowed_currencies` states which
+currencies it will settle in, and `exchange_rate_guarantee` decides when the rate stops moving:
+
+| Guarantee | Rate fixed at |
+|-----------|---------------|
+| `invoice` | Each invoice is issued — the rate is re-quoted then |
+| `acceptance` | Acceptance — the figures the customer accepted are frozen |
+
+```php
+<?php
+
+$proposal = $client->proposals->create([
+    'currency' => 'EUR',
+    'allowed_currencies' => ['EUR', 'RON'],
+    'billed_currency' => 'RON',
+    'exchange_rate_guarantee' => 'acceptance',
+    // ...
+]);
+```
+
+Both `currency` and `billed_currency` must appear in `allowed_currencies`. Once a contract has been
+generated from the proposal, `billed_currency` and `exchange_rate_guarantee` are both locked — the
+document already names them.
+
+From the customer-portal lane the customer can re-quote the held rate before answering, and name the
+currency they are accepting in:
+
+```php
+<?php
+
+use Enlivy\EnlivyPortalClient;
+
+$portal = new EnlivyPortalClient([
+    'session_token' => $sessionToken,
+    'organization_id' => 'org_xxx',
+]);
+
+// Re-quote the held conversion — returns the refreshed figures, untyped
+$conversion = $portal->proposals->refreshConversion('org_prop_xxx');
+
+// Accept in a chosen currency, confirming the amount that was displayed
+$proposal = $portal->proposals->accept('org_prop_xxx', [
+    'billed_currency' => 'RON',
+    'displayed_amount' => 4995.00,
+]);
+```
+
+`displayed_amount` is the figure the customer was shown; sending it lets the API refuse an acceptance
+whose numbers have since moved. Read `billed_currency_is_choosable` to know whether to offer the
+choice at all.
+
+`billed_conversion` is null until a conversion has actually been applied. When present it carries:
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `amount` | string | The converted total, as a decimal string |
+| `currency` | string | The currency that amount is in |
+| `valid_until` | string\|null | When the held rate stops being honoured |
+| `refreshable_at` | string\|null | When `refreshConversion()` will next re-quote |
+
+`amount` is a **decimal string**, not a float — it is money, already rounded to the currency's minor
+unit and with the conversion fee applied. Keep it in string or decimal form; casting it to a float to
+do arithmetic is how rounding errors get into invoices.
+
+## Notification Logs
+
+Every notice the platform sends about a proposal is recorded — both the proposal that went out to the
+customer and the lifecycle reports that came back to the organization.
+
+```php
+<?php
+
+$logs = $client->proposalNotificationLogs->list([
+    'organization_proposal_id' => 'org_prop_xxx',
+    'types' => 'email_seller_accepted,email_seller_rejected',
+    'include' => ['proposal'],
+]);
+
+foreach ($logs as $log) {
+    echo $log->type;
+    var_dump($log->is_seller_notification);  // true = reported to the organization
+    echo $log->subject;
+    echo $log->sent_to;
+}
+
+$log = $client->proposalNotificationLogs->retrieve('org_prop_nl_xxx');
+$client->proposalNotificationLogs->delete('org_prop_nl_xxx');
+$client->proposalNotificationLogs->restore('org_prop_nl_xxx');
+```
+
+Read `is_seller_notification` rather than testing the `email_seller_` prefix yourself. Values are in
+`Enlivy\Enums\Proposal\NotificationLogTypes`; filters are indexed in
+[Filters](../filters.md).
 
 ## Complete Example: Proposal Workflow
 

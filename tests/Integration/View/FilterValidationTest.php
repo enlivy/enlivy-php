@@ -114,6 +114,16 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertGlobalFiltersWork('invoiceNotificationLogs');
     }
 
+    public function testProposalNotificationLogGlobalFilters(): void
+    {
+        $this->assertGlobalFiltersWork('proposalNotificationLogs');
+    }
+
+    public function testProposalNotificationLogInvalidFilterThrows(): void
+    {
+        $this->assertInvalidFilterThrows('proposalNotificationLogs');
+    }
+
     // CRM
 
     public function testProspectGlobalFilters(): void
@@ -271,7 +281,7 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertGlobalFiltersWork('bankAccounts');
     }
 
-    // Billing & Offers
+    // Billing & Packages
 
     public function testBillingScheduleGlobalFilters(): void
     {
@@ -292,14 +302,14 @@ class FilterValidationTest extends IntegrationTestCase
         ]);
     }
 
-    public function testOfferGlobalFilters(): void
+    public function testBillingPackageGlobalFilters(): void
     {
-        $this->assertGlobalFiltersWork('offers');
+        $this->assertGlobalFiltersWork('billingPackages');
     }
 
-    public function testOfferBooleanFilters(): void
+    public function testBillingPackageBooleanFilters(): void
     {
-        $this->assertResourceFiltersWork('offers', [
+        $this->assertResourceFiltersWork('billingPackages', [
             'is_active' => true,
         ]);
     }

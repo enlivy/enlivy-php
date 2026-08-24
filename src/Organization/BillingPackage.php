@@ -31,8 +31,11 @@ use Enlivy\ApiResource;
  * @property string|null $expired_by_user_id
  * @property int|null $proposal_valid_for_seconds
  * @property array|null $allowed_payment_methods
+ * @property string|null $currency
+ * @property array|null $currency_list
  * @property array|null $available_currencies
  * @property string|null $currency_conversion_fee
+ * @property string|null $exchange_rate_guarantee
  * @property string|null $created_by_user_id
  * @property string|null $deleted_by_user_id
  * @property string|null $deleted_at

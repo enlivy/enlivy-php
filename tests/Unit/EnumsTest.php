@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Tests\Unit;
 
 use Enlivy\Enums\BillingPackage\ContractPartySelections;
+use Enlivy\Enums\BillingPackage\ExchangeRateGuarantees;
 use Enlivy\Enums\BillingPackage\ContractPartySources;
 use Enlivy\Enums\BillingPackage\OutcomeMode;
 use Enlivy\Enums\BillingPackage\PortalDiscoveryMode;
@@ -22,7 +23,11 @@ use Enlivy\Enums\Organization\Environments;
 use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Payslip\Fields as PayslipFields;
+use Enlivy\Enums\Contract\PartyIdentityRequirements;
+use Enlivy\Enums\Proposal\NotificationLogTypes as ProposalNotificationLogTypes;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
+use Enlivy\Enums\Proposal\StageActors as ProposalStageActors;
+use Enlivy\Enums\Proposal\Stages as ProposalStages;
 use Enlivy\Enums\Proposal\Statuses as ProposalStatuses;
 use Enlivy\Enums\Tax\TaxApplicabilityReasons;
 use Enlivy\Enums\Tax\TaxEventDirections;
@@ -58,6 +63,39 @@ final class EnumsTest extends TestCase
             TaxApplicabilityReasons::values(),
         );
         $this->assertSame(['live', 'sandbox'], Environments::values());
+        $this->assertSame(['invoice', 'acceptance'], ExchangeRateGuarantees::values());
+        $this->assertSame(
+            ['contact', 'identity_document', 'civil_registry'],
+            PartyIdentityRequirements::values(),
+        );
+        $this->assertSame(
+            ['organization', 'customer', 'third_party', 'several'],
+            ProposalStageActors::values(),
+        );
+        $this->assertSame(
+            [
+                'drafting',
+                'awaiting_acceptance',
+                'awaiting_contract',
+                'awaiting_signature',
+                'awaiting_payment',
+                'closed',
+                'rejected',
+                'expired',
+            ],
+            ProposalStages::values(),
+        );
+        $this->assertSame(
+            [
+                'email',
+                'email_seller_viewed',
+                'email_seller_accepted',
+                'email_seller_rejected',
+                'email_seller_expired',
+                'email_seller_contract_generated',
+            ],
+            ProposalNotificationLogTypes::values(),
+        );
         $this->assertSame(
             ['email', 'email_domain', 'phone_number'],
             BlockedIdentifierTypes::values(),
@@ -143,6 +181,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(114, $count, 'Expected at least 114 mirrored enums');
+        $this->assertGreaterThanOrEqual(119, $count, 'Expected at least 119 mirrored enums');
     }
 }

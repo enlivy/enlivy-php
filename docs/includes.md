@@ -76,6 +76,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `invoicePrefixes` | `organization`, `deleted_by_user`, `custom_logo` |
 | `invoiceNetworkExchanges` | `organization`, `parsed_data`, `invoice`, `tag_ids` |
 | `invoiceNotificationLogs` | `deleted_by_user`, `organization` |
+| `proposalNotificationLogs` | `deleted_by_user`, `organization`, `proposal` |
 | `invoiceScheduledReminders` | _(none — rows are projected, not stored)_ |
 | `receipts` | `organization`, `invoice`, `bank_account`, `sender_user`, `receiver_user`, `deleted_by_user`, `tag_ids`, `taxes`, `contract` |
 | `receipts` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
@@ -85,7 +86,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `prospects` | `organization`, `organization_prospect_status`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user` |
+| `prospects` | `organization`, `organization_prospect_status`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user`, `proposals` |
 | `prospectActivities` | `organization`, `organization_prospect`, `performed_by_organization_user`, `organization_report`, `organization_file`, `organization_prospect_status_path`, `created_by_user`, `deleted_by_user` |
 | `prospectStatuses` | `organization`, `deleted_by_user`, `paths` |
 
@@ -163,7 +164,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `blockedIdentifiers` | `organization` |
 | `eventDestinations` | `organization`, `deleted_by_user`, `event_subscriptions`, `event_deliveries` |
 | `billingPackages` | `organization`, `project`, `groups`, `payment_plans`, `contract_templates`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
-| `proposals` | `organization`, `project`, `billing_package`, `billing_package_payment_plan`, `payments`, `proposal_contracts`, `billing_schedule`, `invoice`, `proforma_invoice`, `prospect`, `receiver_user`, `sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
+| `proposals` | `organization`, `project`, `billing_package`, `billing_package_payment_plan`, `subscription_term`, `payments`, `proposal_contracts`, `billing_schedule`, `invoice`, `proforma_invoice`, `prospect`, `receiver_user`, `sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user`, `stage_detail` |
 | `notifications` | `organization`, `sent_to_organization_user` |
 
 ### Global Services

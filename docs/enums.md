@@ -88,6 +88,11 @@ set. A selection relevant to recently added features:
 | `BillingPackage\TierPriceType` | `fixed`, `percent_of_baseline` |
 | `BillingPackage\ContractPartySelections` | `standard`, `custom` |
 | `BillingPackage\ContractPartySources` | `sender`, `receiver`, `assigned`, `stated` |
+| `BillingPackage\ExchangeRateGuarantees` | `invoice`, `acceptance` |
+| `Contract\PartyIdentityRequirements` | `contact`, `identity_document`, `civil_registry` |
+| `Proposal\Stages` | `drafting`, `awaiting_acceptance`, `awaiting_contract`, `awaiting_signature`, `awaiting_payment`, `closed`, `rejected`, `expired` |
+| `Proposal\StageActors` | `organization`, `customer`, `third_party`, `several` |
+| `Proposal\NotificationLogTypes` | `email`, `email_seller_viewed`, `email_seller_accepted`, `email_seller_rejected`, `email_seller_expired`, `email_seller_contract_generated` |
 
 > `BlockedIdentifier\Sources::ALL` is a filter directive on the list endpoint,
 > not a value a stored row carries — a row is always `organization` or `platform`.
@@ -107,6 +112,28 @@ set. A selection relevant to recently added features:
 > rows and has no replacement — the payments cron reads that entitlement directly.
 > `payment_failed` is new: a schedule whose card keeps refusing stops minting
 > cycles. See [UPGRADING](../UPGRADING.md).
+
+> `Proposal\Stages` is where a proposal sits across itself, its contracts and
+> their parties — `status` only records what the row was last set to, so two
+> accepted proposals can report different stages. `closed`, `rejected` and
+> `expired` are terminal. `Proposal\StageActors` names whose move it is;
+> `several` covers both a step either side may take and one that more than one
+> side owes.
+
+> `BillingPackage\ExchangeRateGuarantees` picks when the rate for a proposal
+> billed in a second currency is fixed: `invoice` re-quotes at issue time,
+> `acceptance` freezes the figures the customer accepted.
+
+> `Contract\PartyIdentityRequirements` is cumulative: `contact` needs somewhere
+> to write to, `identity_document` adds the party's identity document, and
+> `civil_registry` adds the civil-registry data a company registry asks for.
+> Which fields each tier means is per-country. A company party carries no birth
+> data, so `civil_registry` asks the same of it as `identity_document` does.
+
+> `Proposal\NotificationLogTypes` distinguishes the proposal sent to a customer
+> (`email`) from the lifecycle notices reported back to the organization (the
+> `email_seller_*` cases). Rows carry `is_seller_notification` so you do not have
+> to test the prefix yourself.
 
 > `BillingPackage\OutcomeMode` decides whether a proposal built from the package
 > ever produces a fiscal document: only `sale` does. `funding` (share subscriptions,

@@ -47,6 +47,7 @@ use Enlivy\Organization\Product;
 use Enlivy\Organization\Project;
 use Enlivy\Organization\ProjectMember;
 use Enlivy\Organization\Proposal;
+use Enlivy\Organization\ProposalNotificationLog;
 use Enlivy\Organization\Prospect;
 use Enlivy\Organization\ProspectActivity;
 use Enlivy\Organization\ProspectStatus;
@@ -185,6 +186,7 @@ final class ObjectTypes
         'subscription_term' => BillingPackageSubscriptionTerm::class,
         'subscription_term_item' => BillingPackageSubscriptionTermItem::class,
         'proposal' => Proposal::class,
+        'proposal_notification_log' => ProposalNotificationLog::class,
         'tenant_billing' => TenantBilling::class,
 
         // Organization-scoped: API & Integrations

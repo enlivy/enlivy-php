@@ -15,6 +15,7 @@ use Enlivy\ApiResource;
  * @property string|null $organization_billing_package_payment_plan_id
  * @property string|null $organization_billing_package_subscription_term_id
  * @property string|null $access_token
+ * @property string|null $portal_url
  * @property string $status
  * @property string|null $organization_prospect_id
  * @property string|null $organization_receiver_user_id
@@ -23,6 +24,10 @@ use Enlivy\ApiResource;
  * @property string|null $organization_sender_user_id
  * @property string $currency
  * @property string|null $billed_currency
+ * @property string|null $exchange_rate_guarantee
+ * @property array|null $allowed_currencies
+ * @property array|null $billed_conversion
+ * @property bool $billed_currency_is_choosable
  * @property float $sub_total
  * @property float $discount
  * @property float $total
@@ -32,6 +37,7 @@ use Enlivy\ApiResource;
  * @property string|null $currency_conversion_fee
  * @property bool $is_expired
  * @property bool $has_unsigned_required_contracts
+ * @property string $stage
  * @property bool $can_create_billing_schedule
  * @property string|null $sent_at
  * @property string|null $expires_at

@@ -173,6 +173,18 @@ $inboundLeads = $client->prospects->list([
     'source_type' => 'inbound',
 ]);
 
+// By campaign attribution
+$campaignLeads = $client->prospects->list([
+    'source_channel' => 'google',
+    'source_medium' => 'cpc',
+    'source_campaign' => 'spring-2026',
+]);
+
+// Only prospects sitting past their status's stuck threshold
+$stalled = $client->prospects->list([
+    'is_stalled' => true,
+]);
+
 // By linked customer
 $linkedProspects = $client->prospects->list([
     'linked_organization_user_id' => 'org_user_xxx',
@@ -213,6 +225,13 @@ Get prospects organized by status for a kanban board:
 
 $board = $client->prospects->board();
 
+// Narrowed to a project and a date window
+$board = $client->prospects->board([
+    'assigned_organization_project_id' => 'org_proj_xxx',
+    'created_at_from' => '2026-08-01T00:00:00Z',
+    'created_at_to' => '2026-08-31T23:59:59Z',
+]);
+
 foreach ($board->columns as $column) {
     echo "=== {$column->status->name} ({$column->count}) ===\n";
 
@@ -221,6 +240,38 @@ foreach ($board->columns as $column) {
     }
 }
 ```
+
+## Pipeline Analytics
+
+Aggregate views over the pipeline. `start_date` and `end_date` are required; the window can be
+narrowed by owner, project or source, and money can be reported in a single currency.
+
+```php
+<?php
+
+$window = [
+    'start_date' => '2026-08-01T00:00:00Z',
+    'end_date' => '2026-08-31T23:59:59Z',
+    'convert_to_currency' => 'EUR',
+];
+
+$overview = $client->analytics->prospects($window);
+
+$summary     = $client->analytics->prospectsByType('summary', $window);
+$funnel      = $client->analytics->prospectsByType('funnel', $window);
+$transitions = $client->analytics->prospectsByType('transitions', $window);
+$stalled     = $client->analytics->prospectsByType('stalled', $window);
+```
+
+| Type | Answers |
+|------|---------|
+| `summary` | Totals, and breakdowns by status, status type, owner, project, source type, channel, campaign, and budget |
+| `funnel` | How a cohort moved through the stages, including its proposal and paid stages, plus what could not be attributed |
+| `transitions` | Status-to-status movement counts, with how long prospects sat in the status they left |
+| `stalled` | Per status: how many are stuck past its threshold, and how long they have sat |
+
+Narrowing accepts `assigned_organization_user_id`, `assigned_organization_project_id` and
+`source_type`. Responses are untyped — read them as plain objects.
 
 ## Retrieving a Prospect
 
@@ -427,7 +478,17 @@ foreach ($activities as $activity) {
     echo "[{$activity->type}] {$activity->title}\n";
     echo "  {$activity->occurred_at}: {$activity->description}\n";
 }
+
+// Narrow to when the activity happened, rather than when it was recorded
+$thisWeek = $client->prospectActivities->list([
+    'activity_at_from' => '2026-08-17T00:00:00Z',
+    'activity_at_to' => '2026-08-24T00:00:00Z',
+]);
 ```
+
+An activity that records a status move carries the pair it moved between —
+`from_organization_prospect_status_id` and `to_organization_prospect_status_id` — so a history can be
+read without resolving the status path. Both are null on activities that are not moves.
 
 ## Importing Prospects
 

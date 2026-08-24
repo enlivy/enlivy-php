@@ -39,7 +39,12 @@ class ProspectActivityService extends AbstractService
         'organization_prospect_id',
         'organization_report_id',
         'organization_file_id',
+        'organization_prospect_status_path_id',
         'performed_by_organization_user_id',
+        'activity_at_from',
+        'activity_at_to',
+        'created_at_from',
+        'created_at_to',
     ];
 
     /**

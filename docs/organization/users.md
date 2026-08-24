@@ -590,6 +590,7 @@ $addresses = $client->userAddresses->list([
 | `address_state` | string\|null | State |
 | `address_zip_code` | string | Postal/ZIP code |
 | `address_iso_3166` | string | ISO 3166-2 subdivision code |
+| `address_country_code` | string | Country the address is in, when it differs from `country_code` |
 | `locale` | string | Language locale (e.g., 'en', 'ro'). Must be one the organization operates in — see below. |
 | `timezone` | string\|null | Timezone (e.g., 'Europe/Bucharest') |
 
@@ -599,11 +600,27 @@ A user's `locale` must be one of the organization's own locales (its `locale` pl
 a billing package's `locale` and `locale_list`. On update, a user already sitting on a locale the
 organization has since dropped may keep it.
 
+`address_country_code` is where the address actually is, which need not be where the person is:
+`country_code` stays required of everyone, and `address_country_code` falls back to it when omitted.
+`address_iso_3166` is validated against whichever of the two applies.
+
+`address_line_1` and `address_city` are now **required** for a user whose role can be invoiced —
+that role puts them on documents that must state where they are. Every other role is a contact, and a
+contact with no address is ordinary. On update the requirement is `sometimes`-style: a partial update
+need not resend a stored address, but it cannot blank one on an invoiceable user.
+
+`birthplace` and `citizenship` sit alongside `birthdate`. They are what a company registry asks for
+when a contract has to identify a person by civil-registry data — see
+[Contracts — Party Identity](contracts.md#party-identity). Both are writable on the customer-portal
+profile lane too.
+
 `address_city`, `address_county`, `address_state` and `timezone` accept `null` — send it to clear a
 value that no longer applies. Plenty of countries have no county or state layer at all, so requiring
 one made those addresses unstorable. On the organization itself, `address_county`, `address_state`
 and `timezone` are clearable the same way.
 | `birthdate` | string | Birth date (YYYY-MM-DD) |
+| `birthplace` | string | Place of birth |
+| `citizenship` | string | Citizenship, as a 2-letter country code |
 | `organization_type` | string | Company type (SRL, SA, etc.) |
 | `information` | object | Country-specific personal info (JSON) |
 | `organization_information` | object | Company info (tax ID, etc.) (JSON) |

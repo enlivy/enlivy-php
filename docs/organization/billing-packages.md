@@ -55,6 +55,8 @@ $package = $client->billingPackages->create([
     'locale' => 'en',
     'locale_list' => ['en', 'ro'],
     'type' => 'standard',
+    'currency' => 'EUR',
+    'currency_list' => ['EUR', 'RON'],
     'is_active' => true,
 
     // Optional: link to a project
@@ -111,6 +113,32 @@ $package = $client->billingPackages->create([
 
 echo "Billing package created: {$package->id}\n";
 ```
+
+## Currencies
+
+A package is quoted in one currency and may transact in several. `currency` is the quote currency and
+`currency_list` is every currency it settles in; both are required together, and `currency` must
+appear in `currency_list`. Anything in the list beyond `currency` settles by conversion rather than
+by a second price ladder. Both are narrowed to the organization's own currency list, the same way the
+locale pair is — widen the organization's list first if you need one it does not yet operate in. On
+update, a package already carrying a currency the organization has since dropped may keep it.
+
+`exchange_rate_guarantee` decides when the conversion rate stops moving for proposals built from the
+package: `invoice` re-quotes at issue time, `acceptance` freezes the figures the customer accepted.
+
+```php
+<?php
+
+$client->billingPackages->update('org_bp_xxx', [
+    'currency' => 'EUR',
+    'currency_list' => ['EUR', 'RON', 'USD'],
+    'exchange_rate_guarantee' => 'acceptance',
+]);
+```
+
+`available_currencies` is returned on read: the currencies the package can actually be transacted in
+right now. Values for the guarantee are in `Enlivy\Enums\BillingPackage\ExchangeRateGuarantees`;
+see [Proposals — Settlement Currency](proposals.md#settlement-currency) for how they play out.
 
 ## Outcome Mode
 
@@ -399,6 +427,13 @@ Every source fills the same way: a base identity is resolved, then any detail st
 over it. So `stated` is simply the case where the source contributes nothing, and any party may
 override individual fields (`first_name`, `organization_name`, `contact_email_address`, the
 `address_*` block, and the country's identity fields).
+
+A party row may also declare `identity_requirement` — how completely that party must be described
+before a document generated from the template can be issued (`contact`, `identity_document` or
+`civil_registry`). The generated contract arrives with the tier already set, which is why the
+dependency runs this way and not the other. Rows carry the civil fields themselves too:
+`party_citizenship`, `birthdate`, `birthplace`, and `address_country_code` alongside
+`address_iso_3166`. See [Contracts — Party Identity](contracts.md#party-identity).
 
 `organization_user_id` is required for `assigned` and rejected for every other source.
 `referenced_as_lang_map` is required on every row — it is the name clauses address the party by, and

@@ -257,16 +257,16 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('eventDestinations');
     }
 
-    // Billing & Offers
+    // Billing & Packages
 
     public function testBillingScheduleAllIncludes(): void
     {
         $this->assertAllIncludesWork('billingSchedules');
     }
 
-    public function testOfferAllIncludes(): void
+    public function testBillingPackageAllIncludes(): void
     {
-        $this->assertAllIncludesWork('offers');
+        $this->assertAllIncludesWork('billingPackages');
     }
 
     public function testProposalAllIncludes(): void

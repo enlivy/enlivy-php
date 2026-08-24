@@ -17,6 +17,7 @@ use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\ContractConnection;
 use Enlivy\Organization\EventTrail;
 use Enlivy\Organization\Invoice;
+use Enlivy\Organization\ProposalNotificationLog;
 use Enlivy\Organization\Prospect;
 use Enlivy\Tests\Mock\MockHttpClient;
 use Enlivy\Util\RequestOptions;
@@ -352,6 +353,92 @@ final class ServiceTest extends TestCase
             '/organizations/org_default/invoices/notification-logs/restore/org_inv_nl_1',
             $request['url'],
         );
+    }
+
+    public function testProposalNotificationLogsListHitsTheNestedProposalsPathAndAcceptsTypeFilters(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->proposalNotificationLogs->list([
+            'types' => 'email_seller_viewed,email_seller_accepted',
+            'organization_proposal_id' => 'org_prop_1',
+            'created_at_from' => '2026-08-01T00:00:00Z',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/proposals/notification-logs', $request['url']);
+        $this->assertSame('email_seller_viewed,email_seller_accepted', $request['params']['types']);
+        $this->assertSame('org_prop_1', $request['params']['organization_proposal_id']);
+        $this->assertSame('2026-08-01T00:00:00Z', $request['params']['created_at_from']);
+    }
+
+    public function testProposalNotificationLogRetrieveHydratesTypedAndRestoreKeepsItsNestedPath(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => [
+            'id' => 'org_prop_nl_1',
+            'object' => 'proposal_notification_log',
+            'type' => 'email_seller_accepted',
+            'is_seller_notification' => true,
+        ]]);
+
+        $log = $this->client->proposalNotificationLogs->retrieve('org_prop_nl_1');
+
+        $this->assertInstanceOf(ProposalNotificationLog::class, $log);
+        $this->assertSame('email_seller_accepted', $log->type);
+        $this->assertTrue($log->is_seller_notification);
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_prop_nl_1']]);
+        $this->client->proposalNotificationLogs->restore('org_prop_nl_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString(
+            '/organizations/org_default/proposals/notification-logs/restore/org_prop_nl_1',
+            $request['url'],
+        );
+    }
+
+    public function testPortalProposalRefreshConversionAndCurrencyAcceptance(): void
+    {
+        $portal = new \Enlivy\EnlivyPortalClient([
+            'portal_token' => 'portal_tok',
+            'organization_id' => 'org_default',
+            'http_client' => $this->httpClient,
+        ]);
+
+        $this->httpClient->addResponse(200, ['data' => ['amount' => '4995.00', 'currency' => 'RON']]);
+        $conversion = $portal->proposals->refreshConversion('org_prop_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('proposals/org_prop_1/refresh-conversion', $request['url']);
+        $this->assertSame('4995.00', $conversion->amount);
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_prop_1', 'object' => 'proposal']]);
+        $portal->proposals->accept('org_prop_1', [
+            'billed_currency' => 'RON',
+            'displayed_amount' => 4995.00,
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('proposals/org_prop_1/accept', $request['url']);
+        $this->assertSame('RON', $request['params']['billed_currency']);
+        $this->assertSame(4995.00, $request['params']['displayed_amount']);
+    }
+
+    public function testProspectAnalyticsResolveUnderTheProspectsPath(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->analytics->prospectsByType('funnel', [
+            'start_date' => '2026-08-01T00:00:00Z',
+            'end_date' => '2026-08-31T00:00:00Z',
+            'convert_to_currency' => 'EUR',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/prospects/analytics/funnel', $request['url']);
+        $this->assertSame('EUR', $request['params']['convert_to_currency']);
     }
 
     public function testScheduledRemindersHydrateWithoutAnIdAndCarryTheWindowMeta(): void

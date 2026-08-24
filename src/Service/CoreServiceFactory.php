@@ -47,6 +47,7 @@ use Enlivy\Service\Organization\Project\ProjectPermissionProspectService;
 use Enlivy\Service\Organization\Project\ProjectPermissionReportService;
 use Enlivy\Service\Organization\Project\ProjectProspectStatusService;
 use Enlivy\Service\Organization\Project\ProjectService;
+use Enlivy\Service\Organization\Proposal\ProposalNotificationLogService;
 use Enlivy\Service\Organization\ProposalService;
 use Enlivy\Service\Organization\Prospect\ProspectActivityService;
 use Enlivy\Service\Organization\Prospect\ProspectService;
@@ -208,6 +209,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             // Org-scoped: Billing
             'billingPackages' => BillingPackageService::class,
             'proposals' => ProposalService::class,
+            'proposalNotificationLogs' => ProposalNotificationLogService::class,
             'tenantBilling' => TenantBillingService::class,
             'tenantBillingTrial' => TenantBillingTrialService::class,
             'tenantBillingPaymentMethods' => TenantBillingPaymentMethodService::class,

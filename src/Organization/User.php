@@ -25,6 +25,7 @@ use Enlivy\ApiResource;
  * @property string|null $address_county
  * @property string|null $address_state
  * @property string|null $address_iso_3166
+ * @property string|null $address_country_code
  * @property string|null $address_zip_code
  * @property string|null $locale
  * @property string|null $timezone
@@ -35,6 +36,8 @@ use Enlivy\ApiResource;
  * @property array|null $organization_information
  * @property bool $organization_is_eu_vat_registered
  * @property string|null $birthdate
+ * @property string|null $birthplace
+ * @property string|null $citizenship
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at
