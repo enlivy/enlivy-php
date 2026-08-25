@@ -3,6 +3,23 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [2.8.1] - 2026-08-25
+
+Reverts the one behaviour change in 2.8.0.
+
+### Fixed
+
+- **Organization user addresses are optional again**, whatever the role says.
+  2.8.0 required `address_line_1` and `address_city` of users whose role can be
+  invoiced, which broke integrations that create a customer before it has an
+  address. The role branch is gone rather than loosened. If you added address
+  fields to satisfy 2.8.0, you can drop them again.
+- `address_line_1` now accepts an explicit `null`, not just an absent key, so
+  clearing a stored street no longer depends on whether your client strips empty
+  values before posting. This was true before 2.8.0 as well and is now fixed.
+
+Docs only — no SDK method, property or enum changed in either direction.
+
 ## [2.8.0] - 2026-08-24
 
 Proposals that quote in one currency and settle in another, a stage that reads
@@ -53,6 +70,7 @@ Purely additive — no method, enum case, property or constant removed.
 - `address_line_1` and `address_city` are now required when creating an
   organization user whose role can be invoiced, and cannot be blanked on update
   for such a user. Other roles are unaffected.
+  **Reverted in 2.8.1 — do not build against this.**
 
 ### Fixed
 

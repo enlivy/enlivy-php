@@ -604,10 +604,15 @@ organization has since dropped may keep it.
 `country_code` stays required of everyone, and `address_country_code` falls back to it when omitted.
 `address_iso_3166` is validated against whichever of the two applies.
 
-`address_line_1` and `address_city` are now **required** for a user whose role can be invoiced —
-that role puts them on documents that must state where they are. Every other role is a contact, and a
-contact with no address is ordinary. On update the requirement is `sometimes`-style: a partial update
-need not resend a stored address, but it cannot blank one on an invoiceable user.
+The whole address block is optional for every organization user, whatever their role says, and
+`address_line_1` accepts an explicit `null` as well as being omitted. Sending `null` to clear a
+stored street is therefore safe — before 2.8.1 the field rejected an explicit null while accepting
+an absent key, which only ever surfaced for callers that did not strip empty values before posting.
+
+> **2.8.0 only.** That release briefly required `address_line_1` and `address_city` of users whose
+> role can be invoiced. It broke integrations that create a customer before it has an address and was
+> reverted in 2.8.1. If you added address fields to satisfy it, you can drop them again; if you
+> skipped 2.8.0, nothing changed for you.
 
 `birthplace` and `citizenship` sit alongside `birthdate`. They are what a company registry asks for
 when a contract has to identify a person by civil-registry data — see
