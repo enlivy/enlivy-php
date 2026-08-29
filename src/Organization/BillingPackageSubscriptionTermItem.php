@@ -20,7 +20,7 @@ use Enlivy\ApiResource;
  * @property string $organization_billing_package_group_item_id
  * @property bool $is_available
  * @property array|null $prices
- * @property array|null $unit_lang_map
+ * @property string|null $unit_code
  * @property array|null $invoice_schema_map
  * @property string|null $deleted_by_user_id
  * @property string|null $deleted_at

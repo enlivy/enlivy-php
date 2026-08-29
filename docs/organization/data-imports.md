@@ -98,12 +98,27 @@ Start with `dry_run => true`. It runs the same validation and produces the same 
 | `field_position_tax_class` | Matched against the organization's tax classes |
 | `field_position_ean_number`, `field_position_upc_number` | Product codes |
 | `field_position_is_sold` | Whether the row is offered for sale |
-| `field_position_peppol_billing_unit_code`, `field_position_cpv_code` | E-invoicing codes |
+| `field_position_unit_code` | Billing unit — must be a UN/ECE **code**, not a label (see below) |
+| `field_position_cpv_code` | EU Common Procurement Vocabulary code |
 | `field_position_stripe_product_id` | Links the row to an existing Stripe product |
 | `field_position_tags` | Split on `tags_separator` |
-| `field_position_{name,description,unit,note}_map` | `{ locale: position }` for the multilingual fields |
+| `field_position_{name,description,note}_map` | `{ locale: position }` for the multilingual fields |
 
 Each multilingual field also accepts a plain `field_position_{field}` for a single-locale file.
+
+> **The unit column changed.** The unit used to be one of the multilingual fields,
+> so a `Unit` column reading `hour`, `ore` or `buc` imported as written. It is now
+> `unit_code` and is validated as a UN/ECE code, and the import passes your column
+> through unchanged — it does **not** translate a label into a code. A row whose
+> unit column holds a label now fails validation and is logged as a failed row, and
+> enough of them in a row can stop the import on `consecutive_failures`.
+>
+> Map `field_position_unit_code` to a column of codes (`HUR`, `DAY`, `MON`, `ANN`,
+> `H87`), or leave the column unmapped and let each product take the `H87` default.
+> Note that the header aliases the importer recognises for this column — `Unit`,
+> `Unit of Measure`, `UOM`, `Measure`, `UM`, `Unitate` — are the same ones a
+> label column usually carries, so an existing file may map itself onto the new
+> field automatically. Check that column before re-running a saved import.
 
 ### Organization-user columns
 

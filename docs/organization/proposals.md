@@ -82,7 +82,7 @@ $proposal = $client->proposals->create([
                 [
                     'name_lang_map' => ['en' => 'Design Phase'],
                     'description_lang_map' => ['en' => 'UX/UI design and prototyping'],
-                    'unit_lang_map' => ['en' => 'service'],
+                    'unit_code' => 'H87',
                     'type' => 'service',
                     'quantity' => 1,
                     'price' => 5000.00,
@@ -498,7 +498,7 @@ echo "Billing schedule created for proposal: {$proposal->id}\n";
 | `organization_product_id` | string | Product reference |
 | `name_lang_map` | object | Name by language (required if no product) |
 | `description_lang_map` | object | Description by language |
-| `unit_lang_map` | object | Unit by language |
+| `unit_code` | string | Billing unit as a UN/ECE code (`HUR`, `DAY`, `H87`, …) |
 | `type` | string | Product type (service, digital, physical, bonus) |
 | `quantity` | numeric | Quantity |
 | `price` | numeric | Unit price |

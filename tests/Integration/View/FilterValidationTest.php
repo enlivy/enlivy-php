@@ -265,7 +265,7 @@ class FilterValidationTest extends IntegrationTestCase
     public function testBankTransactionStateFilter(): void
     {
         $this->assertResourceFiltersWork('bankTransactions', [
-            'state' => 'classified',
+            'state' => 'completed',
         ]);
     }
 

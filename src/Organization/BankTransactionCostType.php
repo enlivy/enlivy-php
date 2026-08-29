@@ -12,6 +12,7 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property string|null $organization_bank_transaction_cost_type_id
  * @property array|null $title_lang_map
+ * @property array|null $description_lang_map
  * @property bool $connection_required
  * @property array|null $connection_types
  * @property string|null $deleted_at

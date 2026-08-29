@@ -845,4 +845,28 @@ final class ServiceTest extends TestCase
 
         $this->assertSame('org_file_1', $activities->getData()[0]->organization_file_id);
     }
+
+    public function testInvoicesAndReceiptsFilterOnTheDateTheyFallDue(): void
+    {
+        foreach (['invoices', 'receipts'] as $accessor) {
+            $this->httpClient->addResponse(200, ['data' => []]);
+
+            $this->client->{$accessor}->list([
+                'due_at_from' => '2026-09-01T00:00:00Z',
+                'due_at_to' => '2026-09-30T23:59:59Z',
+            ]);
+
+            $params = $this->httpClient->getLastRequest()['params'];
+            $this->assertSame('2026-09-01T00:00:00Z', $params['due_at_from']);
+            $this->assertSame('2026-09-30T23:59:59Z', $params['due_at_to']);
+        }
+    }
+
+    public function testBankTransactionsAcceptTheMergedCompletedState(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->bankTransactions->list(['state' => 'completed']);
+        $this->assertSame('completed', $this->httpClient->getLastRequest()['params']['state']);
+    }
 }

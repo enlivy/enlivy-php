@@ -11,9 +11,7 @@ enum States: string
     use EnumValues;
 
     case BACKLOG = 'backlog';
-    case CLASSIFIED = 'classified';
-    case CONNECTED = 'connected';
-    case CONNECTED_PARTIALLY = 'connected_partially';
-    case DANGER = 'danger';
+    case COMPLETED = 'completed';
+    case UNBALANCED = 'unbalanced';
     case TRASHED = 'trashed';
 }

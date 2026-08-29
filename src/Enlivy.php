@@ -16,7 +16,7 @@ namespace Enlivy;
  */
 final class Enlivy
 {
-    public const string VERSION = '2.8.1';
+    public const string VERSION = '3.0.0';
 
     public const string DEFAULT_API_BASE = 'https://api.enlivy.com';
 

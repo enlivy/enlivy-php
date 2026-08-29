@@ -74,6 +74,8 @@ class InvoiceService extends AbstractService
         'paid_at_to',
         'issued_at_from',
         'issued_at_to',
+        'due_at_from',
+        'due_at_to',
         'created_at_from',
         'created_at_to',
         'updated_at_from',

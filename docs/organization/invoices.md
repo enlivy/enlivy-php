@@ -130,7 +130,7 @@ $invoice = $client->invoices->create([
         ],
         [
             'name_lang_map' => ['en' => 'Development Hours'],
-            'unit_lang_map' => ['en' => 'hour'],
+            'unit_code' => 'HUR',
             'quantity' => 20,
             'price' => 75.00,
             'discount' => 10, // Percentage discount
@@ -242,10 +242,12 @@ $invoice = $client->invoices->create([
             'type' => 'service',
             'organization_tax_class_id' => 'org_tax_xxx',
 
+            // Billing unit, as a UN/ECE code
+            'unit_code' => 'HUR',
+
             // PEPPOL/E-invoicing schema fields
             'invoice_schema_map' => [
                 'classification_identifier_cpv' => '72000000', // CPV code
-                'peppol_billing_unit_code' => 'HUR', // Hours
             ],
         ],
     ],

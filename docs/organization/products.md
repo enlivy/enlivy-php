@@ -60,11 +60,8 @@ $service = $client->products->create([
         'ro' => 'O ora de consultanta profesionala',
     ],
 
-    // Multilingual unit (optional)
-    'unit_lang_map' => [
-        'en' => 'hour',
-        'ro' => 'ora',
-    ],
+    // Billing unit, as a UN/ECE code (optional)
+    'unit_code' => 'HUR',
 
     // Tax configuration - tax treatment derives from the assigned tax class
     'organization_tax_class_id' => 'org_tax_xxx',
@@ -113,7 +110,7 @@ $physical = $client->products->create([
     'type' => 'physical',
     'name_lang_map' => ['en' => 'Laptop Stand'],
     'description_lang_map' => ['en' => 'Ergonomic aluminum laptop stand'],
-    'unit_lang_map' => ['en' => 'piece'],
+    'unit_code' => 'H87',
     'price_map' => [
         'EUR' => 49.99,
     ],
@@ -141,13 +138,13 @@ $product = $client->products->create([
     'price_map' => ['EUR' => 200.00],
     'organization_tax_class_id' => 'org_tax_xxx',
 
+    // Billing unit, as a UN/ECE code
+    'unit_code' => 'HUR',
+
     // PEPPOL e-invoicing schema
     'invoice_schema_map' => [
         // CPV code (Common Procurement Vocabulary)
         'classification_identifier_cpv' => '72000000-5', // IT services
-
-        // PEPPOL billing unit code
-        'peppol_billing_unit_code' => 'HUR', // Hour
     ],
 
     'is_sold' => true,
@@ -361,7 +358,7 @@ $invoice = $client->invoices->create([
 | `alias` | string | Unique identifier (alphanumeric, dashes) |
 | `name_lang_map` | object | Name by language (e.g., `{"en": "Name", "ro": "Nume"}`) |
 | `description_lang_map` | object | Description by language |
-| `unit_lang_map` | object | Unit by language (e.g., `{"en": "hour"}`) |
+| `unit_code` | string | Billing unit as a UN/ECE code (`HUR`, `DAY`, `H87`, …) |
 | `description` | string | Plain text description |
 | `organization_tax_class_id` | string | Tax class ID (determines the product's tax treatment) |
 | `primary_currency` | string | Primary currency when multiple prices exist |
@@ -376,7 +373,13 @@ $invoice = $client->invoices->create([
 | Field | Description |
 |-------|-------------|
 | `classification_identifier_cpv` | EU Common Procurement Vocabulary code |
-| `peppol_billing_unit_code` | PEPPOL BIS Billing unit code (HUR, DAY, MON, etc.) |
+
+`unit_code` used to live in this map as `peppol_billing_unit_code`. It is its own
+field now, and the old key is neither accepted on write nor returned on read.
+Products that existed before the change were migrated — each kept the code it had
+recorded, or got one recovered from its unit label — so no backfill is needed on
+your side. A product created without a `unit_code` reads back `H87` (piece)
+rather than `null`.
 
 ### Include Options
 
@@ -416,19 +419,13 @@ try {
         'description_lang_map' => [
             'en' => 'Professional consulting services',
         ],
-        'unit_lang_map' => [
-            'en' => 'hour',
-            'ro' => 'ora',
-        ],
+        'unit_code' => 'HUR',
         'price_map' => [
             'EUR' => 150.00,
             'RON' => 750.00,
         ],
         'primary_currency' => 'EUR',
         'organization_tax_class_id' => $taxClass->id,
-        'invoice_schema_map' => [
-            'peppol_billing_unit_code' => 'HUR',
-        ],
         'is_sold' => true,
     ]);
 

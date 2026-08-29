@@ -418,7 +418,7 @@ REPORT,
 
 ## Notes
 
-- AI Agents require the `openai` feature to be enabled for your organization
+- AI Agents require the `prompt_engine` feature to be enabled for your organization
 - Agent prompts and output structures are only visible to admin users
 - All agent runs are logged for billing and debugging purposes
 - The `input_target_entity` determines which entity types can be processed

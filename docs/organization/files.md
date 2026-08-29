@@ -253,6 +253,7 @@ The allow-list is exact — an extension outside it is rejected at upload:
 - Images: `jpg`, `jpeg`, `png`, `gif`
 - Video: `mp4`, `mov`, `webm`
 - Audio: `mp3`, `m4a`
+- Subtitles: `srt`, `vtt`
 - Archives: `zip`
 - Text: `txt`, `csv`
 

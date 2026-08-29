@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Enlivy\Tests\Unit;
 
+use Enlivy\Enums\BankTransaction\States as BankTransactionStates;
 use Enlivy\Enums\BillingPackage\ContractPartySelections;
 use Enlivy\Enums\BillingPackage\ExchangeRateGuarantees;
 use Enlivy\Enums\BillingPackage\ContractPartySources;
@@ -132,6 +133,10 @@ final class EnumsTest extends TestCase
             ContractPartySources::values(),
         );
         $this->assertContains('agreed', ProposalStatuses::values());
+        $this->assertSame(
+            ['backlog', 'completed', 'unbalanced', 'trashed'],
+            BankTransactionStates::values(),
+        );
     }
 
     /**
@@ -142,6 +147,18 @@ final class EnumsTest extends TestCase
     {
         $this->assertNotContains('subscription_required', BillingScheduleStatuses::values());
         $this->assertNotContains('cancelling', BillingScheduleStatuses::values());
+    }
+
+    /**
+     * The four states upstream merged away in 3.0.0. A transaction is now either settled
+     * against its documents (completed) or it is not (unbalanced); nothing reports how far
+     * along that reconciliation got.
+     */
+    public function testMergedBankTransactionStatesStayRemoved(): void
+    {
+        foreach (['classified', 'connected', 'connected_partially', 'danger'] as $retired) {
+            $this->assertNotContains($retired, BankTransactionStates::values());
+        }
     }
 
     /**

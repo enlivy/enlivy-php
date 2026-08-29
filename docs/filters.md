@@ -129,6 +129,7 @@ $invoices = $client->invoices->list([
 | `is_tax_charged` | bool |
 | `paid_at_from`, `paid_at_to` | datetime |
 | `issued_at_from`, `issued_at_to` | datetime |
+| `due_at_from`, `due_at_to` | datetime |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
@@ -141,6 +142,7 @@ $invoices = $client->invoices->list([
 | `organization_invoice_id` | string[] |
 | `paid_at_from`, `paid_at_to` | datetime |
 | `issued_at_from`, `issued_at_to` | datetime |
+| `due_at_from`, `due_at_to` | datetime |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
@@ -235,7 +237,7 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
-| `state` | `backlog`, `classified`, `connected`, `connected_partially`, `danger`, `trashed` |
+| `state` | `backlog`, `completed`, `unbalanced`, `trashed` |
 | `direction` | `inbound`, `outbound` |
 | `connection_entity_type` | `invoice`, `receipt`, `bank_transaction`, `user`, `payslip` |
 | `connection_entity_id` | string |

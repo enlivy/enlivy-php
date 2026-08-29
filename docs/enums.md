@@ -81,6 +81,7 @@ set. A selection relevant to recently added features:
 | `Import\StopReasons` | `usage_limit`, `ai_limit`, `consecutive_failures`, `file_unreadable` |
 | `BlockedIdentifier\Types` | `email`, `email_domain`, `phone_number` |
 | `BlockedIdentifier\Sources` | `organization`, `platform`, `all` |
+| `BankTransaction\States` | `backlog`, `completed`, `unbalanced`, `trashed` |
 | `Receipt\Directions` | `inbound`, `outbound` |
 | `Receipt\Sources` | `uploaded`, `generated` |
 | `BillingPackage\PortalDiscoveryMode` | `disabled`, `request`, `checkout` |
@@ -119,6 +120,14 @@ set. A selection relevant to recently added features:
 > `expired` are terminal. `Proposal\StageActors` names whose move it is;
 > `several` covers both a step either side may take and one that more than one
 > side owes.
+
+> `BankTransaction\States` collapsed four cases into two in 3.0.0. A transaction
+> is `completed` once it is fully settled against the documents it is connected to
+> and `unbalanced` while it is not — the old `classified`, `connected`,
+> `connected_partially` and `danger` reported how far along that reconciliation
+> was, which is a property of the connections and not of the transaction. Filter
+> on `state`, or read `is_connected`, rather than pinning the intermediate steps.
+> See [UPGRADING](../UPGRADING.md).
 
 > `BillingPackage\ExchangeRateGuarantees` picks when the rate for a proposal
 > billed in a second currency is fixed: `invoice` re-quotes at issue time,

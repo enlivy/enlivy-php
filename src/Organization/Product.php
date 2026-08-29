@@ -18,7 +18,7 @@ use Enlivy\ApiResource;
  * @property string|null $organization_tax_class_id
  * @property array|null $name_lang_map
  * @property array|null $description_lang_map
- * @property array|null $unit_lang_map
+ * @property string|null $unit_code
  * @property array|null $note_lang_map
  * @property array|null $invoice_schema_map
  * @property array|null $stripe_product_id_list

@@ -3,6 +3,47 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.0.0] - 2026-08-30
+
+The billing unit on every priced line became a UN/ECE code, and
+`BankTransaction\States` lost four cases. **Your stored data was migrated for
+you** — every product and line item already carries a `unit_code`, so nothing
+needs backfilling. If you never wrote or read a unit, only product imports need a
+look. See [UPGRADING](UPGRADING.md).
+
+### Changed
+
+- `unit_lang_map` → `unit_code` (a UN/ECE code such as `HUR`, `DAY`, `H87`) on
+  products, invoice line items, proposal payment line items, billing-schedule
+  phase line items, billing-package payment-plan phase line items and
+  subscription-term items.
+- `invoice_schema_map.peppol_billing_unit_code` removed, superseded by `unit_code`.
+- `BankTransaction\States`: `classified`, `connected`, `connected_partially` and
+  `danger` are now `completed` and `unbalanced`.
+- `organizations->summary()`: `bank_transactions.unbalanced` replaces
+  `partially_connected` and `danger`.
+- Product imports: `field_position_unit_code` replaces
+  `field_position_peppol_billing_unit_code`, `field_position_unit_map` is gone,
+  and the unit column must hold a code — a label fails the row.
+  See [Data Imports](docs/organization/data-imports.md).
+- `aiAgents->run()` requires the `prompt_engine` feature, not `openai`.
+- `match->run()` requires the entity's `*.manage` ability, not just membership.
+
+### Added
+
+- `due_at_from` / `due_at_to` filters on `invoices` and `receipts`.
+- `description_lang_map` on bank-transaction cost types.
+- `peppol_anaf_sync_status`, `peppol_anaf_sync_blocked_at` and
+  `peppol_anaf_sync_blocked_reason` in `organizations->summary()`.
+- `srt` and `vtt` file uploads.
+- `match->run()`: `create_draft`, `bank_accounts`, and per-match provenance.
+
+### Fixed
+
+- Portal contacts without a platform account can save a billing profile and claim
+  a package again; both answered `500`.
+- `q` now folds case against lang-map and JSON columns.
+
 ## [2.8.1] - 2026-08-25
 
 Reverts the one behaviour change in 2.8.0.

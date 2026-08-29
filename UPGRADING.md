@@ -1,3 +1,186 @@
+# Upgrading to 3.0.0
+
+`3.0.0` is a **major** release: a field rename that reaches every priced line in
+the API, one source break on an enum, and a key removal inside
+`invoice_schema_map`. Nothing here is a signature change — your service calls and
+method names are untouched — but the wire contract moved, so the major is the
+honest label.
+
+## Start here: most integrations need no data work
+
+**Your existing rows were migrated for you, on the API side, before this release.**
+Every product and every line item already carries a `unit_code`, resolved in this
+order:
+
+1. the PEPPOL code you had recorded in `invoice_schema_map.peppol_billing_unit_code`;
+2. failing that, the free-text unit the row was written with, matched against a
+   vocabulary covering all six supported languages (`hour`/`ora`/`heure`/`stunde`/… → `HUR`);
+3. failing that, `H87` (piece).
+
+So nothing was dropped, nothing needs backfilling by you, and the migration
+*improved* e-invoicing for rows that carried a unit label but no code — those had
+been going out as generic units and now go out as what they are.
+
+**If you never set a unit** — you never sent `unit_lang_map`, never set
+`peppol_billing_unit_code`, and never read either back — then this release asks
+nothing of you. Your products and invoices behave exactly as before; they simply
+read `H87` where they used to read `null`.
+
+**You have work to do if** you write `unit_lang_map`, write
+`invoice_schema_map.peppol_billing_unit_code`, read either back, reference a
+`BankTransaction\States` constant, or **import products from a file** — the
+migration fixed your stored rows, but it cannot fix a spreadsheet you upload
+tomorrow, and the unit column is now validated. Those five cases are what the
+rest of this page is about.
+
+## `unit_lang_map` became `unit_code`
+
+A line's unit was a lang-map — free text per language, entered by whoever built
+the product. It is now a single UN/ECE unit code, the same vocabulary PEPPOL
+bills in. The field is renamed on read and on write, everywhere a priced line
+appears:
+
+- products (and the product summary)
+- invoice line items
+- proposal payment line items
+- billing-schedule phase line items
+- billing-package payment-plan phase line items
+- billing-package subscription-term items
+
+```php
+// Before
+$client->products->create([
+    'name_lang_map' => ['en' => 'Consulting'],
+    'unit_lang_map' => ['en' => 'hour', 'ro' => 'ora'],
+]);
+
+// After
+$client->products->create([
+    'name_lang_map' => ['en' => 'Consulting'],
+    'unit_code' => 'HUR',
+]);
+```
+
+The value is at most three characters and is checked against the UN/ECE unit-code
+vocabulary; `HUR` (hour), `DAY`, `MON`, `ANN` and `H87` (piece) cover most
+billing, and an unrecognised code is a `422`.
+
+**`unit_lang_map` is dropped silently, not rejected.** It is no longer a field the
+write contract knows about, so a payload still carrying it validates, saves, and
+simply stores no unit — you will not get an error pointing you here. Find your
+writes before upgrading:
+
+```bash
+grep -rn "unit_lang_map" src/
+```
+
+Reads need the same pass — `$product->unit_lang_map` is `null` on 3.0.0, and a
+lang-map lookup against it returns nothing rather than erroring. Translation is
+the part you lose: one code replaces six strings, and the label a customer sees
+comes from the locale the document is rendered in, not from what you stored.
+
+## `invoice_schema_map.peppol_billing_unit_code` is gone
+
+The unit had two homes once `unit_code` existed. The map keeps
+`classification_identifier_cpv` and loses the unit key on both sides of the wire.
+
+```php
+// Before
+'invoice_schema_map' => [
+    'classification_identifier_cpv' => '72000000-5',
+    'peppol_billing_unit_code' => 'HUR',
+],
+
+// After
+'unit_code' => 'HUR',
+'invoice_schema_map' => [
+    'classification_identifier_cpv' => '72000000-5',
+],
+```
+
+A row whose map held nothing else reads back `null` rather than `{}`, which is
+what "no invoice schema" looked like before the key existed.
+
+## Product imports need their unit column checked
+
+This is the one place the migration does not cover you: it is about files you have
+yet to upload, not rows already stored.
+
+The unit used to be a multilingual import field, so a `Unit` column reading
+`hour`, `ore` or `buc` imported as written. It is now `unit_code`, validated as a
+UN/ECE code, and **the import passes your column through unchanged — it does not
+translate a label into a code**. Such a row now fails validation and is logged as
+a failed row; enough consecutive failures stop the import outright.
+
+Two settings keys moved:
+
+| Before | Now |
+|--------|-----|
+| `field_position_peppol_billing_unit_code` | `field_position_unit_code` |
+| `field_position_unit_map` / `field_position_unit` | *gone* — the unit is no longer multilingual |
+
+Either point `field_position_unit_code` at a column of codes, or leave it
+unmapped and let each product take the `H87` default. Worth checking even if you
+changed nothing: the header aliases the importer matches for this column —
+`Unit`, `Unit of Measure`, `UOM`, `Measure`, `UM`, `Unitate` — are exactly what a
+label column is usually called, so an existing file can map itself onto the new
+field on its own.
+
+## `BankTransaction\States` lost four cases
+
+`CLASSIFIED`, `CONNECTED`, `CONNECTED_PARTIALLY` and `DANGER` are gone;
+`COMPLETED` (`completed`) and `UNBALANCED` (`unbalanced`) replace them. The full
+set is now:
+
+```
+backlog · completed · unbalanced · trashed
+```
+
+Referencing a removed constant is a fatal error:
+
+```bash
+grep -rn "States::CLASSIFIED\|States::CONNECTED\|States::CONNECTED_PARTIALLY\|States::DANGER" src/
+```
+
+The four described how far a transaction had got through reconciliation, which
+is a property of its connections rather than of the transaction. A transaction
+is now `completed` when it is settled against the documents it is connected to
+and `unbalanced` until then. Filtering `bankTransactions` on a retired value
+returns a validation error, not an empty page.
+
+| Removed | What to filter on now |
+|---------|-----------------------|
+| `classified` | `unbalanced` — a cost type was assigned but the money is not accounted for. |
+| `connected_partially` | `unbalanced`. Read `is_connected` if you need to know whether *any* connection exists. |
+| `connected` | `completed`. |
+| `danger` | `unbalanced`. Nothing flags a transaction as wrong on its own any more. |
+
+`organizations->summary()` follows the same rename: `bank_transactions` reports
+`unbalanced` where it reported `partially_connected` and `danger`.
+
+## AI agents need a different feature flag
+
+`$client->aiAgents->run()` is gated on the `prompt_engine` organization feature
+instead of `openai`. Nothing about the call changes; an organization entitled to
+one but not the other now answers `403`.
+
+## `match->run()` is gated per entity
+
+Matching prepares data for entry, so it now asks for the ability to enter that
+entity rather than for organization membership alone:
+
+| `entityAlias` | Ability now required |
+|---------------|----------------------|
+| `user` | `users.manage` |
+| `invoice` | `invoices.manage` |
+| `receipt` | `receipts.manage` |
+| `contract` | `contracts.manage` |
+| `bank_transaction` | `bank_transactions.manage` |
+
+Other aliases are unchanged. A key or member with read-only access to one of
+these five gets a `403` where it previously got results, so check the abilities
+on any token that calls `$client->match->run()`.
+
 # Upgrading to 2.7.0
 
 `2.7.0` is a **minor** release and almost entirely additive, but it carries one

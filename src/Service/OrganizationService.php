@@ -97,6 +97,15 @@ class OrganizationService extends AbstractService
         return $this->request('POST', "/organizations/{$id}/sandboxes", $params, $opts);
     }
 
+    /**
+     * Counts and health for the organization's documents, banking and exchanges.
+     *
+     * `bank_transactions` reports `unbalanced` where it once reported
+     * `partially_connected` and `danger`; the invoices section carries
+     * `peppol_anaf_sync_status`, `peppol_anaf_sync_blocked_at` and
+     * `peppol_anaf_sync_blocked_reason`, which stay null for an organization
+     * that has never synced rather than collapsing to false.
+     */
     public function summary(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
