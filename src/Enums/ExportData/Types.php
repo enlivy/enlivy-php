@@ -12,4 +12,6 @@ enum Types: string
 
     case FULL = 'full';
     case ACCOUNTING_SAGA = 'accounting_saga';
+    case WORKING_TIME_TIMESHEET = 'working_time_timesheet';
+    case PAYROLL_HANDOFF = 'payroll_handoff';
 }

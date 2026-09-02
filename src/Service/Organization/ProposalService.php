@@ -169,4 +169,12 @@ class ProposalService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}/contracts/{$contractId}"), $params, $opts);
     }
+
+    public function reopen(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Proposal */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/reopen"), $params, $opts);
+    }
 }

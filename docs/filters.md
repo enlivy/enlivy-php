@@ -21,7 +21,7 @@ $invoices = $client->invoices->list([
 // Combine with includes
 $prospects = $client->prospects->list([
     'source_type' => 'inbound',
-    'include' => ['organization_prospect_status', 'assigned_organization_user'],
+    'include' => ['organization_prospect_stage', 'assigned_organization_user'],
     'per_page' => 10,
 ]);
 ```
@@ -183,7 +183,8 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
-| `organization_prospect_status_id` | string |
+| `organization_prospect_stage_id` | string |
+| `organization_prospect_pipeline_id` | string |
 | `assigned_organization_user_id` | string |
 | `assigned_organization_project_id` | string |
 | `source_type` | `inbound`, `outbound` |
@@ -206,7 +207,7 @@ $invoices = $client->invoices->list([
 | `organization_prospect_id` | string |
 | `organization_report_id` | string |
 | `organization_file_id` | string |
-| `organization_prospect_status_path_id` | string |
+| `organization_prospect_stage_path_id` | string |
 | `performed_by_organization_user_id` | string |
 | `activity_at_from`, `activity_at_to` | datetime |
 | `created_at_from`, `created_at_to` | datetime |
@@ -302,6 +303,28 @@ $invoices = $client->invoices->list([
 | `issued_at_from`, `issued_at_to` | datetime |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
+
+**`employments`**
+
+| Filter | Type |
+|--------|------|
+| `organization_user_id` | string |
+| `type` | `permanent`, `fixed_term`, `part_time`, `day_labourer`, `copyright`, `contractor`, `internship` |
+| `active_on` | date (`Y-m-d`) — employments whose term covers that day |
+
+**`workingTimeTerms`**
+
+| Filter | Type |
+|--------|------|
+| `organization_employment_id` | string |
+| `effective_on` | date (`Y-m-d`) — the term in force on that day |
+
+**`workingTimeDays`**
+
+| Filter | Type |
+|--------|------|
+| `organization_employment_id` | string |
+| `date_from`, `date_to` | date (`Y-m-d`) |
 
 ### Reports
 
@@ -480,7 +503,8 @@ depends on what the resource calls its label:
 
 | Service | Filters |
 |---------|---------|
-| `prospectStatuses`, `contractStatuses`, `taskStatuses`, `reportSchemas`, `resourceBundles` | `title`, `description` |
+| `prospectStages` | `title`, `description`, `organization_prospect_pipeline_id` |
+| `prospectPipelines`, `contractStatuses`, `taskStatuses`, `reportSchemas`, `resourceBundles` | `title`, `description` |
 | `taxClasses`, `payslipSchemas` | `name`, `description` |
 | `bankTransactionCostTypes` | `title` |
 

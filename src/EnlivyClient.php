@@ -32,14 +32,15 @@ use Enlivy\Service;
  * Organization-scoped services - CRM:
  * @property Service\Organization\Prospect\ProspectService $prospects
  * @property Service\Organization\Prospect\ProspectActivityService $prospectActivities
- * @property Service\Organization\Prospect\ProspectStatusService $prospectStatuses
+ * @property Service\Organization\Prospect\ProspectStageService $prospectStages
+ * @property Service\Organization\Prospect\ProspectPipelineService $prospectPipelines
  * @property Service\Organization\Project\ProjectService $projects
  * @property Service\Organization\Project\ProjectMemberService $projectMembers
  * @property Service\Organization\Project\ProjectPermissionProspectService $projectPermissionProspects
  * @property Service\Organization\Project\ProjectPermissionGuidelineService $projectPermissionGuidelines
  * @property Service\Organization\Project\ProjectPermissionPlaybookService $projectPermissionPlaybooks
  * @property Service\Organization\Project\ProjectPermissionReportService $projectPermissionReports
- * @property Service\Organization\Project\ProjectProspectStatusService $projectProspectStatuses
+ * @property Service\Organization\Project\ProjectProspectStageService $projectProspectStages
  *
  * Organization-scoped services - Accounting:
  * @property Service\Organization\Invoice\InvoiceService $invoices
@@ -77,6 +78,9 @@ use Enlivy\Service;
  * Organization-scoped services - Payroll:
  * @property Service\Organization\Payslip\PayslipSchemaService $payslipSchemas
  * @property Service\Organization\Payslip\PayslipService $payslips
+ * @property Service\Organization\Employment\EmploymentService $employments
+ * @property Service\Organization\WorkingTime\WorkingTimeTermService $workingTimeTerms
+ * @property Service\Organization\WorkingTime\WorkingTimeDayService $workingTimeDays
  *
  * Organization-scoped services - Reports:
  * @property Service\Organization\Report\ReportService $reports

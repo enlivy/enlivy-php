@@ -74,7 +74,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `invoices` | `bank_account`, `invoice_prefix`, `sender_user`, `receiver_user`, `receiver_user_address`, `line_items`, `receipts`, `deleted_by_user`, `party_locales`, `tag_ids`, `taxes`, `last_peppol_exchange`, `contract`, `charge_logs`, `latest_charge_log`, `reversal_invoices`, `parent_invoice` |
 | `invoices` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `invoicePrefixes` | `organization`, `deleted_by_user`, `custom_logo` |
-| `invoiceNetworkExchanges` | `organization`, `parsed_data`, `invoice`, `tag_ids` |
+| `invoiceNetworkExchanges` | `organization`, `parsed_data`, `tax_mapping`¹, `recording_suggestions`¹, `invoice`, `tag_ids` |
 | `invoiceNotificationLogs` | `deleted_by_user`, `organization` |
 | `proposalNotificationLogs` | `deleted_by_user`, `organization`, `proposal` |
 | `invoiceScheduledReminders` | _(none — rows are projected, not stored)_ |
@@ -82,13 +82,16 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `receipts` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `receiptPrefixes` | `organization`, `receipts`, `deleted_by_user` |
 
+¹ Retrieve-only: the list endpoint rejects these two with a `422`.
+
 ### CRM
 
 | Service | Includes |
 |---------|----------|
-| `prospects` | `organization`, `organization_prospect_status`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user`, `proposals` |
-| `prospectActivities` | `organization`, `organization_prospect`, `performed_by_organization_user`, `organization_report`, `organization_file`, `organization_prospect_status_path`, `created_by_user`, `deleted_by_user` |
-| `prospectStatuses` | `organization`, `deleted_by_user`, `paths` |
+| `prospects` | `organization`, `organization_prospect_stage`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user`, `proposals` |
+| `prospectActivities` | `organization`, `organization_prospect`, `performed_by_organization_user`, `organization_report`, `organization_file`, `organization_prospect_stage_path`, `created_by_user`, `deleted_by_user` |
+| `prospectStages` | `organization`, `deleted_by_user`, `paths`, `pipeline` |
+| `prospectPipelines` | `organization`, `deleted_by_user`, `stages` |
 
 ### Contracts
 
@@ -138,7 +141,10 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `payslips` | `deleted_by_user`, `organization`, `organization_payslip_schema`, `receiver_user`, `sender_user` |
+| `payslips` | `deleted_by_user`, `organization`, `organization_payslip_schema`, `organization_employment`, `lines`, `receiver_user`, `sender_user` |
+| `employments` | `organization`, `organization_user`, `organization_contract`, `organization_employment_jurisdictions`, `organization_employment_agreements`, `deleted_by_user` |
+| `workingTimeTerms` | `organization`, `organization_employment`, `deleted_by_user` |
+| `workingTimeDays` | `organization`, `organization_employment`, `organization_working_time_day_breaks` |
 | `payslipSchemas` | `organization` |
 | `reports` | `organization`, `report_schema`, `organization_user`, `organization_user_role`, `deleted_by_user`, `organization_project`, `report_schema.report_schema_fields` |
 | `reportSchemas` | `organization`, `report_schema_fields`, `deleted_by_user` |

@@ -71,6 +71,9 @@ $package = $client->billingPackages->create([
     // Allowed payment methods
     'allowed_payment_methods' => ['bank_transfer', 'card'],
 
+    // Which of your bank accounts a proposal built from this package may settle to
+    'organization_bank_account_ids' => ['org_bank_acc_xxx'],
+
     // Product groups
     'groups' => [
         [

@@ -11,7 +11,7 @@ use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
-class ProjectProspectStatusService extends AbstractService
+class ProjectProspectStageService extends AbstractService
 {
     use HasIncludes;
     use HasFilters;
@@ -19,12 +19,12 @@ class ProjectProspectStatusService extends AbstractService
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'organization_project',
-        'organization_prospect_status',
+        'organization_prospect_stage',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'organization_project_id',
-        'organization_prospect_status_id',
+        'organization_prospect_stage_id',
     ];
 
     public function list(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
@@ -33,7 +33,7 @@ class ProjectProspectStatusService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->requestCollection('GET', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses"), $params, $opts);
+        return $this->requestCollection('GET', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages"), $params, $opts);
     }
 
     public function create(string $projectId, array $params, ?RequestOptions $opts = null): EnlivyObject
@@ -41,31 +41,31 @@ class ProjectProspectStatusService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses"), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages"), $params, $opts);
     }
 
-    public function retrieve(string $projectId, string $statusId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    public function retrieve(string $projectId, string $stageId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('GET', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses/{$statusId}"), $params, $opts);
+        return $this->request('GET', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages/{$stageId}"), $params, $opts);
     }
 
-    public function update(string $projectId, string $statusId, array $params, ?RequestOptions $opts = null): EnlivyObject
+    public function update(string $projectId, string $stageId, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('PUT', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses/{$statusId}"), $params, $opts);
+        return $this->request('PUT', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages/{$stageId}"), $params, $opts);
     }
 
-    public function delete(string $projectId, string $statusId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    public function delete(string $projectId, string $stageId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses/{$statusId}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages/{$stageId}"), $params, $opts);
     }
 
     public function storeBody(string $projectId, array $params, ?RequestOptions $opts = null): EnlivyObject
@@ -73,6 +73,6 @@ class ProjectProspectStatusService extends AbstractService
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/prospect-statuses"), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages"), $params, $opts);
     }
 }

@@ -80,7 +80,7 @@ $prospect = $client->prospects->create([
     'source_referrer_organization_user_id' => 'org_user_referrer_xxx', // Optional referrer
 
     // Pipeline position
-    'organization_prospect_status_id' => 'org_pros_status_qualified_xxx',
+    'organization_prospect_stage_id' => 'org_pros_stage_qualified_xxx',
 
     // Assignment
     'assigned_organization_user_id' => 'org_user_sales_rep_xxx',
@@ -155,7 +155,7 @@ echo "Total prospects: {$prospects->getTotalCount()}\n";
 
 // By status
 $qualified = $client->prospects->list([
-    'organization_prospect_status_id' => 'org_pros_status_qualified_xxx',
+    'organization_prospect_stage_id' => 'org_pros_stage_qualified_xxx',
 ]);
 
 // By assigned user
@@ -197,18 +197,18 @@ $linkedProspects = $client->prospects->list([
 <?php
 
 $prospects = $client->prospects->list([
-    'include' => ['status', 'assigned_user', 'activities', 'project', 'linked_user'],
+    'include' => ['organization_prospect_stage', 'assigned_organization_user', 'assigned_organization_project', 'linked_organization_user'],
 ]);
 
 foreach ($prospects as $prospect) {
     echo "{$prospect->title}\n";
 
-    if ($prospect->status) {
-        echo "  Status: {$prospect->status->name}\n";
+    if ($prospect->organization_prospect_stage) {
+        echo "  Stage: {$prospect->organization_prospect_stage->title_lang_map['en']}\n";
     }
 
-    if ($prospect->assigned_user) {
-        $name = $prospect->assigned_user->first_name ?? $prospect->assigned_user->name;
+    if ($prospect->assigned_organization_user) {
+        $name = $prospect->assigned_organization_user->first_name ?? $prospect->assigned_organization_user->name;
         echo "  Assigned to: {$name}\n";
     }
 
@@ -233,7 +233,7 @@ $board = $client->prospects->board([
 ]);
 
 foreach ($board->columns as $column) {
-    echo "=== {$column->status->name} ({$column->count}) ===\n";
+    echo "=== {$column->stage->title_lang_map['en']} ({$column->count}) ===\n";
 
     foreach ($column->prospects as $prospect) {
         echo "  - {$prospect->title}\n";
@@ -279,7 +279,7 @@ Narrowing accepts `assigned_organization_user_id`, `assigned_organization_projec
 <?php
 
 $prospect = $client->prospects->retrieve('org_pros_xxx', [
-    'include' => ['status', 'assigned_user', 'activities', 'linked_user'],
+    'include' => ['organization_prospect_stage', 'assigned_organization_user', 'linked_organization_user'],
 ]);
 
 echo "Prospect: {$prospect->title}\n";
@@ -287,8 +287,8 @@ echo "Contact: {$prospect->first_name} {$prospect->last_name}\n";
 echo "Company: {$prospect->company_name}\n";
 echo "Email: {$prospect->email}\n";
 
-if ($prospect->status) {
-    echo "Status: {$prospect->status->name}\n";
+if ($prospect->organization_prospect_stage) {
+    echo "Stage: {$prospect->organization_prospect_stage->title_lang_map['en']}\n";
 }
 
 echo "Budget: {$prospect->budget} {$prospect->budget_currency}\n";
@@ -333,67 +333,142 @@ $prospect = $client->prospects->update('org_pros_xxx', [
 ]);
 ```
 
-## Managing Pipeline Status
+## Pipelines and Stages
 
-### List Statuses
+A **pipeline** holds an ordered set of **stages**; a prospect sits in exactly one stage,
+and each pipeline has its own kanban board. Before 3.1.0 stages were called *statuses* —
+the wire names, paths and SDK classes all changed, with no aliases. See the
+[3.1.0 changelog entry](../../CHANGELOG.md) for the full rename map.
+
+### List Pipelines
 
 ```php
 <?php
 
-$statuses = $client->prospectStatuses->list();
+$pipelines = $client->prospectPipelines->list([
+    'include' => 'stages',
+]);
 
-foreach ($statuses as $status) {
-    echo "{$status->order}. {$status->name}\n";
+foreach ($pipelines->data as $pipeline) {
+    echo "{$pipeline->order}. {$pipeline->title_lang_map['en']}\n";
 }
-
-// Typical output:
-// 1. New
-// 2. Contacted
-// 3. Qualified
-// 4. Proposal Sent
-// 5. Negotiation
-// 6. Won
-// 7. Lost
 ```
 
-### Create Custom Status
+### Create a Pipeline
 
 ```php
 <?php
 
-$status = $client->prospectStatuses->create([
-    'name' => 'Technical Review',
-    'color' => '#9C27B0',
-    'order' => 4,
-    'is_won' => false,
-    'is_lost' => false,
+$pipeline = $client->prospectPipelines->create([
+    'title_lang_map' => ['en' => 'Enterprise'],
+    'description_lang_map' => ['en' => 'Deals over 50k'],
+    'rgba_color_code' => 'rgba(156, 39, 176, 1)',
+    'order' => 2,
 ]);
 ```
 
-### Move Prospect to Status
+### Board for One Pipeline
+
+```php
+<?php
+
+$board = $client->prospectPipelines->board($pipeline->id, [
+    'stage_types' => 'open',
+    'assigned_organization_user_id' => 'org_user_xxx',
+]);
+```
+
+### List Stages
+
+```php
+<?php
+
+$stages = $client->prospectStages->list([
+    'organization_prospect_pipeline_id' => $pipeline->id,
+    'include' => 'pipeline',
+]);
+
+foreach ($stages->data as $stage) {
+    echo "{$stage->order}. {$stage->title_lang_map['en']} ({$stage->stage_type})\n";
+}
+```
+
+### Create a Stage
+
+```php
+<?php
+
+$stage = $client->prospectStages->create([
+    'organization_prospect_pipeline_id' => $pipeline->id,
+    'title_lang_map' => ['en' => 'Technical Review'],
+    'stage_type' => \Enlivy\Enums\Prospect\StageTypes::OPEN->value,
+    'rgba_color_code' => 'rgba(156, 39, 176, 1)',
+    'order' => 4,
+    'is_stuck_threshold_days' => 14,
+]);
+```
+
+`is_stuck_threshold_days` is a day count, not a flag: a prospect sitting in the stage
+longer than that is reported as stalled by the `is_stalled` filter and the analytics lane.
+
+### Move a Prospect to a Stage
 
 ```php
 <?php
 
 $prospect = $client->prospects->update('org_pros_xxx', [
-    'organization_prospect_status_id' => 'org_pros_status_qualified_xxx',
+    'organization_prospect_stage_id' => 'org_pros_stage_qualified_xxx',
 ]);
-
-echo "Moved to: {$prospect->status->name}\n";
 ```
 
-### Advance to Next Status
+### Advance to the Next Stage
 
 ```php
 <?php
 
-// Automatically move to the next status in the pipeline
 $prospect = $client->prospects->advance('org_pros_xxx', [
     'note' => 'Client confirmed budget and timeline.',
 ]);
-
-echo "Advanced to: {$prospect->status->name}\n";
 ```
+
+## Finding and Merging Duplicates
+
+`duplicates()` scores other prospects against one record; `merge()` folds them in.
+
+```php
+<?php
+
+$candidates = $client->prospects->duplicates('org_pros_xxx');
+
+foreach ($candidates->data as $candidate) {
+    echo "{$candidate->organization_prospect_id}: {$candidate->confidence}\n";
+    echo "  matched on: " . implode(', ', $candidate->signals) . "\n";
+
+    if ($candidate->blockers !== []) {
+        echo "  cannot merge: " . implode(', ', $candidate->blockers) . "\n";
+    }
+}
+```
+
+A candidate with a non-empty `blockers` list cannot be merged until the conflict is resolved.
+`organization_proposals_count` and `organization_prospect_activities_count` tell you how much
+history each candidate carries, so you can pick which record survives.
+
+```php
+<?php
+
+$survivor = $client->prospects->merge('org_pros_xxx', [
+    'merge_organization_prospect_ids' => ['org_pros_yyy', 'org_pros_zzz'],
+    'field_choices' => [
+        'email' => 'org_pros_yyy',
+        'phone_number' => 'org_pros_xxx',
+    ],
+]);
+```
+
+`field_choices` decides, per field, which of the merged records wins. Anything left out
+keeps the surviving prospect's own value. The merged records are deleted, and their
+activities and proposals reattach to the survivor.
 
 ## Prospect Activities
 
@@ -487,7 +562,7 @@ $thisWeek = $client->prospectActivities->list([
 ```
 
 An activity that records a status move carries the pair it moved between —
-`from_organization_prospect_status_id` and `to_organization_prospect_status_id` — so a history can be
+`from_organization_prospect_stage_id` and `to_organization_prospect_stage_id` — so a history can be
 read without resolving the status path. Both are null on activities that are not moves.
 
 ## Importing Prospects
@@ -584,7 +659,7 @@ same attribution as one created through the back office.
 
 `source_channel` is capped at 100 characters on both lanes. The portal lane previously accepted 255
 and now matches the back office, so an over-long value that used to be stored is a 422.
-| `organization_prospect_status_id` | string | Pipeline status ID |
+| `organization_prospect_stage_id` | string | Pipeline stage ID |
 | `assigned_organization_user_id` | string | Assigned sales rep ID |
 | `assigned_organization_project_id` | string | Assigned project ID |
 | `linked_organization_user_id` | string | Linked customer ID |
@@ -654,7 +729,7 @@ try {
         'note' => 'Qualified - budget and timeline confirmed.',
     ]);
 
-    echo "Advanced to: {$prospect->status->name}\n";
+    echo "Advanced to: {$prospect->organization_prospect_stage_id}\n";
 
     // 4. Send proposal and advance
     $client->prospectActivities->create([

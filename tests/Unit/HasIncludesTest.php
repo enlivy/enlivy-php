@@ -29,11 +29,11 @@ final class HasIncludesTest extends TestCase
         $this->httpClient->addResponse(200, ['data' => []]);
 
         $this->client->prospects->list([
-            'include' => ['organization', 'organization_prospect_status'],
+            'include' => ['organization', 'organization_prospect_stage'],
         ]);
 
         $request = $this->httpClient->getLastRequest();
-        $this->assertSame('organization,organization_prospect_status', $request['params']['include']);
+        $this->assertSame('organization,organization_prospect_stage', $request['params']['include']);
     }
 
     public function testValidIncludesAsStringPass(): void
@@ -41,11 +41,11 @@ final class HasIncludesTest extends TestCase
         $this->httpClient->addResponse(200, ['data' => []]);
 
         $this->client->prospects->list([
-            'include' => 'organization,organization_prospect_status',
+            'include' => 'organization,organization_prospect_stage',
         ]);
 
         $request = $this->httpClient->getLastRequest();
-        $this->assertSame('organization,organization_prospect_status', $request['params']['include']);
+        $this->assertSame('organization,organization_prospect_stage', $request['params']['include']);
     }
 
     public function testInvalidIncludeThrowsException(): void
@@ -68,7 +68,7 @@ final class HasIncludesTest extends TestCase
         } catch (InvalidArgumentException $e) {
             $this->assertStringContainsString('Available includes for this resource:', $e->getMessage());
             $this->assertStringContainsString('organization', $e->getMessage());
-            $this->assertStringContainsString('organization_prospect_status', $e->getMessage());
+            $this->assertStringContainsString('organization_prospect_stage', $e->getMessage());
         }
     }
 

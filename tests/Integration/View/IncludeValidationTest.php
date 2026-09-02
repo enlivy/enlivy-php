@@ -110,9 +110,9 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertInvalidIncludeThrows('prospects');
     }
 
-    public function testProspectStatusAllIncludes(): void
+    public function testProspectStageAllIncludes(): void
     {
-        $this->assertAllIncludesWork('prospectStatuses');
+        $this->assertAllIncludesWork('prospectStages');
     }
 
     // Contracts

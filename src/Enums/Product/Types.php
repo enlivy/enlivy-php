@@ -14,4 +14,5 @@ enum Types: string
     case PHYSICAL = 'physical';
     case SERVICE = 'service';
     case BONUS = 'bonus';
+    case PENALTY = 'penalty';
 }

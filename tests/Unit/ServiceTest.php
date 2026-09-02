@@ -15,10 +15,17 @@ use Enlivy\Organization;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\ContractConnection;
+use Enlivy\Organization\Employment;
 use Enlivy\Organization\EventTrail;
 use Enlivy\Organization\Invoice;
 use Enlivy\Organization\ProposalNotificationLog;
+use Enlivy\Organization\PayslipLine;
 use Enlivy\Organization\Prospect;
+use Enlivy\Organization\ProspectDuplicate;
+use Enlivy\Organization\ProspectPipeline;
+use Enlivy\Organization\ProspectStage;
+use Enlivy\Organization\WorkingTimeDay;
+use Enlivy\Organization\WorkingTimeTerm;
 use Enlivy\Tests\Mock\MockHttpClient;
 use Enlivy\Util\RequestOptions;
 use PHPUnit\Framework\TestCase;
@@ -868,5 +875,207 @@ final class ServiceTest extends TestCase
 
         $this->client->bankTransactions->list(['state' => 'completed']);
         $this->assertSame('completed', $this->httpClient->getLastRequest()['params']['state']);
+    }
+
+    public function testProspectStagesResolveUnderTheRenamedPathAndAcceptThePipelineFilter(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [['id' => 'org_pros_stg_1', 'object' => 'prospect_stage', 'stage_type' => 'open']],
+        ]);
+
+        $stages = $this->client->prospectStages->list(['organization_prospect_pipeline_id' => 'org_pros_pipe_1']);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/prospect-stages', $request['url']);
+        $this->assertStringNotContainsString('prospect-statuses', $request['url']);
+        $this->assertSame('org_pros_pipe_1', $request['params']['organization_prospect_pipeline_id']);
+        $this->assertInstanceOf(ProspectStage::class, $stages->data[0]);
+        $this->assertSame('open', $stages->data[0]->stage_type);
+    }
+
+    public function testProspectPipelineBoardAndRestoreKeepTheirPaths(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pros_pipe_1', 'object' => 'prospect_pipeline']]);
+        $pipeline = $this->client->prospectPipelines->retrieve('org_pros_pipe_1', ['include' => 'stages']);
+
+        $this->assertInstanceOf(ProspectPipeline::class, $pipeline);
+        $this->assertStringContainsString('/prospect-pipelines/org_pros_pipe_1', $this->httpClient->getLastRequest()['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['columns' => []]]);
+        $this->client->prospectPipelines->board('org_pros_pipe_1', ['stage_types' => 'open']);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/prospect-pipelines/org_pros_pipe_1/board', $request['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pros_pipe_1', 'object' => 'prospect_pipeline']]);
+        $this->client->prospectPipelines->restore('org_pros_pipe_1');
+        $this->assertStringContainsString('/prospect-pipelines/restore/org_pros_pipe_1', $this->httpClient->getLastRequest()['url']);
+    }
+
+    public function testProspectDuplicatesAndMergeResolveUnderTheProspectPath(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [[
+                'object' => 'prospect_duplicate',
+                'organization_prospect_id' => 'org_pros_2',
+                'confidence' => 'high',
+                'signals' => ['email'],
+                'blockers' => [],
+                'organization_proposals_count' => 2,
+                'organization_prospect_activities_count' => 7,
+            ]],
+        ]);
+
+        $duplicates = $this->client->prospects->duplicates('org_pros_1');
+
+        $this->assertStringContainsString('/prospects/org_pros_1/duplicates', $this->httpClient->getLastRequest()['url']);
+        $this->assertInstanceOf(ProspectDuplicate::class, $duplicates->data[0]);
+        $this->assertSame('high', $duplicates->data[0]->confidence);
+        $this->assertSame(2, $duplicates->data[0]->organization_proposals_count);
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_pros_1', 'object' => 'prospect']]);
+        $merged = $this->client->prospects->merge('org_pros_1', [
+            'merge_organization_prospect_ids' => ['org_pros_2'],
+            'field_choices' => ['email' => 'org_pros_2'],
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/prospects/org_pros_1/merge', $request['url']);
+        $this->assertSame(['org_pros_2'], $request['params']['merge_organization_prospect_ids']);
+        $this->assertInstanceOf(Prospect::class, $merged);
+    }
+
+    public function testEmploymentAndWorkingTimeTermResolveTypedUnderTheirPaths(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [['id' => 'org_empl_1', 'object' => 'employment', 'lifecycle' => 'active']],
+        ]);
+
+        $employments = $this->client->employments->list(['type' => 'permanent', 'active_on' => '2026-09-01']);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/employments', $request['url']);
+        $this->assertSame('permanent', $request['params']['type']);
+        $this->assertInstanceOf(Employment::class, $employments->data[0]);
+        $this->assertSame('active', $employments->data[0]->lifecycle);
+
+        $this->httpClient->addResponse(200, [
+            'data' => ['id' => 'org_wtt_1', 'object' => 'working_time_term', 'unit' => 'hours'],
+        ]);
+        $term = $this->client->workingTimeTerms->retrieve('org_wtt_1');
+
+        $this->assertStringContainsString('/working-time-terms/org_wtt_1', $this->httpClient->getLastRequest()['url']);
+        $this->assertInstanceOf(WorkingTimeTerm::class, $term);
+    }
+
+    public function testWorkingTimeDayMonthLaneUsesTheRightVerbs(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [['id' => 'org_wtd_1', 'object' => 'working_time_day', 'disposition' => 'worked']],
+        ]);
+        $days = $this->client->workingTimeDays->list([
+            'organization_employment_id' => 'org_empl_1',
+            'date_from' => '2026-09-01',
+            'date_to' => '2026-09-30',
+        ]);
+        $this->assertInstanceOf(WorkingTimeDay::class, $days->data[0]);
+
+        $this->httpClient->addResponse(200, ['data' => ['month' => '2026-09']]);
+        $this->client->workingTimeDays->month(['organization_employment_id' => 'org_empl_1', 'month' => '2026-09']);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/working-time-days/month', $request['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['month' => '2026-09']]);
+        $this->client->workingTimeDays->upsertMonth([
+            'organization_employment_id' => 'org_empl_1',
+            'month' => '2026-09',
+            'days' => [],
+        ]);
+        $this->assertSame('PUT', $this->httpClient->getLastRequest()['method']);
+
+        $this->httpClient->addResponse(200, ['data' => ['month' => '2026-09']]);
+        $this->client->workingTimeDays->attestMonth([
+            'organization_employment_id' => 'org_empl_1',
+            'month' => '2026-09',
+            'attestation_method' => 'supervisor_approved',
+        ]);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/working-time-days/month/attest', $request['url']);
+    }
+
+    public function testPayslipGainsLinesDownloadAndTheLineCodeHelper(): void
+    {
+        $this->httpClient->addResponse(200, [
+            'data' => [
+                'id' => 'org_pay_1',
+                'object' => 'payslip',
+                'gross_total' => 5000.0,
+                'employer_contributions_total' => 112.5,
+                'lines' => [['id' => 'org_pay_line_1', 'object' => 'payslip_line', 'code' => 'base_salary']],
+            ],
+        ]);
+
+        $payslip = $this->client->payslips->retrieve('org_pay_1', ['include' => 'lines,organization_employment']);
+        $this->assertSame(5000.0, $payslip->gross_total);
+        $this->assertInstanceOf(PayslipLine::class, $payslip->lines[0]);
+
+        $this->httpClient->addResponse(200, ['data' => []]);
+        $this->client->payslips->download('org_pay_1');
+        $this->assertStringContainsString('/payslips/org_pay_1/download', $this->httpClient->getLastRequest()['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['codes' => ['base_salary']]]);
+        $this->client->misc->determinePayslipLineCodes([
+            'organization_employment_id' => 'org_empl_1',
+            'period_end' => '2026-09-30',
+        ]);
+        $this->assertStringContainsString('/misc/determine-payslip-line-codes', $this->httpClient->getLastRequest()['url']);
+    }
+
+    public function testProposalReopenAndNetworkExchangeTaxMappingResolve(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_prop_1', 'object' => 'proposal']]);
+        $this->client->proposals->reopen('org_prop_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/proposals/org_prop_1/reopen', $request['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['outcome' => 'candidates']]);
+        $mapping = $this->client->invoiceNetworkExchanges->taxMapping('org_inv_pnx_1');
+
+        $this->assertStringContainsString('/invoices/network-exchanges/org_inv_pnx_1/tax-mapping', $this->httpClient->getLastRequest()['url']);
+        $this->assertSame('candidates', $mapping->outcome);
+    }
+
+    public function testPortalGainsPayslipDownloadAndTheWorkingTimeMonthLane(): void
+    {
+        $portal = new \Enlivy\EnlivyPortalClient([
+            'portal_token' => 'portal_tok',
+            'organization_id' => 'org_default',
+            'http_client' => $this->httpClient,
+        ]);
+
+        $this->httpClient->addResponse(200, ['data' => []]);
+        $portal->payslips->download('org_pay_1');
+        $this->assertStringContainsString('payslips/org_pay_1/download', $this->httpClient->getLastRequest()['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['month' => '2026-09']]);
+        $portal->workingTimeDays->month(['organization_employment_id' => 'org_empl_1', 'month' => '2026-09']);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('working-time-days/month', $request['url']);
+
+        $this->httpClient->addResponse(200, ['data' => ['month' => '2026-09']]);
+        $portal->workingTimeDays->attestMonth([
+            'organization_employment_id' => 'org_empl_1',
+            'month' => '2026-09',
+        ]);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('working-time-days/month/attest', $request['url']);
     }
 }

@@ -25,6 +25,8 @@ class InvoiceNetworkExchangeService extends AbstractService
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'parsed_data',
+        'tax_mapping',
+        'recording_suggestions',
         'invoice',
         'tag_ids',
     ];
@@ -123,5 +125,12 @@ class InvoiceNetworkExchangeService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/information"), $params, $opts);
+    }
+
+    public function taxMapping(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/tax-mapping"), $params, $opts);
     }
 }

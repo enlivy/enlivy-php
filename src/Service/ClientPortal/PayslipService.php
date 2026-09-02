@@ -26,4 +26,11 @@ class PayslipService extends AbstractPortalService
         /** @var Payslip */
         return $this->request('GET', $this->portalPath($orgId, "payslips/{$id}"), $params, $opts);
     }
+
+    public function download(string $id, array $params = [], ?RequestOptions $opts = null): string
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestRaw('GET', $this->portalPath($orgId, "payslips/{$id}/download"), $params, $opts);
+    }
 }

@@ -106,4 +106,11 @@ class MiscService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/tax-monitors'), $params, $opts);
     }
+
+    public function determinePayslipLineCodes(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-payslip-line-codes'), $params, $opts);
+    }
 }

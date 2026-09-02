@@ -10,7 +10,7 @@ use Enlivy\ApiResource;
  * @property string $id
  * @property string $object
  * @property string $organization_id
- * @property string|null $organization_prospect_status_id
+ * @property string|null $organization_prospect_stage_id
  * @property string|null $linked_organization_user_id
  * @property string|null $assigned_organization_user_id
  * @property string|null $title

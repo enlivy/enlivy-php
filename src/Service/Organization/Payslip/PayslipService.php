@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Payslip;
 use Enlivy\Collection;
 use Enlivy\Organization\Payslip;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
@@ -18,6 +19,7 @@ use Enlivy\Util\RequestOptions;
 class PayslipService extends AbstractService
 {
     use HasRestore;
+    use HasDownload;
     use HasIncludes;
     use HasFilters;
 
@@ -28,6 +30,8 @@ class PayslipService extends AbstractService
         'deleted_by_user',
         'organization',
         'organization_payslip_schema',
+        'organization_employment',
+        'lines',
         'receiver_user',
         'sender_user',
     ];

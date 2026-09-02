@@ -3,6 +3,46 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.1.0] - 2026-09-03
+
+The prospect *status* is now the prospect *stage*, everywhere — two classes, two
+accessors, one enum and a dozen wire fields renamed together, with no aliases.
+Scoped as a minor because nothing changed but names. New alongside it: a payroll
+lane (employments, working time, payslips with typed lines), prospect pipelines,
+and duplicate detection with merge. See [UPGRADING](UPGRADING.md).
+
+### Changed
+
+- `$client->prospectStatuses` → `$client->prospectStages`; `$client->projectProspectStatuses` → `$client->projectProspectStages`.
+- `Organization\ProspectStatus` → `Organization\ProspectStage`; `Enums\Prospect\StatusTypes` → `Enums\Prospect\StageTypes` (cases unchanged).
+- Includes: `organization_prospect_status` → `organization_prospect_stage`, `organization_prospect_status_path` → `organization_prospect_stage_path`.
+- Filters: `organization_prospect_status_id` → `organization_prospect_stage_id`, `organization_prospect_status_path_id` → `organization_prospect_stage_path_id`.
+- Fields: `status_type` → `stage_type`, and the `from_`/`to_`/`organization_project_`/`default_`/`default_inbound_` prospect-status IDs all become `..._stage_...`.
+- Kanban column key `status` → `stage`; analytics `by_status` → `by_stage`, `by_status_type` → `by_stage_type`, `avg_`/`median_days_in_current_status` → `..._stage`.
+- Portal: board filter `status_types` → `stage_types`; prospect writes take `organization_prospect_stage_id`.
+- Prospect stages now require `organization_prospect_pipeline_id`. Existing stages were backfilled into a default pipeline.
+
+### Added
+
+- Payroll lane: `employments`, `workingTimeTerms`, `workingTimeDays`, and typed payslip `lines`. New docs: [Payroll](docs/organization/payroll.md).
+- `payslips`: `organization_employment_id`, `period_start`, `period_end`, seven computed totals, `lines` and `organization_employment` includes, and `download()` on both lanes.
+- `misc->determinePayslipLineCodes()` — which line codes apply to an employment and period.
+- `prospectPipelines` service, with `board()` per pipeline.
+- `prospects->duplicates()` and `prospects->merge()`, plus the `organization_prospect_pipeline_id` filter.
+- `proposals->reopen()`, and the `proposal.reopened` trigger event.
+- `invoiceNetworkExchanges->taxMapping()`, plus `tax_mapping` and `recording_suggestions` includes for recording an inbound bill. See [Integrations](docs/integrations.md).
+- `users->activity()` accepts `limit` and `page`.
+- `billingPackages`: `organization_bank_account_ids`.
+- Export types `working_time_timesheet` and `payroll_handoff`, with `parameters.month`, `parameters.organization_employment_id` and `parameters.profile`.
+- Portal `workingTimeDays->month()` / `attestMonth()`, and `payslips->download()`.
+- 29 enums: `Employment\*` (8), `WorkingTime\*` (11), `Payslip\Line*` (3), `Prospect\Duplicate*` and `MergeBlockers`, `Tax\MappingSuggestion*`, `NetworkExchange\RecordingSuggestionBases`.
+- Cases: `Product\Types::PENALTY`, `Tax\ProductTaxCategories::PENALTIES_COMPENSATION`, `EventTrail\EventType` gains `attested`, `jurisdiction_changed`, `agreement_changed`.
+
+### Fixed
+
+- `ProspectStage::$is_stuck_threshold_days` was annotated `bool`; it is a nullable integer.
+- `prospects->duplicates()` hydrated rows as `Prospect` instead of `ProspectDuplicate`.
+
 ## [3.0.0] - 2026-08-30
 
 The billing unit on every priced line became a UN/ECE code, and

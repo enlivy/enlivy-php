@@ -153,7 +153,7 @@ class FilterValidationTest extends IntegrationTestCase
 
     /**
      * The "fun" test: pick a random prospect from the list, extract its filterable
-     * properties (email, status ID, assigned user ID, source type), then search
+     * properties (email, stage ID, assigned user ID, source type), then search
      * back using all those filters combined. The original prospect MUST appear
      * in the filtered results — proving the filters actually narrow down correctly.
      */
@@ -164,7 +164,7 @@ class FilterValidationTest extends IntegrationTestCase
         // Step 1: Get a page of prospects
         $prospects = $client->prospects->list([
             'per_page' => 50,
-            'include' => 'organization_prospect_status,assigned_organization_user',
+            'include' => 'organization_prospect_stage,assigned_organization_user',
         ]);
 
         if (count($prospects->data) === 0) {
@@ -175,7 +175,7 @@ class FilterValidationTest extends IntegrationTestCase
         $candidates = array_filter(
             $prospects->data,
             fn ($p) => $p->email !== null
-                || $p->organization_prospect_status_id !== null
+                || $p->organization_prospect_stage_id !== null
                 || $p->assigned_organization_user_id !== null,
         );
 
@@ -195,9 +195,9 @@ class FilterValidationTest extends IntegrationTestCase
             $filterDescriptions[] = "email={$random->email}";
         }
 
-        if ($random->organization_prospect_status_id !== null) {
-            $filters['organization_prospect_status_id'] = $random->organization_prospect_status_id;
-            $filterDescriptions[] = "status={$random->organization_prospect_status_id}";
+        if ($random->organization_prospect_stage_id !== null) {
+            $filters['organization_prospect_stage_id'] = $random->organization_prospect_stage_id;
+            $filterDescriptions[] = "stage={$random->organization_prospect_stage_id}";
         }
 
         if ($random->assigned_organization_user_id !== null) {

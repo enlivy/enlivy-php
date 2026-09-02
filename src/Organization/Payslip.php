@@ -14,10 +14,20 @@ use Enlivy\ApiResource;
  * @property string|null $organization_receiver_user_id
  * @property string|null $organization_sender_user_id
  * @property string|null $organization_contract_id
+ * @property string|null $organization_employment_id
+ * @property string|null $period_start
+ * @property string|null $period_end
  * @property string $status
  * @property string|null $payment_method
+ * @property float $gross_total
+ * @property float $employee_contributions_total
+ * @property float $tax_relief_total
+ * @property float $taxable_amount
  * @property float $net_total
  * @property float $tax_total
+ * @property float $post_tax_deductions_total
+ * @property float $paid_total
+ * @property float $employer_contributions_total
  * @property float $total
  * @property string $currency
  * @property string|null $issued_at

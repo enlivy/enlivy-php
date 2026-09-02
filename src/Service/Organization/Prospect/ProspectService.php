@@ -7,6 +7,7 @@ namespace Enlivy\Service\Organization\Prospect;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Prospect;
+use Enlivy\Organization\ProspectDuplicate;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasImports;
 use Enlivy\Service\Concern\HasResumableImports;
@@ -31,7 +32,7 @@ class ProspectService extends AbstractService
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
-        'organization_prospect_status',
+        'organization_prospect_stage',
         'linked_organization_user',
         'assigned_organization_user',
         'assigned_organization_project',
@@ -42,7 +43,8 @@ class ProspectService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'organization_prospect_status_id',
+        'organization_prospect_stage_id',
+        'organization_prospect_pipeline_id',
         'assigned_organization_user_id',
         'assigned_organization_project_id',
         'source_type',
@@ -109,7 +111,7 @@ class ProspectService extends AbstractService
      *     summary?: string,
      *     budget?: float,
      *     budget_currency?: string,
-     *     organization_prospect_status_id?: string,
+     *     organization_prospect_stage_id?: string,
      *     assigned_organization_user_id?: string,
      *     assigned_organization_project_id?: string,
      * } $params
@@ -131,7 +133,7 @@ class ProspectService extends AbstractService
      *     company_name?: string,
      *     email?: string,
      *     phone_number?: string,
-     *     organization_prospect_status_id?: string,
+     *     organization_prospect_stage_id?: string,
      *     assigned_organization_user_id?: string,
      * } $params
      */
@@ -160,7 +162,7 @@ class ProspectService extends AbstractService
     }
 
     /**
-     * Advance a prospect to the next status.
+     * Advance a prospect to the next stage.
      */
     public function advance(string $id, array $params, ?RequestOptions $opts = null): Prospect
     {
@@ -168,5 +170,24 @@ class ProspectService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var Prospect */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/advance"), $params, $opts);
+    }
+
+    /**
+     * @return Collection<ProspectDuplicate>
+     */
+    public function duplicates(string $id, array $params = [], ?RequestOptions $opts = null): Collection
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Collection<ProspectDuplicate> */
+        return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/duplicates"), $params, $opts, ProspectDuplicate::class);
+    }
+
+    public function merge(string $id, array $params, ?RequestOptions $opts = null): Prospect
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Prospect */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/merge"), $params, $opts);
     }
 }

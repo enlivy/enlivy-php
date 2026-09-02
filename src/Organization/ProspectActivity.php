@@ -14,10 +14,10 @@ use Enlivy\ApiResource;
  * @property string|null $performed_by_organization_user_id
  * @property string|null $organization_report_id
  * @property string|null $organization_file_id
- * @property string|null $organization_prospect_status_path_id
- * @property string|null $from_organization_prospect_status_id
- * @property string|null $to_organization_prospect_status_id
- * @property string|null $organization_project_prospect_status_id
+ * @property string|null $organization_prospect_stage_path_id
+ * @property string|null $from_organization_prospect_stage_id
+ * @property string|null $to_organization_prospect_stage_id
+ * @property string|null $organization_project_prospect_stage_id
  * @property string|null $title
  * @property string|null $description
  * @property string|null $outcome

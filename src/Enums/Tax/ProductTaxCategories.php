@@ -24,4 +24,5 @@ enum ProductTaxCategories: string
     case EDUCATION_TUITION = 'education_tuition';
     case HEALTHCARE_SERVICES = 'healthcare_services';
     case FINANCIAL_INSURANCE = 'financial_insurance';
+    case PENALTIES_COMPENSATION = 'penalties_compensation';
 }

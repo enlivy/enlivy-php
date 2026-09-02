@@ -20,12 +20,12 @@ class ProjectPermissionProspectService extends AbstractService
         'organization',
         'organization_project',
         'organization_user',
-        'organization_prospect_status',
+        'organization_prospect_stage',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'organization_project_id',
-        'organization_prospect_status_id',
+        'organization_prospect_stage_id',
         'organization_user_id',
     ];
 

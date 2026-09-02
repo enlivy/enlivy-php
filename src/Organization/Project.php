@@ -14,8 +14,8 @@ use Enlivy\ApiResource;
  * @property array|null $description_lang_map
  * @property string|null $locale
  * @property array|null $locale_list
- * @property string|null $default_organization_prospect_status_id
- * @property string|null $default_inbound_organization_prospect_status_id
+ * @property string|null $default_organization_prospect_stage_id
+ * @property string|null $default_inbound_organization_prospect_stage_id
  * @property array|null $custom_inbound_success_title_lang_map
  * @property array|null $custom_inbound_success_message_lang_map
  * @property array|null $custom_inbound_success_actions

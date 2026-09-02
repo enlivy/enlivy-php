@@ -45,13 +45,17 @@ use Enlivy\Service\Organization\Project\ProjectPermissionGuidelineService;
 use Enlivy\Service\Organization\Project\ProjectPermissionPlaybookService;
 use Enlivy\Service\Organization\Project\ProjectPermissionProspectService;
 use Enlivy\Service\Organization\Project\ProjectPermissionReportService;
-use Enlivy\Service\Organization\Project\ProjectProspectStatusService;
+use Enlivy\Service\Organization\Project\ProjectProspectStageService;
 use Enlivy\Service\Organization\Project\ProjectService;
 use Enlivy\Service\Organization\Proposal\ProposalNotificationLogService;
 use Enlivy\Service\Organization\ProposalService;
 use Enlivy\Service\Organization\Prospect\ProspectActivityService;
 use Enlivy\Service\Organization\Prospect\ProspectService;
-use Enlivy\Service\Organization\Prospect\ProspectStatusService;
+use Enlivy\Service\Organization\Employment\EmploymentService;
+use Enlivy\Service\Organization\Prospect\ProspectPipelineService;
+use Enlivy\Service\Organization\Prospect\ProspectStageService;
+use Enlivy\Service\Organization\WorkingTime\WorkingTimeDayService;
+use Enlivy\Service\Organization\WorkingTime\WorkingTimeTermService;
 use Enlivy\Service\Organization\Receipt\ReceiptPrefixService;
 use Enlivy\Service\Organization\Receipt\ReceiptService;
 use Enlivy\Service\Organization\Report\ReportSchemaFieldService;
@@ -119,14 +123,15 @@ class CoreServiceFactory extends AbstractServiceFactory
             // Org-scoped: CRM
             'prospects' => ProspectService::class,
             'prospectActivities' => ProspectActivityService::class,
-            'prospectStatuses' => ProspectStatusService::class,
+            'prospectStages' => ProspectStageService::class,
+            'prospectPipelines' => ProspectPipelineService::class,
             'projects' => ProjectService::class,
             'projectMembers' => ProjectMemberService::class,
             'projectPermissionProspects' => ProjectPermissionProspectService::class,
             'projectPermissionGuidelines' => ProjectPermissionGuidelineService::class,
             'projectPermissionPlaybooks' => ProjectPermissionPlaybookService::class,
             'projectPermissionReports' => ProjectPermissionReportService::class,
-            'projectProspectStatuses' => ProjectProspectStatusService::class,
+            'projectProspectStages' => ProjectProspectStageService::class,
 
             // Org-scoped: Users & Roles
             'organizationUsers' => OrganizationUserService::class,
@@ -173,6 +178,9 @@ class CoreServiceFactory extends AbstractServiceFactory
             // Org-scoped: Payroll
             'payslipSchemas' => PayslipSchemaService::class,
             'payslips' => PayslipService::class,
+            'employments' => EmploymentService::class,
+            'workingTimeTerms' => WorkingTimeTermService::class,
+            'workingTimeDays' => WorkingTimeDayService::class,
 
             // Org-scoped: Reports
             'reports' => ReportService::class,

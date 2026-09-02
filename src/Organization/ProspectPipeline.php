@@ -12,16 +12,14 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property array|null $title_lang_map
  * @property array|null $description_lang_map
- * @property string|null $status_type
  * @property string|null $rgba_color_code
  * @property int $order
- * @property bool $is_stuck_threshold_days
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at
  * @property string|null $deleted_by_user_id
  */
-class ProspectStatus extends ApiResource
+class ProspectPipeline extends ApiResource
 {
-    public const ?string OBJECT_NAME = 'prospect_status';
+    public const ?string OBJECT_NAME = 'prospect_pipeline';
 }

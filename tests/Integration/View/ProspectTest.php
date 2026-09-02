@@ -7,7 +7,7 @@ namespace Enlivy\Tests\Integration\View;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Prospect;
-use Enlivy\Organization\ProspectStatus;
+use Enlivy\Organization\ProspectStage;
 use Enlivy\Organization\ProspectActivity;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
@@ -41,7 +41,7 @@ class ProspectTest extends IntegrationTestCase
     public function testListProspectsWithInclude(): void
     {
         $prospects = $this->getClient()->prospects->list([
-            'include' => 'organization_prospect_status,assigned_organization_user',
+            'include' => 'organization_prospect_stage,assigned_organization_user',
         ]);
 
         $this->assertInstanceOf(Collection::class, $prospects);
@@ -49,8 +49,8 @@ class ProspectTest extends IntegrationTestCase
         if (count($prospects->data) > 0) {
             $prospect = $prospects->data[0];
             // Status should be included
-            if ($prospect->organization_prospect_status_id !== null) {
-                $this->assertNotNull($prospect->organization_prospect_status);
+            if ($prospect->organization_prospect_stage_id !== null) {
+                $this->assertNotNull($prospect->organization_prospect_stage);
             }
         }
     }
@@ -82,33 +82,33 @@ class ProspectTest extends IntegrationTestCase
 
     // Prospect Statuses
 
-    public function testListProspectStatuses(): void
+    public function testListProspectStages(): void
     {
-        $statuses = $this->getClient()->prospectStatuses->list();
+        $stages = $this->getClient()->prospectStages->list();
 
-        $this->assertInstanceOf(Collection::class, $statuses);
-        $this->assertIsArray($statuses->data);
+        $this->assertInstanceOf(Collection::class, $stages);
+        $this->assertIsArray($stages->data);
 
-        if (count($statuses->data) > 0) {
-            $status = $statuses->data[0];
-            $this->assertInstanceOf(ProspectStatus::class, $status);
-            $this->assertNotNull($status->id);
+        if (count($stages->data) > 0) {
+            $stage = $stages->data[0];
+            $this->assertInstanceOf(ProspectStage::class, $stage);
+            $this->assertNotNull($stage->id);
         }
     }
 
-    public function testRetrieveProspectStatus(): void
+    public function testRetrieveProspectStage(): void
     {
-        $statuses = $this->getClient()->prospectStatuses->list(['per_page' => 1]);
+        $stages = $this->getClient()->prospectStages->list(['per_page' => 1]);
 
-        if (count($statuses->data) === 0) {
-            $this->markTestSkipped('No prospect statuses available for testing');
+        if (count($stages->data) === 0) {
+            $this->markTestSkipped('No prospect stages available for testing');
         }
 
-        $statusId = $statuses->data[0]->id;
-        $status = $this->getClient()->prospectStatuses->retrieve($statusId);
+        $stageId = $stages->data[0]->id;
+        $stage = $this->getClient()->prospectStages->retrieve($stageId);
 
-        $this->assertInstanceOf(ProspectStatus::class, $status);
-        $this->assertEquals($statusId, $status->id);
+        $this->assertInstanceOf(ProspectStage::class, $stage);
+        $this->assertEquals($stageId, $stage->id);
     }
 
     // Prospect Activities

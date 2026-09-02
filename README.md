@@ -114,6 +114,12 @@ Detailed guides with code examples for every feature:
 | [Blocked Identifiers](docs/organization/blocked-identifiers.md) | Keep an email, domain, or phone number out of your organization |
 | [Projects](docs/organization/projects.md) | Projects, team members, and permissions |
 
+### Payroll
+
+| Guide | Description |
+|-------|-------------|
+| [Payroll](docs/organization/payroll.md) | Employments, working-time terms and days, month attestation, and typed payslip lines |
+
 ### Contracts
 
 | Guide | Description |

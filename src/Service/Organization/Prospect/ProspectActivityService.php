@@ -30,7 +30,7 @@ class ProspectActivityService extends AbstractService
         'performed_by_organization_user',
         'organization_report',
         'organization_file',
-        'organization_prospect_status_path',
+        'organization_prospect_stage_path',
         'created_by_user',
         'deleted_by_user',
     ];
@@ -39,7 +39,7 @@ class ProspectActivityService extends AbstractService
         'organization_prospect_id',
         'organization_report_id',
         'organization_file_id',
-        'organization_prospect_status_path_id',
+        'organization_prospect_stage_path_id',
         'performed_by_organization_user_id',
         'activity_at_from',
         'activity_at_to',

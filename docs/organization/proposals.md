@@ -554,6 +554,19 @@ two proposals that are both `accepted` can report different stages.
 | `rejected` | Declined |
 | `expired` | Lapsed |
 
+`closed`, `rejected` and `expired` are terminal — but a proposal closed too early can be put back
+in play:
+
+```php
+<?php
+
+$proposal = $client->proposals->reopen('org_prop_xxx');
+```
+
+Reopening emits the `proposal.reopened` event
+(`Enlivy\Enums\EventDelivery\TriggerEvent::PROPOSAL_REOPENED`), so destinations subscribed to the
+proposal lane see it as a distinct transition rather than a silent status edit.
+
 `closed`, `rejected` and `expired` are terminal. The `stage_detail` include adds whose move it is and
 what is missing:
 

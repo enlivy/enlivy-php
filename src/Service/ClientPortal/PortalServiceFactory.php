@@ -27,6 +27,7 @@ class PortalServiceFactory extends AbstractServiceFactory
             'paymentMethods' => PaymentMethodService::class,
             'projects' => ProjectService::class,
             'prospects' => ProspectService::class,
+            'workingTimeDays' => WorkingTimeDayService::class,
             'session' => SessionService::class,
         ];
     }

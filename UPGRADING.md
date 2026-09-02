@@ -1,3 +1,90 @@
+# Upgrading to 3.1.0
+
+`3.1.0` is a **minor** release, but it carries one break you cannot ignore: the
+prospect **status** is now the prospect **stage**, everywhere. Two SDK classes,
+two client accessors, one enum, three endpoints and roughly a dozen wire fields
+changed name together. There are no aliases on either side — the API emits only
+the new names, and the SDK exposes only the new classes.
+
+Everything else in the release is additive: a new payroll lane (employments,
+working time, payslips with typed lines), prospect pipelines, duplicate
+detection and merge, and six new endpoints on resources you already use.
+
+## The prospect stage rename
+
+Nothing about the concept changed. A prospect still sits in one ordered step of
+a pipeline; that step is called a stage now. Rename mechanically:
+
+**Client accessors**
+
+| Before | After |
+|--------|-------|
+| `$client->prospectStatuses` | `$client->prospectStages` |
+| `$client->projectProspectStatuses` | `$client->projectProspectStages` |
+
+**Classes**
+
+| Before | After |
+|--------|-------|
+| `Enlivy\Organization\ProspectStatus` | `Enlivy\Organization\ProspectStage` |
+| `Enlivy\Enums\Prospect\StatusTypes` | `Enlivy\Enums\Prospect\StageTypes` |
+
+The enum's **cases and values are unchanged** (`open`, `qualified`,
+`disqualified`, `won`, `lost`) — only the class name moved.
+
+**Includes and filters**
+
+| Before | After |
+|--------|-------|
+| `organization_prospect_status` | `organization_prospect_stage` |
+| `organization_prospect_status_path` | `organization_prospect_stage_path` |
+| `organization_prospect_status_id` | `organization_prospect_stage_id` |
+| `organization_prospect_status_path_id` | `organization_prospect_stage_path_id` |
+
+**Response fields**
+
+| Before | After |
+|--------|-------|
+| `status_type` | `stage_type` |
+| `from_organization_prospect_status_id` | `from_organization_prospect_stage_id` |
+| `to_organization_prospect_status_id` | `to_organization_prospect_stage_id` |
+| `organization_project_prospect_status_id` | `organization_project_prospect_stage_id` |
+| `default_organization_prospect_status_id` | `default_organization_prospect_stage_id` |
+| `default_inbound_organization_prospect_status_id` | `default_inbound_organization_prospect_stage_id` |
+
+**Board and analytics** — the kanban column key is `stage`, not `status`. In the
+prospect analytics payloads, `by_status` is `by_stage`, `by_status_type` is
+`by_stage_type`, and `avg_days_in_current_status` / `median_days_in_current_status`
+are `..._in_current_stage`.
+
+**Customer portal** — the board filter `status_types` is `stage_types`, and
+prospect create/update take `organization_prospect_stage_id`.
+
+A grep for `prospect_status`, `ProspectStatus` and `prospectStatuses` across your
+integration finds every case; there is no behavioural subtlety hiding behind the
+rename.
+
+## `is_stuck_threshold_days` was documented as a bool
+
+It is, and always was, a **nullable integer** — the number of days after which a
+prospect sitting in a stage counts as stalled. The SDK's property docblock said
+`bool`, so a static analyzer may have been narrowing it wrongly at your call
+sites. The wire value never changed; only the annotation was fixed.
+
+## Prospect stages now belong to a pipeline
+
+Stages gained `organization_prospect_pipeline_id`, and prospects can be filtered
+by pipeline. Existing stages were assigned to a default pipeline on the API side,
+so reads keep working — but if you create a stage, name the pipeline it belongs
+to. Each pipeline has its own board: `$client->prospectPipelines->board($id)`.
+
+## Payslip totals are computed, not sent
+
+If you write payslips, note that the new totals (`gross_total`, `taxable_amount`,
+`paid_total`, and the four contribution/relief/deduction totals) are derived from
+the new `lines` array. Send lines; do not send totals. Existing payslips without
+lines keep reporting their stored `net_total`, `tax_total` and `total`.
+
 # Upgrading to 3.0.0
 
 `3.0.0` is a **major** release: a field rename that reaches every priced line in

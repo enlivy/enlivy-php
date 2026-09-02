@@ -29,6 +29,9 @@ use Enlivy\Organization\EventSubscription;
 use Enlivy\Organization\EventTrail;
 use Enlivy\Organization\EventTrailChange;
 use Enlivy\Organization\ExportData;
+use Enlivy\Organization\Employment;
+use Enlivy\Organization\EmploymentAgreement;
+use Enlivy\Organization\EmploymentJurisdiction;
 use Enlivy\Organization\File;
 use Enlivy\Organization\Guideline;
 use Enlivy\Organization\Invoice;
@@ -41,6 +44,7 @@ use Enlivy\Organization\BillingPackage;
 use Enlivy\Organization\BillingPackageSubscriptionTerm;
 use Enlivy\Organization\BillingPackageSubscriptionTermItem;
 use Enlivy\Organization\Payslip;
+use Enlivy\Organization\PayslipLine;
 use Enlivy\Organization\PayslipSchema;
 use Enlivy\Organization\Playbook;
 use Enlivy\Organization\Product;
@@ -50,7 +54,9 @@ use Enlivy\Organization\Proposal;
 use Enlivy\Organization\ProposalNotificationLog;
 use Enlivy\Organization\Prospect;
 use Enlivy\Organization\ProspectActivity;
-use Enlivy\Organization\ProspectStatus;
+use Enlivy\Organization\ProspectDuplicate;
+use Enlivy\Organization\ProspectPipeline;
+use Enlivy\Organization\ProspectStage;
 use Enlivy\Organization\Receipt;
 use Enlivy\Organization\ReceiptPrefix;
 use Enlivy\Organization\Report;
@@ -76,6 +82,9 @@ use Enlivy\Organization\UserBankAccount;
 use Enlivy\Organization\UserPaymentMethod;
 use Enlivy\Organization\UserRole;
 use Enlivy\Organization\UserRoleAbility;
+use Enlivy\Organization\WorkingTimeDay;
+use Enlivy\Organization\WorkingTimeDayBreak;
+use Enlivy\Organization\WorkingTimeTerm;
 use Enlivy\User;
 use Enlivy\UserToken;
 
@@ -105,7 +114,9 @@ final class ObjectTypes
         // Organization-scoped: CRM
         'prospect' => Prospect::class,
         'prospect_activity' => ProspectActivity::class,
-        'prospect_status' => ProspectStatus::class,
+        'prospect_stage' => ProspectStage::class,
+        'prospect_pipeline' => ProspectPipeline::class,
+        'prospect_duplicate' => ProspectDuplicate::class,
         'project' => Project::class,
         'project_member' => ProjectMember::class,
 
@@ -153,6 +164,13 @@ final class ObjectTypes
         // Organization-scoped: Payroll
         'payslip_schema' => PayslipSchema::class,
         'payslip' => Payslip::class,
+        'payslip_line' => PayslipLine::class,
+        'employment' => Employment::class,
+        'employment_agreement' => EmploymentAgreement::class,
+        'employment_jurisdiction' => EmploymentJurisdiction::class,
+        'working_time_term' => WorkingTimeTerm::class,
+        'working_time_day' => WorkingTimeDay::class,
+        'working_time_day_break' => WorkingTimeDayBreak::class,
 
         // Organization-scoped: Reports
         'report' => Report::class,

@@ -6,7 +6,7 @@ namespace Enlivy\Enums\Prospect;
 
 use Enlivy\Enums\Concern\EnumValues;
 
-enum StatusTypes: string
+enum StageTypes: string
 {
     use EnumValues;
 

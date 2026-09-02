@@ -329,6 +329,33 @@ try {
 }
 ```
 
+## Worker-Facing Endpoints
+
+A portal session belonging to an employed person reaches their own payroll records:
+
+```php
+<?php
+
+// The worker's own month, and their confirmation of it
+$month = $portal->workingTimeDays->month([
+    'organization_employment_id' => 'org_empl_xxx',
+    'month' => '2026-09',
+]);
+
+$portal->workingTimeDays->attestMonth([
+    'organization_employment_id' => 'org_empl_xxx',
+    'month' => '2026-09',
+]);
+
+// Their payslips
+$payslips = $portal->payslips->list();
+$pdf = $portal->payslips->download('org_pay_xxx');
+```
+
+`attestMonth` takes no `attestation_method` on this lane — the portal caller is the worker, so it
+always records `worker_confirmed`. The back-office endpoint is the second-party half of the same
+confirmation and rejects that method. See [Payroll](payroll.md).
+
 ## Security Best Practices
 
 1. **Use minimal permissions** - Only grant access to what's needed
@@ -345,3 +372,4 @@ try {
 - [Contracts](contracts.md) - Customer contracts
 - [Reports](reports.md) - Customer reports
 - [Receipts](receipts.md) - Payment receipts
+- [Payroll](payroll.md) - Employments, working time, and payslips

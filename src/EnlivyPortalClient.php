@@ -39,6 +39,7 @@ use Enlivy\Service\ClientPortal\PortalServiceFactory;
  * @property Service\ClientPortal\PaymentMethodService $paymentMethods
  * @property Service\ClientPortal\ProjectService $projects
  * @property Service\ClientPortal\ProspectService $prospects
+ * @property Service\ClientPortal\WorkingTimeDayService $workingTimeDays
  * @property Service\ClientPortal\SessionService $session
  */
 class EnlivyPortalClient implements EnlivyClientInterface

@@ -36,7 +36,8 @@ enum EntityManifest: string
     case TASK = 'task';
     case TASK_STATUS = 'task_status';
     case PROSPECT = 'prospect';
-    case PROSPECT_STATUS = 'prospect_status';
+    case PROSPECT_STAGE = 'prospect_stage';
+    case PROSPECT_PIPELINE = 'prospect_pipeline';
     case PROSPECT_ACTIVITY = 'prospect_activity';
     case GUIDELINE = 'guideline';
     case PLAYBOOK = 'playbook';
@@ -45,4 +46,7 @@ enum EntityManifest: string
     case BILLING_PACKAGE = 'billing_package';
     case PROPOSAL = 'proposal';
     case FILE = 'file';
+    case EMPLOYMENT = 'employment';
+    case WORKING_TIME_TERM = 'working_time_term';
+    case WORKING_TIME_DAY = 'working_time_day';
 }

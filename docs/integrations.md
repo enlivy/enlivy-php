@@ -186,6 +186,43 @@ echo "Submitted: {$exchange->submitted_at}\n";
 echo "Processed: {$exchange->processed_at}\n";
 ```
 
+### Recording an Inbound Bill
+
+An inbound exchange can be read with two assistive includes that suggest how to record it,
+so you are not re-deriving the supplier, account and tax treatment by hand:
+
+```php
+<?php
+
+$exchange = $client->invoiceNetworkExchanges->retrieve('org_inv_peppol_xxx', [
+    'include' => 'recording_suggestions,tax_mapping',
+]);
+```
+
+Both includes are **retrieve-only** — the list endpoint does not offer them and answers `422`
+if you ask. The SDK validates includes from one set per service, so it will let
+`list(['include' => 'tax_mapping'])` through to the API rather than catching it locally.
+
+`recording_suggestions` proposes the counterparty and the bank account to settle from, each
+carrying the basis it was drawn from (`NetworkExchange\RecordingSuggestionBases` — payment
+history, an identifier match, the organization owner, and so on).
+
+`tax_mapping` is also available on its own, without loading the rest of the exchange:
+
+```php
+<?php
+
+$mapping = $client->invoiceNetworkExchanges->taxMapping('org_inv_peppol_xxx');
+
+echo $mapping->outcome;   // Tax\MappingSuggestionOutcomes: candidates | no_tax | unmatched
+```
+
+`candidates` means one or more of your tax rates matched, each scored by a
+`Tax\MappingSuggestionBases` reason; `no_tax` means the document itself carries none; `unmatched`
+means the document declares tax that nothing in your catalog explains — that one needs a human.
+
+These are suggestions, not decisions: nothing is recorded until you create the invoice yourself.
+
 ## Complete Example: Stripe Payment Flow
 
 ```php

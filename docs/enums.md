@@ -62,6 +62,11 @@ set. A selection relevant to recently added features:
 | `EventTrail\EventType` | event-trail subject change types |
 | `EventTrail\Origin` | `back_office`, `client_portal`, `cron`, `webhook`, `system` |
 | `Organization\ButtonStyles` | `primary`, `secondary`, `outline` |
+| `Prospect\StageTypes` | pipeline stage kinds (renamed from `Prospect\StatusTypes` in 3.1.0) |
+| `Prospect\DuplicateConfidence` | `high`, `medium`, `low` |
+| `Prospect\DuplicateSignals` | `linked_organization_user`, `email`, `phone_number`, `name` |
+| `Prospect\MergeBlockers` | `conflicting_linked_user`, `different_project`, `conflicting_outcome` |
+| `NetworkExchange\RecordingSuggestionBases` | why an inbound bill's recording was suggested (`payment_history`, `identifier_match`, …) |
 | `TenantBilling\TrialChangeSetTypes` | `add`, `drop` |
 | `TenantBilling\BillingEffects` | `prorated_now`, `trial`, `next_cycle`, `none` |
 | `BillingPackage\BillingEffect` | `now`, `next_cycle` |
@@ -156,7 +161,7 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 | Enum | Values |
 |------|--------|
 | `Tax\TaxFamilies` | `vat`, `sales_tax`, `income_tax`, `payroll` |
-| `Tax\ProductTaxCategories` | `general_services`, `digital_services`, `general_physical_goods`, `foodstuffs`, `printed_books_periodicals`, … (14 EU/UK/CH categories) |
+| `Tax\ProductTaxCategories` | `general_services`, `digital_services`, `general_physical_goods`, `foodstuffs`, `printed_books_periodicals`, … (15 EU/UK/CH categories) |
 | `Tax\RegistrationSchemes` | `vat_registered`, `small_business_domestic`, `small_business_cross_border`, `oss_union`, `oss_non_union`, `ioss`, `not_registered`, `micro_enterprise`, `profit_tax`, `self_employed_income`, `employer` |
 | `Tax\SellerVatStatuses` | `undeclared`, `registered`, `small_business_exempt`, `not_registered`, `not_applicable` |
 | `Tax\TaxApplicabilityReasons` | `seller_not_registered`, `outside_scope`, `domestic`, `eu_reverse_charge`, `eu_business_without_vat_id`, `eu_consumer` |
@@ -172,6 +177,42 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 | `Tax\TaxEventSourceTypes` | `invoice`, `receipt`, `customs`, `bank_correction`, `authority`, `manual`, `baseline` |
 | `Tax\TaxEventRegimes` | `accrual`, `cash` |
 | `Tax\TaxEventSupplyTypes` | `goods`, `services`, `triangular` |
+| `Tax\MappingSuggestionOutcomes` | `candidates`, `no_tax`, `unmatched` |
+| `Tax\MappingSuggestionBases` | `supplier_history`, `organization_frequency`, `category_match`, `rate_match`, `forward_resolution` |
+
+## Employment & working time
+
+The payroll lane ships enums under `Enlivy\Enums\Employment\`,
+`Enlivy\Enums\WorkingTime\` and `Enlivy\Enums\Payslip\`:
+
+| Enum | Values |
+|------|--------|
+| `Employment\Types` | `permanent`, `fixed_term`, `part_time`, `day_labourer`, `copyright`, `contractor`, `internship` |
+| `Employment\Lifecycles` | `scheduled`, `active`, `ended`, `undated` |
+| `Employment\PayPeriods` | `weekly`, `biweekly`, `semi_monthly`, `four_weekly`, `monthly` |
+| `Employment\RegistryStatuses` | `unknown`, `not_required`, `required`, `confirmed` |
+| `Employment\AgreementTypes` | `weekly_hours_opt_out`, `working_time_exemption` |
+| `Employment\FilingCadences` | `monthly`, `per_payday`, `quarterly`, `annual`, `event_driven` |
+| `Employment\FactSources` | `contract`, `official_registry`, `user_asserted`, `migrated_inferred`, `unknown` |
+| `Employment\JurisdictionAxes` | `work`, `payroll`, `social_security`, `tax` |
+| `WorkingTime\DayDispositions` | `worked`, `absent`, `rest_day`, `public_holiday`, `scheduled_non_working_day`, `unknown` |
+| `WorkingTime\DayOrigins` | `derived`, `authored`, `imported`, `corrected` |
+| `WorkingTime\AttestationMethods` | `worker_confirmed`, `supervisor_approved`, `period_close`, `signed_document` |
+| `WorkingTime\AttestationStatuses` | `unattested`, `attested`, `voided` |
+| `WorkingTime\RecordSourceTypes` | `document`, `import_batch`, `device_event`, `external_system` |
+| `WorkingTime\RetentionStatuses` | `protected`, `retained`, `expired`, `unresolved` |
+| `WorkingTime\BreakTypes` | `meal`, `rest`, `other` |
+| `WorkingTime\OvertimeBases` | `daily`, `weekly`, `daily_and_weekly` |
+| `WorkingTime\LimitBreaches` | `daily_rest`, `weekly_rest`, `weekly_average`, `weekly_absolute`, `night_average`, `daily_maximum` |
+| `WorkingTime\AbsenceReasons` | `annual_leave`, `sick_leave`, `maternity_leave`, … (10 statutory reasons) |
+| `WorkingTime\TermUnits` | `hours`, `days` |
+| `Payslip\LineTypes` | `informational`, `earning`, `employee_contribution`, `tax_relief`, `tax`, `post_tax_deduction`, `employer_contribution` |
+| `Payslip\LineCodes` | 48 codes spanning the seven line types (`base_salary`, `income_tax`, `pension_employer`, …) |
+| `Payslip\LineSources` | `entered`, `computed`, `imported` |
+
+> `WorkingTime\AbsenceReasons` is redacted for viewers who may not see it: when
+> `absence_reason_redacted` is true on a working-time day, `absence_reason` is
+> withheld rather than merely blank.
 
 ## Stability
 

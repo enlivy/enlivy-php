@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Enlivy\Organization;
+
+use Enlivy\ApiResource;
+
+/**
+ * @property string $id
+ * @property string $object
+ * @property string $organization_id
+ * @property string $organization_employment_id
+ * @property string|null $type
+ * @property string|null $value
+ * @property string|null $effective_from
+ * @property string|null $effective_to
+ * @property string|null $source
+ * @property string|null $source_reference
+ * @property string $created_at
+ * @property string $updated_at
+ */
+class EmploymentAgreement extends ApiResource
+{
+    public const ?string OBJECT_NAME = 'employment_agreement';
+}

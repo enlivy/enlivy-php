@@ -16,6 +16,7 @@ enum EventType: string
     case DELETED = 'deleted';
     case RESTORED = 'restored';
     case FINALIZED = 'finalized';
+    case ATTESTED = 'attested';
     case CHARGED = 'charged';
     case CHARGE_FAILED = 'charge_failed';
     case REFUNDED = 'refunded';
@@ -28,4 +29,6 @@ enum EventType: string
     case TAX_BREAKDOWN_CHANGED = 'tax_breakdown_changed';
     case PHASE_CHANGED = 'phase_changed';
     case SCHEDULED_PAYMENT_CHANGED = 'scheduled_payment_changed';
+    case JURISDICTION_CHANGED = 'jurisdiction_changed';
+    case AGREEMENT_CHANGED = 'agreement_changed';
 }
