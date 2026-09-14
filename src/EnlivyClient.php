@@ -36,7 +36,7 @@ use Enlivy\Service;
  * @property Service\Organization\Prospect\ProspectPipelineService $prospectPipelines
  * @property Service\Organization\Project\ProjectService $projects
  * @property Service\Organization\Project\ProjectMemberService $projectMembers
- * @property Service\Organization\Project\ProjectPermissionProspectService $projectPermissionProspects
+ * @property Service\Organization\Project\ProjectPermissionPipelineService $projectPermissionPipelines
  * @property Service\Organization\Project\ProjectPermissionGuidelineService $projectPermissionGuidelines
  * @property Service\Organization\Project\ProjectPermissionPlaybookService $projectPermissionPlaybooks
  * @property Service\Organization\Project\ProjectPermissionReportService $projectPermissionReports
@@ -53,6 +53,7 @@ use Enlivy\Service;
  * @property Service\Organization\Receipt\ReceiptPrefixService $receiptPrefixes
  * @property Service\Organization\ProductService $products
  * @property Service\Organization\BankAccount\BankAccountService $bankAccounts
+ * @property Service\Organization\BankAccount\BankAccountStatementService $bankAccountStatements
  * @property Service\Organization\BankAccount\BankTransactionService $bankTransactions
  * @property Service\Organization\BankAccount\BankTransactionCostTypeService $bankTransactionCostTypes
  * @property Service\Organization\BankAccount\BankAccountDataService $bankAccountData
@@ -65,6 +66,19 @@ use Enlivy\Service;
  * @property Service\Organization\Contract\ContractSignatureService $contractSignatures
  * @property Service\Organization\Contract\ContractSignatureNotificationLogService $contractSignatureNotificationLogs
  *
+ * Organization-scoped services - Helpdesk:
+ * @property Service\Organization\Helpdesk\HelpdeskConversationService $helpdeskConversations
+ * @property Service\Organization\Helpdesk\HelpdeskConversationMessageService $helpdeskConversationMessages
+ * @property Service\Organization\Helpdesk\HelpdeskConversationAttachmentService $helpdeskConversationAttachments
+ * @property Service\Organization\Helpdesk\HelpdeskConversationParticipantService $helpdeskConversationParticipants
+ * @property Service\Organization\Helpdesk\HelpdeskInboxService $helpdeskInboxes
+ * @property Service\Organization\Helpdesk\HelpdeskTeammateService $helpdeskTeammates
+ * @property Service\Organization\Helpdesk\HelpdeskSettingsService $helpdeskSettings
+ * @property Service\Organization\Helpdesk\HelpdeskInboundEmailService $helpdeskInboundEmails
+ * @property Service\Organization\Helpdesk\HelpdeskInboundEmailRuleService $helpdeskInboundEmailRules
+ * @property Service\Organization\Helpdesk\HelpdeskProactiveMessageService $helpdeskProactiveMessages
+ * @property Service\Organization\Helpdesk\HelpdeskVisitorService $helpdeskVisitors
+ *
  * Organization-scoped services - Tax:
  * @property Service\Organization\Tax\TaxClassService $taxClasses
  * @property Service\Organization\Tax\TaxRateService $taxRates
@@ -76,7 +90,6 @@ use Enlivy\Service;
  * @property Service\Organization\Tax\TaxFilingPeriodPaymentService $taxFilingPeriodPayments
  *
  * Organization-scoped services - Payroll:
- * @property Service\Organization\Payslip\PayslipSchemaService $payslipSchemas
  * @property Service\Organization\Payslip\PayslipService $payslips
  * @property Service\Organization\Employment\EmploymentService $employments
  * @property Service\Organization\WorkingTime\WorkingTimeTermService $workingTimeTerms

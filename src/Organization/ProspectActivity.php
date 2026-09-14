@@ -13,6 +13,8 @@ use Enlivy\ApiResource;
  * @property string $organization_prospect_id
  * @property string|null $performed_by_organization_user_id
  * @property string|null $organization_report_id
+ * @property string|null $from_assigned_organization_user_id
+ * @property string|null $to_assigned_organization_user_id
  * @property string|null $organization_file_id
  * @property string|null $organization_prospect_stage_path_id
  * @property string|null $from_organization_prospect_stage_id

@@ -31,7 +31,6 @@ enum EntityManifest: string
     case CONTRACT_STATUS = 'contract_status';
     case CONTRACT_SIGNATURE = 'contract_signature';
     case PAYSLIP = 'payslip';
-    case PAYSLIP_SCHEMA = 'payslip_schema';
     case PROJECT = 'project';
     case TASK = 'task';
     case TASK_STATUS = 'task_status';
@@ -49,4 +48,10 @@ enum EntityManifest: string
     case EMPLOYMENT = 'employment';
     case WORKING_TIME_TERM = 'working_time_term';
     case WORKING_TIME_DAY = 'working_time_day';
+    case HELPDESK_CONVERSATION = 'helpdesk_conversation';
+    case HELPDESK_INBOX = 'helpdesk_inbox';
+    case HELPDESK_TEAMMATE = 'helpdesk_teammate';
+    case HELPDESK_VISITOR = 'helpdesk_visitor';
+    case HELPDESK_PROACTIVE_MESSAGE = 'helpdesk_proactive_message';
+    case HELPDESK_INBOUND_EMAIL_RULE = 'helpdesk_inbound_email_rule';
 }

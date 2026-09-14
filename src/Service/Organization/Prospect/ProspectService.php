@@ -9,6 +9,7 @@ use Enlivy\EnlivyObject;
 use Enlivy\Organization\Prospect;
 use Enlivy\Organization\ProspectDuplicate;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasImports;
 use Enlivy\Service\Concern\HasResumableImports;
 use Enlivy\Service\Concern\HasFilters;
@@ -22,6 +23,7 @@ use Enlivy\Util\RequestOptions;
 class ProspectService extends AbstractService
 {
     use HasRestore;
+    use HasDownload;
     use HasImports;
     use HasResumableImports;
     use HasIncludes;

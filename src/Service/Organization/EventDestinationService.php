@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Enlivy\Service\Organization;
 
+use Enlivy\EnlivyObject;
 use Enlivy\Collection;
 use Enlivy\Organization\EventDelivery;
 use Enlivy\Organization\EventDestination;
@@ -108,5 +109,15 @@ class EventDestinationService extends AbstractService
 
         /** @var EventDelivery */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/deliveries/{$id}"), $params, $opts, EventDelivery::class);
+    }
+
+    /**
+     * Send a test delivery, to prove the destination is reachable before events depend on it.
+     */
+    public function test(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/test"), $params, $opts);
     }
 }

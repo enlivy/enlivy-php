@@ -17,6 +17,9 @@ use Enlivy\ApiResource;
  * @property string|null $tax_category
  * @property string|null $auto_imported_from
  * @property string|null $auto_imported_hash
+ * @property string|null $retired_at
+ * @property array|null $retired_reason_lang_map
+ * @property string|null $retired_by_user_id
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

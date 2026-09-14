@@ -68,6 +68,24 @@ set. A selection relevant to recently added features:
 | `Prospect\MergeBlockers` | `conflicting_linked_user`, `different_project`, `conflicting_outcome` |
 | `NetworkExchange\RecordingSuggestionBases` | why an inbound bill's recording was suggested (`payment_history`, `identifier_match`, …) |
 | `TenantBilling\TrialChangeSetTypes` | `add`, `drop` |
+| `Helpdesk\ConversationStates` | `open`, `pending`, `snoozed`, `resolved`, `closed`, `spam` |
+| `Helpdesk\ConversationSources` | `widget`, `email`, `portal`, `api` |
+| `Helpdesk\ConversationPriorities` | `none`, `low`, `medium`, `high`, `urgent` |
+| `Helpdesk\MessageTypes` | `incoming`, `outgoing`, `note`, `activity` |
+| `Helpdesk\MessageContentTypes` | `text`, `html`, and the system notices the desk writes itself |
+| `Helpdesk\ParticipantSources` | `embed`, `customer`, `author`, `email`, `teammate` |
+| `Helpdesk\AssignmentModes` | `manual`, `default_teammate`, `round_robin` |
+| `Helpdesk\EmailCollectModes` | `never`, `outside_hours`, `always` |
+| `Helpdesk\EmailStyles` | `branded`, `plain` |
+| `Helpdesk\ExpectedReplyTimes` | `minutes`, `hours`, `day` |
+| `Helpdesk\InboundEmailInterpretations` | what the desk decided a message was (`matched`, `new_conversation`, `bounce`, `spam`, …) |
+| `Helpdesk\InboundEmailRuleActions` | `route`, `discard` |
+| `Helpdesk\ProactiveMessageConditionTypes` | `page_visited`, `time_on_page`, `pages_visited_all`, `pages_visited_any`, `total_page_views` |
+| `Helpdesk\ProactiveMessageMatchModes` | `exact`, `contains`, `starts_with`, `regex` |
+| `Helpdesk\VisitorEventTypes` | `arrival` and the proactive-message outcomes |
+| `BankAccount\StatementFormats` | `pdf`, `mt940`, `camt_053`, `csv`, `spreadsheet`, `other` |
+| `Organization\ConnectionLiveness` | `live`, `historical`, `trashed` |
+| `Project\ProspectAccessScopes` | `none`, `own`, `own_and_unassigned`, `all` |
 | `TenantBilling\BillingEffects` | `prorated_now`, `trial`, `next_cycle`, `none` |
 | `BillingPackage\BillingEffect` | `now`, `next_cycle` |
 | `BillingPackage\SubscriptionTermStatuses` | `active`, `archived` |

@@ -33,6 +33,19 @@ class MiscService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/calculate-due-date'), $params, $opts);
     }
 
+    /**
+     * Pick the tax class a product of this type should be charged under.
+     *
+     * Takes a required `type` (a product type) and returns
+     * `{ tax_class_id: string|null, tax_category: string }`.
+     */
+    public function determineTaxClassId(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/determine-tax-class-id'), $params, $opts);
+    }
+
     public function determineTaxRateId(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

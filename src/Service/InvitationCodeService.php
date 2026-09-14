@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Enlivy\Service;
 
+use Enlivy\EnlivyObject;
 use Enlivy\Collection;
 use Enlivy\InvitationCode;
 use Enlivy\Service\Concern\HasFilters;
@@ -87,5 +88,11 @@ class InvitationCodeService extends AbstractService
 
         /** @var Collection<InvitationCode> */
         return $this->requestCollection('GET', "/invitation-codes/{$id}/referrals", $params, $opts);
+    }
+
+    public function retrieve(string $code, array $params = [], ?RequestOptions $opts = null): InvitationCode
+    {
+        /** @var InvitationCode */
+        return $this->request('GET', "/invitation-codes/{$code}", $params, $opts);
     }
 }

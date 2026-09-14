@@ -111,4 +111,14 @@ class ReceiptService extends AbstractService
         /** @var Receipt */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
+
+    /**
+     * The receipt as a PDF. Distinct from `download()`, which serves the stored document.
+     */
+    public function pdf(string $id, array $params = [], ?RequestOptions $opts = null): string
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestRaw('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/pdf"), $params, $opts);
+    }
 }

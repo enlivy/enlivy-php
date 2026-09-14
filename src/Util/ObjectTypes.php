@@ -18,7 +18,22 @@ use Enlivy\Organization\BankTransactionCostType;
 use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\Contract;
-use Enlivy\Organization\ContractConnection;
+use Enlivy\Organization\Connection;
+use Enlivy\Organization\HelpdeskConversation;
+use Enlivy\Organization\HelpdeskConversationMessage;
+use Enlivy\Organization\HelpdeskConversationAttachment;
+use Enlivy\Organization\HelpdeskConversationParticipant;
+use Enlivy\Organization\HelpdeskConversationRead;
+use Enlivy\Organization\HelpdeskConversationMessageDelivery;
+use Enlivy\Organization\HelpdeskInbox;
+use Enlivy\Organization\HelpdeskTeammate;
+use Enlivy\Organization\HelpdeskSettings;
+use Enlivy\Organization\HelpdeskInboundEmail;
+use Enlivy\Organization\HelpdeskInboundEmailRule;
+use Enlivy\Organization\HelpdeskProactiveMessage;
+use Enlivy\Organization\HelpdeskVisitor;
+use Enlivy\Organization\HelpdeskVisitorEvent;
+use Enlivy\Organization\BankAccountStatement;
 use Enlivy\Organization\ContractPrefix;
 use Enlivy\Organization\ContractSignature;
 use Enlivy\Organization\ContractSignatureNotificationLog;
@@ -45,7 +60,6 @@ use Enlivy\Organization\BillingPackageSubscriptionTerm;
 use Enlivy\Organization\BillingPackageSubscriptionTermItem;
 use Enlivy\Organization\Payslip;
 use Enlivy\Organization\PayslipLine;
-use Enlivy\Organization\PayslipSchema;
 use Enlivy\Organization\Playbook;
 use Enlivy\Organization\Product;
 use Enlivy\Organization\Project;
@@ -138,6 +152,7 @@ final class ObjectTypes
         'receipt_prefix' => ReceiptPrefix::class,
         'product' => Product::class,
         'bank_account' => BankAccount::class,
+        'bank_account_statement' => BankAccountStatement::class,
         'bank_transaction' => BankTransaction::class,
         'bank_transaction_cost_type' => BankTransactionCostType::class,
         'blocked_identifier' => BlockedIdentifier::class,
@@ -145,11 +160,27 @@ final class ObjectTypes
 
         // Organization-scoped: Contracts
         'contract' => Contract::class,
-        'contract_connection' => ContractConnection::class,
+        'connection' => Connection::class,
         'contract_prefix' => ContractPrefix::class,
         'contract_status' => ContractStatus::class,
         'contract_signature' => ContractSignature::class,
         'contract_signature_notification_log' => ContractSignatureNotificationLog::class,
+
+        // Organization-scoped: Helpdesk
+        'helpdesk_conversation' => HelpdeskConversation::class,
+        'helpdesk_conversation_message' => HelpdeskConversationMessage::class,
+        'helpdesk_conversation_attachment' => HelpdeskConversationAttachment::class,
+        'helpdesk_conversation_participant' => HelpdeskConversationParticipant::class,
+        'helpdesk_conversation_read' => HelpdeskConversationRead::class,
+        'helpdesk_conversation_message_delivery' => HelpdeskConversationMessageDelivery::class,
+        'helpdesk_inbox' => HelpdeskInbox::class,
+        'helpdesk_teammate' => HelpdeskTeammate::class,
+        'helpdesk_settings' => HelpdeskSettings::class,
+        'helpdesk_inbound_email' => HelpdeskInboundEmail::class,
+        'helpdesk_inbound_email_rule' => HelpdeskInboundEmailRule::class,
+        'helpdesk_proactive_message' => HelpdeskProactiveMessage::class,
+        'helpdesk_visitor' => HelpdeskVisitor::class,
+        'helpdesk_visitor_event' => HelpdeskVisitorEvent::class,
 
         // Organization-scoped: Tax
         'tax_class' => TaxClass::class,
@@ -162,7 +193,6 @@ final class ObjectTypes
         'tax_filing_period_payment' => TaxFilingPeriodPayment::class,
 
         // Organization-scoped: Payroll
-        'payslip_schema' => PayslipSchema::class,
         'payslip' => Payslip::class,
         'payslip_line' => PayslipLine::class,
         'employment' => Employment::class,

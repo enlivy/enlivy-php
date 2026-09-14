@@ -10,7 +10,6 @@ use Enlivy\ApiResource;
  * @property string $id
  * @property string $object
  * @property string $organization_id
- * @property string|null $organization_payslip_schema_id
  * @property string|null $organization_receiver_user_id
  * @property string|null $organization_sender_user_id
  * @property string|null $organization_contract_id
@@ -32,7 +31,6 @@ use Enlivy\ApiResource;
  * @property string $currency
  * @property string|null $issued_at
  * @property string|null $paid_at
- * @property array|null $information
  * @property string|null $deleted_by_user_id
  * @property string|null $deleted_at
  * @property string $created_at

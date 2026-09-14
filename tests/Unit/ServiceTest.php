@@ -14,7 +14,7 @@ use Enlivy\Exception\InvalidArgumentException;
 use Enlivy\Organization;
 use Enlivy\Organization\BillingSchedule;
 use Enlivy\Organization\BlockedIdentifier;
-use Enlivy\Organization\ContractConnection;
+use Enlivy\Organization\Connection;
 use Enlivy\Organization\Employment;
 use Enlivy\Organization\EventTrail;
 use Enlivy\Organization\Invoice;
@@ -496,28 +496,36 @@ final class ServiceTest extends TestCase
         $this->client->invoiceScheduledReminders->list(['status' => 'pending']);
     }
 
-    public function testContractConnectionsReturnTypedRows(): void
+    public function testConnectionsReturnTypedRowsAndFacetCounts(): void
     {
         $this->httpClient->addResponse(200, [
             'data' => [
                 [
                     'id' => 'org_inv_1',
                     'entity' => 'invoice',
-                    'title' => 'INV-0001',
-                    'status' => 'issued',
-                    'total' => '120.000000',
-                    'currency' => 'EUR',
-                    'created_at' => '2026-07-01T10:00:00Z',
-                    'updated_at' => '2026-07-01T10:00:00Z',
+                    'liveness' => 'live',
+                    'item' => ['id' => 'org_inv_1', 'currency' => 'EUR'],
+                ],
+            ],
+            'meta' => [
+                'connections' => [
+                    'entities' => [
+                        ['entity' => 'invoice', 'restricted' => false, 'live' => 1, 'historical' => 0, 'trashed' => 0, 'total' => 1],
+                    ],
+                    'totals' => ['live' => 1, 'historical' => 0, 'trashed' => 0, 'total' => 1],
                 ],
             ],
         ]);
 
-        $connections = $this->client->contracts->connections('org_cont_1', ['entity' => ['invoice']]);
+        $connections = $this->client->contracts->connections('org_cont_1', ['entity' => ['invoice'], 'liveness' => 'live']);
 
         $row = $connections->getData()[0];
-        $this->assertInstanceOf(ContractConnection::class, $row);
+        $this->assertInstanceOf(Connection::class, $row);
         $this->assertSame('invoice', $row->entity);
+        $this->assertSame('live', $row->liveness);
+
+        // The facet counts live in meta, which is only reachable because Collection exposes it.
+        $this->assertSame(1, $connections->getMeta()['connections']['totals']['total']);
 
         $request = $this->httpClient->getLastRequest();
         $this->assertSame('GET', $request['method']);

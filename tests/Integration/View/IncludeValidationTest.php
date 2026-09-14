@@ -199,10 +199,6 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('payslips');
     }
 
-    public function testPayslipSchemaAllIncludes(): void
-    {
-        $this->assertAllIncludesWork('payslipSchemas');
-    }
 
     // Reports
 

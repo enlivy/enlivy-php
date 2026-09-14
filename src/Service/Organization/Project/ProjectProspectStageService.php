@@ -75,4 +75,15 @@ class ProjectProspectStageService extends AbstractService
 
         return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages"), $params, $opts);
     }
+
+    /**
+     * Attach an existing prospect stage to this project by naming it in the path.
+     */
+    public function createForStage(string $projectId, string $prospectStageId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/prospect-stages/{$prospectStageId}"), $params, $opts);
+    }
 }

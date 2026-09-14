@@ -37,6 +37,7 @@ enum TriggerEvent: string
     case USER_RESTORED = 'user.restored';
     case NETWORK_EXCHANGE_CREATED = 'network_exchange.created';
     case NETWORK_EXCHANGE_UPDATED = 'network_exchange.updated';
+    case NETWORK_EXCHANGE_RESTORED = 'network_exchange.restored';
     case CONTRACT_CREATED = 'contract.created';
     case CONTRACT_UPDATED = 'contract.updated';
     case CONTRACT_DELETED = 'contract.deleted';
@@ -83,9 +84,13 @@ enum TriggerEvent: string
     case PRODUCT_CREATED = 'product.created';
     case PRODUCT_UPDATED = 'product.updated';
     case PRODUCT_DELETED = 'product.deleted';
+    case PRODUCT_RESTORED = 'product.restored';
     case CONTRACT_SIGNATURE_CREATED = 'contract_signature.created';
     case CONTRACT_SIGNATURE_UPDATED = 'contract_signature.updated';
     case CONTRACT_SIGNATURE_DELETED = 'contract_signature.deleted';
     case CONTRACT_SIGNATURE_RESTORED = 'contract_signature.restored';
     case CONTRACT_ALL_PARTIES_SIGNED = 'contract.all_parties_signed';
+    case HELPDESK_CONVERSATION_CREATED = 'helpdesk_conversation.created';
+    case HELPDESK_CONVERSATION_ASSIGNED = 'helpdesk_conversation.assigned';
+    case HELPDESK_CONVERSATION_MESSAGE_CREATED = 'helpdesk_conversation_message.created';
 }

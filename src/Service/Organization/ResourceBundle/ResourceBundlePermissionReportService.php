@@ -66,4 +66,15 @@ class ResourceBundlePermissionReportService extends AbstractService
 
         return $this->request('DELETE', $this->orgPath($orgId, "resource-bundles/{$bundleId}/permission-reports/{$permissionId}"), $params, $opts);
     }
+
+    /**
+     * Grant by naming the member in the path, for callers that already hold their id.
+     */
+    public function createForUser(string $resourceBundleId, string $organizationUserId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, "resource-bundles/{$resourceBundleId}/permission-reports/{$organizationUserId}"), $params, $opts);
+    }
 }

@@ -505,8 +505,14 @@ depends on what the resource calls its label:
 |---------|---------|
 | `prospectStages` | `title`, `description`, `organization_prospect_pipeline_id` |
 | `prospectPipelines`, `contractStatuses`, `taskStatuses`, `reportSchemas`, `resourceBundles` | `title`, `description` |
-| `taxClasses`, `payslipSchemas` | `name`, `description` |
+| `taxClasses` | `name`, `description`, `retired` |
 | `bankTransactionCostTypes` | `title` |
+| `helpdeskConversations` | `state`, `organization_helpdesk_inbox_id`, `assigned_organization_helpdesk_teammate_id`, `priority`, `source`, `contact_email`, `contact_organization_user_id`, `contact_organization_prospect_id`, `organization_project_id` |
+| `helpdeskConversationMessages` | `type` |
+| `helpdeskInboxes`, `helpdeskInboundEmailRules`, `helpdeskProactiveMessages` | `is_active`, `organization_helpdesk_inbox_id` |
+| `helpdeskTeammates` | `is_available` |
+| `helpdeskInboundEmails` | `interpretation`, `organization_helpdesk_inbox_id`, `organization_helpdesk_conversation_id`, `processed` |
+| `helpdeskVisitors` | `identified`, `blocked` |
 
 ### Services with Global Filters Only
 

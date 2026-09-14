@@ -20,6 +20,8 @@ enum FeaturePacks: string
     case REPORTS = 'reports';
     case CUSTOM_DOMAIN = 'custom_domain';
     case TASKS = 'tasks';
+    case PAYROLL = 'payroll';
+    case HELPDESK = 'helpdesk';
     case REPORTS_STANDARD = 'reports_standard';
     case REPORTS_UNLIMITED = 'reports_unlimited';
 }

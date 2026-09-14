@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization\Tax;
 
 use Enlivy\Collection;
+use Enlivy\Organization\Connection;
 use Enlivy\Organization\TaxRate;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
@@ -78,5 +79,33 @@ class TaxRateService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var TaxRate */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+
+    /**
+     * List every entity that still references this tax rate.
+     *
+     * Each row carries the referencing entity under `item` plus its `liveness`. Facet counts per
+     * entity live in the response `meta.connections`, reachable with `getMeta()`.
+     *
+     * Parameters:
+     * - `entity` (array) - Narrow to these kinds: invoice, receipt
+     * - `liveness` (string) - live, historical or trashed
+     * - `limit` (int) - Page size
+     * - `page` (int) - Page number
+     *
+     * @return Collection<Connection>
+     */
+    public function connections(string $id, array $params = [], ?RequestOptions $opts = null): Collection
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Collection<Connection> */
+        return $this->requestCollection(
+            'GET',
+            $this->orgPath($orgId, self::RESOURCE . "/{$id}/connections"),
+            $params,
+            $opts,
+            Connection::class,
+        );
     }
 }

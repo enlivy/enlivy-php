@@ -3,6 +3,51 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.2.0] - 2026-09-15
+
+A support desk: inboxes, conversations, teammates, inbound mail, visitors and proactive messages,
+on both the staff lane and the customer's own. Alongside it, a statement archive on bank accounts,
+retiring a tax class instead of deleting what names it, and a unified connections feed.
+
+Scoped as a minor despite the removals below, matching the 2.1.0 and 2.7.0 precedent.
+New docs: [Helpdesk](docs/organization/helpdesk.md), [Embedded Support](docs/embedded-support.md).
+See [UPGRADING](UPGRADING.md).
+
+### Removed
+
+- `$client->payslipSchemas`, `Organization\PayslipSchema`, `Enums\Payslip\Fields` — the API retired payslip schemas; payslip data moved to typed columns and coded lines.
+- `Organization\ContractConnection` — replaced by `Organization\Connection`.
+- `$client->projectPermissionProspects` — replaced by `$client->projectPermissionPipelines`.
+- `$portal->prospects->board()` — the API withdrew the project-wide board; use `$portal->pipelines->board()`.
+- `Payslip::$organization_payslip_schema_id`, `Payslip::$information`, the `organization_payslip_schema` include and the `organization_payslip_schema_id` filter.
+
+### Added
+
+- **Helpdesk, staff lane**: `helpdeskConversations`, `helpdeskConversationMessages`, `helpdeskConversationAttachments`, `helpdeskConversationParticipants`, `helpdeskInboxes`, `helpdeskTeammates`, `helpdeskSettings`, `helpdeskInboundEmails`, `helpdeskInboundEmailRules`, `helpdeskProactiveMessages`, `helpdeskVisitors`.
+- **Helpdesk, customer lane**: `$portal->helpdeskConversations`, `$portal->helpdeskAttachments`.
+- 14 helpdesk resource classes and 15 helpdesk enums.
+- `bankAccountStatements` (list/create/download/delete/restore) and `bankAccounts->downloadStatementsForMonth()`.
+- `taxClasses->retire()`, `taxClasses->unretire()`, `taxClasses->connections()`, `taxRates->connections()`, plus the `retired` filter on `taxClasses`.
+- `misc->determineTaxClassId()`, `prospects->download()`, `eventDestinations->test()`, `receipts->pdf()`.
+- `frontend->timezones()`, `frontend->informationSchema()`, `frontend->supportWidgetToken()`, `invitationCodes->retrieve()`, `settings->retrieveForUser()`.
+- `serviceIntegrations->slackChannels()`, `->slackTest()`, `->gmailConnect()`.
+- Portal: `pipelines`, `prospectActivities`, `projectMembers`, plus `prospects->listAcrossProjects()`, `->retrieveAcrossProjects()` and `->advance()`.
+- `createForUser()` on the project and resource-bundle permission services, and `projectProspectStages->createForStage()`.
+- `Collection::getMeta()` — reads the response `meta` block, which is where connection facet counts live.
+- Enum cases: `TenantBilling\FeaturePacks` (`payroll`, `helpdesk`), `CapacityAddons` (`helpdesk_seats`), `MeteredDomains` (`employment`, `helpdesk_seat`), `EventDelivery\TriggerEvent` (2 restore events + 3 helpdesk events), `Organization\EntityManifest` (6 helpdesk entities).
+- Enums `BankAccount\StatementFormats`, `Organization\ConnectionLiveness`, `Project\ProspectAccessScopes`.
+- Resource fields: `ApiCredential::$organization_user_id`/`$is_default`, `TaxClass::$retired_at`/`$retired_reason_lang_map`/`$retired_by_user_id`, `ProspectActivity::$from_assigned_organization_user_id`/`$to_assigned_organization_user_id`.
+
+### Changed
+
+- `contracts->connections()` returns `Collection<Connection>`; rows are now `{id, entity, liveness}` with the referencing entity under `item`. It also accepts `liveness`.
+- `Organization\EntityManifest` no longer has `payslip_schema`.
+
+### Fixed
+
+- Portal session expiry was documented as capping at 7 days; it is 365.
+- The portal session permission list omitted `payment_methods`.
+
 ## [3.1.0] - 2026-09-03
 
 The prospect *status* is now the prospect *stage*, everywhere — two classes, two

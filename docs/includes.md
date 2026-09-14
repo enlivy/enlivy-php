@@ -137,15 +137,38 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `taxTypes` | `organization` |
 | `taxFilingJurisdictions` | `organization` |
 
+### Support
+
+| Service | Includes |
+|---------|----------|
+| `helpdeskConversations` | `organization`, `inbox`, `organization_project`, `visitor`, `assigned_teammate`, `contact_organization_user`, `contact_organization_prospect`, `messages`, `attachments`, `participants`, `reads`, `merged_into`, `continued_from`, `tag_ids`, `deleted_by_user` |
+| `helpdeskConversationMessages` | `organization`, `conversation`, `author_organization_user`, `author_organization_prospect`, `attachments`, `deliveries` |
+| `helpdeskConversationAttachments` | `organization`, `conversation`, `message`, `visitor`, `uploaded_by_user` |
+| `helpdeskConversationParticipants` | `organization`, `conversation`, `organization_user`, `organization_prospect` |
+| `helpdeskInboxes` | `organization`, `organization_project`, `owner_teammate`, `default_teammate`, `organization_api_credential`, `branding_logo_file`, `branding_icon_file`, `deleted_by_user` |
+| `helpdeskTeammates` | `organization`, `organization_user`, `owned_inboxes` |
+| `helpdeskSettings` | `organization`, `branding_logo_file`, `branding_icon_file` |
+| `helpdeskInboundEmails` | `organization`, `inbox`, `organization_api_credential`, `conversation`, `message`, `content` |
+| `helpdeskInboundEmailRules` | `organization`, `inbox`, `deleted_by_user` |
+| `helpdeskProactiveMessages` | `organization`, `inbox`, `sender_teammate`, `deleted_by_user` |
+| `helpdeskVisitors` | `organization`, `organization_user`, `organization_prospect`, `events` |
+| `bankAccountStatements` | `organization`, `bank_account`, `uploaded_by_user`, `deleted_by_user` |
+| `projectPermissionPipelines` | `organization`, `organization_project`, `organization_user`, `organization_prospect_pipeline` |
+
+On the portal lane, a customer's conversation offers only `messages`, and a message always carries
+its `attachments`.
+
+`helpdeskInboundEmails` treats `content` as an include on purpose: the raw body of a message is
+withheld until it is asked for by name.
+
 ### Payroll & Reports
 
 | Service | Includes |
 |---------|----------|
-| `payslips` | `deleted_by_user`, `organization`, `organization_payslip_schema`, `organization_employment`, `lines`, `receiver_user`, `sender_user` |
+| `payslips` | `deleted_by_user`, `organization`, `organization_employment`, `lines`, `receiver_user`, `sender_user` |
 | `employments` | `organization`, `organization_user`, `organization_contract`, `organization_employment_jurisdictions`, `organization_employment_agreements`, `deleted_by_user` |
 | `workingTimeTerms` | `organization`, `organization_employment`, `deleted_by_user` |
 | `workingTimeDays` | `organization`, `organization_employment`, `organization_working_time_day_breaks` |
-| `payslipSchemas` | `organization` |
 | `reports` | `organization`, `report_schema`, `organization_user`, `organization_user_role`, `deleted_by_user`, `organization_project`, `report_schema.report_schema_fields` |
 | `reportSchemas` | `organization`, `report_schema_fields`, `deleted_by_user` |
 | `resourceBundles` | `organization` |

@@ -76,4 +76,15 @@ class ProjectPermissionGuidelineService extends AbstractService
 
         return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/permission-guidelines"), $params, $opts);
     }
+
+    /**
+     * Grant by naming the member in the path, for callers that already hold their id.
+     */
+    public function createForUser(string $projectId, string $organizationUserId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/permission-guidelines/{$organizationUserId}"), $params, $opts);
+    }
 }

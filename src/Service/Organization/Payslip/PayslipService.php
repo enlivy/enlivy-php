@@ -29,7 +29,6 @@ class PayslipService extends AbstractService
     public const array AVAILABLE_INCLUDES = [
         'deleted_by_user',
         'organization',
-        'organization_payslip_schema',
         'organization_employment',
         'lines',
         'receiver_user',
@@ -38,7 +37,6 @@ class PayslipService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'status',
-        'organization_payslip_schema_id',
         'organization_receiver_user_id',
         'organization_sender_user_id',
         'paid_at_from',

@@ -114,6 +114,13 @@ Detailed guides with code examples for every feature:
 | [Blocked Identifiers](docs/organization/blocked-identifiers.md) | Keep an email, domain, or phone number out of your organization |
 | [Projects](docs/organization/projects.md) | Projects, team members, and permissions |
 
+### Support
+
+| Guide | Description |
+|-------|-------------|
+| [Helpdesk](docs/organization/helpdesk.md) | Inboxes, conversations, teammates, inbound mail, and the widget's visitors |
+| [Embedded Support](docs/embedded-support.md) | Put an authenticated support chat on your own application |
+
 ### Payroll
 
 | Guide | Description |

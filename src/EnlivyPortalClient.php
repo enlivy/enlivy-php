@@ -39,6 +39,11 @@ use Enlivy\Service\ClientPortal\PortalServiceFactory;
  * @property Service\ClientPortal\PaymentMethodService $paymentMethods
  * @property Service\ClientPortal\ProjectService $projects
  * @property Service\ClientPortal\ProspectService $prospects
+ * @property Service\ClientPortal\HelpdeskConversationService $helpdeskConversations
+ * @property Service\ClientPortal\HelpdeskAttachmentService $helpdeskAttachments
+ * @property Service\ClientPortal\PipelineService $pipelines
+ * @property Service\ClientPortal\ProspectActivityService $prospectActivities
+ * @property Service\ClientPortal\ProjectMemberService $projectMembers
  * @property Service\ClientPortal\WorkingTimeDayService $workingTimeDays
  * @property Service\ClientPortal\SessionService $session
  */

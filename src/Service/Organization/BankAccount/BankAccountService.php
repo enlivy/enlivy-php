@@ -89,4 +89,16 @@ class BankAccountService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/balance'), $params, $opts);
     }
+
+    /**
+     * Download every statement the organization holds for one month, across all bank accounts.
+     *
+     * Takes `year` and `month`; returns the archive bytes.
+     */
+    public function downloadStatementsForMonth(array $params, ?RequestOptions $opts = null): string
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestRaw('GET', $this->orgPath($orgId, 'bank-accounts/download-statements'), $params, $opts);
+    }
 }

@@ -23,5 +23,7 @@ enum MeteredDomains: string
     case PROSPECT = 'prospect';
     case BANK_CONNECTION = 'bank_connection';
     case WEBHOOK_ENDPOINT = 'webhook_endpoint';
+    case EMPLOYMENT = 'employment';
+    case HELPDESK_SEAT = 'helpdesk_seat';
     case STORAGE_BYTE = 'storage_byte';
 }

@@ -23,7 +23,6 @@ use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
 use Enlivy\Enums\Organization\Environments;
 use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
-use Enlivy\Enums\Payslip\Fields as PayslipFields;
 use Enlivy\Enums\Contract\PartyIdentityRequirements;
 use Enlivy\Enums\Proposal\NotificationLogTypes as ProposalNotificationLogTypes;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
@@ -52,10 +51,6 @@ final class EnumsTest extends TestCase
         $this->assertSame('paid', InvoiceStatuses::PAID->value);
         $this->assertSame(['stripe', 'paypal'], PaymentProvider::values());
         $this->assertSame(['monthly', 'yearly'], BillingCycles::values());
-        $this->assertSame(
-            ['text', 'number', 'number_currency', 'number_percentage'],
-            PayslipFields::values(),
-        );
         $this->assertSame(['bank_transfer', 'card'], PaymentMethodKind::values());
         $this->assertSame(['succeeded', 'failed', 'pending'], RefundStatus::values());
         $this->assertSame(['output', 'input'], TaxEventDirections::values());
@@ -198,6 +193,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(147, $count, 'Expected at least 147 mirrored enums');
+        $this->assertGreaterThanOrEqual(164, $count, 'Expected at least 164 mirrored enums');
     }
 }

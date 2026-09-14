@@ -56,4 +56,15 @@ class SettingService extends AbstractService
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE . '/list-definitions'), $params, $opts);
     }
+
+    /**
+     * One setting as it stands for a particular user in this organization, rather than the
+     * organization-wide value.
+     */
+    public function retrieveForUser(string $userId, string $key, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', "/users/{$userId}/organizations/{$orgId}/settings/{$key}", $params, $opts);
+    }
 }

@@ -29,4 +29,14 @@ class ProfileService extends AbstractPortalService
 
         return $this->request('GET', $this->portalPath($orgId, 'profile/billing-readiness'), $params, $opts);
     }
+
+    /**
+     * What the portal should show this customer: which sections have anything in them.
+     */
+    public function overview(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->portalPath($orgId, 'overview'), $params, $opts);
+    }
 }

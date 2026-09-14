@@ -10,6 +10,8 @@ use Enlivy\ApiResource;
  * @property string $id
  * @property string $object
  * @property string $organization_id
+ * @property string|null $organization_user_id
+ * @property bool $is_default
  * @property string $name
  * @property string|null $service
  * @property bool $has_credentials

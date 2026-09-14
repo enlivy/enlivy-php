@@ -32,6 +32,7 @@ Portal Session
 | `receipts` | View payment receipts |
 | `contracts` | View and download contracts |
 | `reports` | View and submit reports |
+| `payment_methods` | Manage saved payment methods |
 
 ### Portal Base URL
 
@@ -207,9 +208,9 @@ echo "Last used: {$session->last_used_at}\n";
 |-------|------|-------------|
 | `organization_user_id` | string | Customer's organization user ID |
 | `email` | string | Customer's email (alternative to user ID) |
-| `permissions` | array | Access permissions (invoices, receipts, contracts, reports, network_exchanges) |
-| `validity_hours` | integer | Hours until expiration (max 7 days = 168 hours) |
-| `expires_at` | datetime | Specific expiration datetime (max 7 days from now) |
+| `permissions` | array | Access permissions (invoices, receipts, contracts, reports, network_exchanges, payment_methods) |
+| `validity_hours` | integer | Hours until expiration (max 365 days = 8760 hours). Prefer a short window; see [Embedded Support](../embedded-support.md) for the chat-widget recommendation. |
+| `expires_at` | datetime | Specific expiration datetime (max 365 days from now) |
 | `authentication_method` | string | Verification method (email, phone, magic_authentication) |
 
 Note: Either `organization_user_id` or `email` must be provided to identify the customer.

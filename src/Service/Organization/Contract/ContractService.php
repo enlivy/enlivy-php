@@ -6,7 +6,7 @@ namespace Enlivy\Service\Organization\Contract;
 
 use Enlivy\Collection;
 use Enlivy\Organization\Contract;
-use Enlivy\Organization\ContractConnection;
+use Enlivy\Organization\Connection;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasRestore;
@@ -112,25 +112,30 @@ class ContractService extends AbstractService
      * schedules, scheduled payments and amendment contracts running — this is what to review to
      * decide what to close by hand.
      *
+     * Each row carries the referencing entity itself under `item`, rendered by that entity's own
+     * shape, plus its `liveness`. Facet counts per entity live in the response `meta.connections`,
+     * reachable with `getMeta()`; an entity the caller may not view is listed with null counts.
+     *
      * Parameters:
      * - `entity` (array) - Narrow to these kinds: proposal, invoice, receipt, payslip,
      *   billing_schedule, billing_scheduled_payment, contract
+     * - `liveness` (string) - live, historical or trashed
      * - `limit` (int) - Page size
      * - `page` (int) - Page number
      *
-     * @return Collection<ContractConnection>
+     * @return Collection<Connection>
      */
     public function connections(string $id, array $params = [], ?RequestOptions $opts = null): Collection
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Collection<ContractConnection> */
+        /** @var Collection<Connection> */
         return $this->requestCollection(
             'GET',
             $this->orgPath($orgId, self::RESOURCE . "/{$id}/connections"),
             $params,
             $opts,
-            ContractConnection::class,
+            Connection::class,
         );
     }
 

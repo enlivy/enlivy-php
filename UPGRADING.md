@@ -1,3 +1,147 @@
+# Upgrading to 3.2.0
+
+`3.2.0` is a **minor** release that nonetheless removes public classes and
+accessors, because the API removed the endpoints behind them. Nothing here is a
+rename you can defer: the old paths now answer 404.
+
+Everything else is additive — a whole support desk, a bank statement archive,
+tax-class retirement, and a unified connections feed.
+
+## Payslip schemas are gone
+
+The API retired the schema entity. Payslip data moved into typed columns and
+coded lines on the payslip itself, so there is nothing to decode and no
+successor class.
+
+| Removed | Do instead |
+|---------|-----------|
+| `$client->payslipSchemas` | nothing — read `lines` on the payslip |
+| `Enlivy\Organization\PayslipSchema` | — |
+| `Enlivy\Enums\Payslip\Fields` | — |
+| `$payslip->organization_payslip_schema_id` | — |
+| `$payslip->information` | — |
+| include `organization_payslip_schema` | — |
+| filter `organization_payslip_schema_id` | — |
+
+`lines` is now required when creating a payslip. A call that used to pass a
+schema id and no lines will 422.
+
+## Contract connections became one connections shape
+
+`$client->contracts->connections()` keeps its URL and its name, but **the rows
+changed shape**, so code reading them needs editing even though nothing fails
+at load time.
+
+```php
+// Before — a flat summary
+$row->title;     // 'INV-0001'
+$row->total;     // '120.000000'
+$row->currency;  // 'EUR'
+$row->status;    // 'issued'
+
+// After — the entity itself, under item
+$row->entity;    // 'invoice'
+$row->liveness;  // 'live' | 'historical' | 'trashed'
+$row->item;      // the invoice, in its own shape
+```
+
+`Enlivy\Organization\ContractConnection` is replaced by
+`Enlivy\Organization\Connection`. The same feed is now available for tax
+classes and tax rates:
+
+```php
+$client->taxClasses->connections('org_taxcls_xxx', ['liveness' => 'live']);
+$client->taxRates->connections('org_taxrt_xxx');
+```
+
+Facet counts per entity arrive in the response `meta`, which the SDK could not
+previously reach. `Collection::getMeta()` is new for this:
+
+```php
+$connections = $client->taxClasses->connections('org_taxcls_xxx');
+$totals = $connections->getMeta()['connections']['totals'];
+```
+
+An entity the caller may not view is listed as restricted with null counts,
+rather than omitted.
+
+## Project prospect permissions became pipeline permissions
+
+Stage-keyed booleans became pipeline-keyed scopes.
+
+| Before | After |
+|--------|-------|
+| `$client->projectPermissionProspects` | `$client->projectPermissionPipelines` |
+| `organization_prospect_stage_id` | `organization_prospect_pipeline_id` |
+| `can_view_own` / `can_view_others` | `view_scope` |
+| `can_edit_own` / `can_edit_others` | `edit_scope` |
+| — | `can_claim`, `can_reassign` |
+
+Both scopes take `none`, `own`, `own_and_unassigned` or `all`, except
+`view_scope`, which refuses `none` — a grant that sees nothing is not a grant.
+`edit_scope` may not exceed `view_scope`, and `can_claim` needs a view scope
+that includes the unassigned pool. The API enforces all three.
+
+A grant can no longer be repointed to another member or another pipeline;
+delete it and create the one you want. Creating accepts the member either in
+the body or in the path:
+
+```php
+$client->projectPermissionPipelines->create('org_proj_xxx', [
+    'organization_user_id' => 'org_user_xxx',
+    'organization_prospect_pipeline_id' => 'org_prospl_xxx',
+    'view_scope' => 'own_and_unassigned',
+    'edit_scope' => 'own',
+    'can_claim' => true,
+]);
+
+$client->projectPermissionPipelines->createForUser('org_proj_xxx', 'org_user_xxx', [...]);
+```
+
+The old service advertised `organization_project_id`, `organization_prospect_stage_id`
+and `organization_user_id` filters. The new endpoint accepts none of them.
+
+## The portal's project-wide prospect board is gone
+
+Boards belong to pipelines now, because what a member may see is decided per
+pipeline.
+
+```php
+// Before
+$portal->prospects->board('org_proj_xxx');
+
+// After
+$portal->pipelines->board('org_prospl_xxx');
+$portal->pipelines->boardForProject('org_proj_xxx', 'org_prospl_xxx');
+```
+
+The board's `meta.project_id` is now `meta.organization_project_id`.
+
+The portal prospect payload also stopped carrying `organization_id`,
+`linked_organization_user_id`, `source_click_id`,
+`source_referrer_organization_user_id`, `created_by_user_id`, `deleted_at` and
+`deleted_by_user_id`.
+
+## Two things that will 422 without warning
+
+**Accepting a proposal** may now require `payment_method_kind`. When a proposal
+issues fiscal documents, carries at least one payment and offers more than one
+kind, the empty body the SDK used to send is refused.
+
+**Prefix counters** (`invoicePrefixes`, `contractPrefixes`, `receiptPrefixes`)
+take `current_number` as a positive integer only, and refuse a value that would
+reissue a number already in the books.
+
+Products also refuse a retired `organization_tax_class_id`.
+
+## Payroll needs its own pack
+
+Writes on employments, payslips, working-time terms and working-time days now
+require the `payroll` feature pack and answer `402` without it. Reads are
+unaffected. A Pro Lifetime plan does not extend to it.
+
+---
+
 # Upgrading to 3.1.0
 
 `3.1.0` is a **minor** release, but it carries one break you cannot ignore: the

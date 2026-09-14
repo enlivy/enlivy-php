@@ -14,4 +14,5 @@ enum CapacityAddons: string
     case STORAGE = 'storage';
     case TRANSLATIONS = 'translations';
     case BANK_CONNECTIONS = 'bank_connections';
+    case HELPDESK_SEATS = 'helpdesk_seats';
 }

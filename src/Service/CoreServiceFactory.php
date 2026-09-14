@@ -35,7 +35,6 @@ use Enlivy\Service\Organization\MatchService;
 use Enlivy\Service\Organization\MiscService;
 use Enlivy\Service\Organization\NotificationService;
 use Enlivy\Service\Organization\BillingPackage\BillingPackageService;
-use Enlivy\Service\Organization\Payslip\PayslipSchemaService;
 use Enlivy\Service\Organization\Payslip\PayslipService;
 use Enlivy\Service\Organization\PlaybookService;
 use Enlivy\Service\Organization\PreferenceService;
@@ -43,7 +42,19 @@ use Enlivy\Service\Organization\ProductService;
 use Enlivy\Service\Organization\Project\ProjectMemberService;
 use Enlivy\Service\Organization\Project\ProjectPermissionGuidelineService;
 use Enlivy\Service\Organization\Project\ProjectPermissionPlaybookService;
-use Enlivy\Service\Organization\Project\ProjectPermissionProspectService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationMessageService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationAttachmentService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationParticipantService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskInboxService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskTeammateService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskSettingsService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskInboundEmailService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskInboundEmailRuleService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskProactiveMessageService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskVisitorService;
+use Enlivy\Service\Organization\BankAccount\BankAccountStatementService;
+use Enlivy\Service\Organization\Project\ProjectPermissionPipelineService;
 use Enlivy\Service\Organization\Project\ProjectPermissionReportService;
 use Enlivy\Service\Organization\Project\ProjectProspectStageService;
 use Enlivy\Service\Organization\Project\ProjectService;
@@ -127,7 +138,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'prospectPipelines' => ProspectPipelineService::class,
             'projects' => ProjectService::class,
             'projectMembers' => ProjectMemberService::class,
-            'projectPermissionProspects' => ProjectPermissionProspectService::class,
+            'projectPermissionPipelines' => ProjectPermissionPipelineService::class,
             'projectPermissionGuidelines' => ProjectPermissionGuidelineService::class,
             'projectPermissionPlaybooks' => ProjectPermissionPlaybookService::class,
             'projectPermissionReports' => ProjectPermissionReportService::class,
@@ -152,6 +163,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'receiptPrefixes' => ReceiptPrefixService::class,
             'products' => ProductService::class,
             'bankAccounts' => BankAccountService::class,
+            'bankAccountStatements' => BankAccountStatementService::class,
             'bankTransactions' => BankTransactionService::class,
             'bankTransactionCostTypes' => BankTransactionCostTypeService::class,
             'blockedIdentifiers' => BlockedIdentifierService::class,
@@ -165,6 +177,19 @@ class CoreServiceFactory extends AbstractServiceFactory
             'contractSignatures' => ContractSignatureService::class,
             'contractSignatureNotificationLogs' => ContractSignatureNotificationLogService::class,
 
+            // Org-scoped: Helpdesk
+            'helpdeskConversations' => HelpdeskConversationService::class,
+            'helpdeskConversationMessages' => HelpdeskConversationMessageService::class,
+            'helpdeskConversationAttachments' => HelpdeskConversationAttachmentService::class,
+            'helpdeskConversationParticipants' => HelpdeskConversationParticipantService::class,
+            'helpdeskInboxes' => HelpdeskInboxService::class,
+            'helpdeskTeammates' => HelpdeskTeammateService::class,
+            'helpdeskSettings' => HelpdeskSettingsService::class,
+            'helpdeskInboundEmails' => HelpdeskInboundEmailService::class,
+            'helpdeskInboundEmailRules' => HelpdeskInboundEmailRuleService::class,
+            'helpdeskProactiveMessages' => HelpdeskProactiveMessageService::class,
+            'helpdeskVisitors' => HelpdeskVisitorService::class,
+
             // Org-scoped: Tax
             'taxClasses' => TaxClassService::class,
             'taxRates' => TaxRateService::class,
@@ -176,7 +201,6 @@ class CoreServiceFactory extends AbstractServiceFactory
             'taxFilingPeriodPayments' => TaxFilingPeriodPaymentService::class,
 
             // Org-scoped: Payroll
-            'payslipSchemas' => PayslipSchemaService::class,
             'payslips' => PayslipService::class,
             'employments' => EmploymentService::class,
             'workingTimeTerms' => WorkingTimeTermService::class,

@@ -147,6 +147,16 @@ class Collection extends EnlivyObject implements \Countable, \IteratorAggregate
         return $this->values['data'] ?? [];
     }
 
+    /**
+     * The response `meta` block. Endpoints put facet counts and navigation summaries here,
+     * beside the pagination this class already reads.
+     */
+    public function getMeta(): ?EnlivyObject
+    {
+        /** @var EnlivyObject|null */
+        return $this->values['meta'] ?? null;
+    }
+
     public function getPagination(): ?EnlivyObject
     {
         /** @var EnlivyObject|null $meta */

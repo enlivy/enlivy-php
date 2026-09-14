@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Enlivy\Service\Organization\Project;
 
+use Enlivy\EnlivyObject;
 use Enlivy\Collection;
 use Enlivy\Organization\ProjectMember;
 use Enlivy\Service\AbstractService;
@@ -75,5 +76,16 @@ class ProjectMemberService extends AbstractService
 
         /** @var ProjectMember */
         return $this->request('DELETE', $this->orgPath($orgId, "projects/{$projectId}/members/{$memberId}"), $params, $opts);
+    }
+
+    /**
+     * Grant by naming the member in the path, for callers that already hold their id.
+     */
+    public function createForUser(string $projectId, string $organizationUserId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, "projects/{$projectId}/members/{$organizationUserId}"), $params, $opts);
     }
 }
