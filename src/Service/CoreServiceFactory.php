@@ -87,8 +87,9 @@ use Enlivy\Service\Organization\SettingService;
 use Enlivy\Service\Organization\StripeWebhookCallbackService;
 use Enlivy\Service\Organization\TagService;
 use Enlivy\Service\Organization\TrashedItemsService;
+use Enlivy\Service\Organization\Task\TaskCommentService;
 use Enlivy\Service\Organization\Task\TaskService;
-use Enlivy\Service\Organization\Task\TaskStatusService;
+use Enlivy\Service\Organization\Task\TaskStageService;
 use Enlivy\Service\Organization\TenantBilling\TenantBillingInvoiceService;
 use Enlivy\Service\Organization\TenantBilling\TenantBillingPaymentMethodService;
 use Enlivy\Service\Organization\TenantBilling\TenantBillingService;
@@ -220,7 +221,8 @@ class CoreServiceFactory extends AbstractServiceFactory
 
             // Org-scoped: Tasks
             'tasks' => TaskService::class,
-            'taskStatuses' => TaskStatusService::class,
+            'taskStages' => TaskStageService::class,
+            'taskComments' => TaskCommentService::class,
 
             // Org-scoped: Settings & Tags
             'tags' => TagService::class,

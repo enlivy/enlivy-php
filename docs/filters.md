@@ -45,6 +45,16 @@ These filters are available on **every** list endpoint:
 
 Global filters are **not** listed in each service's `AVAILABLE_FILTERS` constant — they are always accepted automatically.
 
+`include_meta` is passed through on every list too. It is not a filter: it asks for count blocks in
+the response `meta`, read with `getMeta()`. Most lists answer `navigation`; some add their own —
+`navigation_by_state` and `navigation_by_assignment` on `helpdeskConversations`,
+`navigation_by_category` on `helpdeskInboundEmails`.
+
+```php
+$queue = $client->helpdeskConversations->list(['include_meta' => 'navigation_by_state']);
+$counts = $queue->getMeta()['navigation_by_state'];
+```
+
 ```php
 // Search and pagination
 $results = $client->invoices->list([
@@ -377,6 +387,24 @@ $invoices = $client->invoices->list([
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
+**`tasks`** (`tasks->board()` takes `q` and all of these except `title`, `content`, `organization_task_stage_id`, `parent_organization_task_id`, `is_subtask` and `unplaced`)
+
+| Filter | Type |
+|--------|------|
+| `title`, `content` | string |
+| `status` | array of `Enums\Task\TaskStatuses` |
+| `organization_task_stage_id` | string |
+| `parent_organization_task_id` | string |
+| `is_subtask` | boolean |
+| `unplaced` | boolean — open top-level tasks with no stage |
+| `organization_project_id` | string |
+| `without_project` | boolean |
+| `assignee_organization_user_id`, `participant_organization_user_id`, `created_by_organization_user_id` | string |
+| `organization_invoice_id`, `organization_prospect_id`, `related_organization_task_id` | string |
+| `due_at_from`, `due_at_to`, `completed_at_from` | datetime |
+
+`order_by=board` sorts a list the way the board does, for paging one column.
+
 **`projectMembers`**
 
 | Filter | Type |
@@ -504,14 +532,14 @@ depends on what the resource calls its label:
 | Service | Filters |
 |---------|---------|
 | `prospectStages` | `title`, `description`, `organization_prospect_pipeline_id` |
-| `prospectPipelines`, `contractStatuses`, `taskStatuses`, `reportSchemas`, `resourceBundles` | `title`, `description` |
+| `prospectPipelines`, `contractStatuses`, `taskStages`, `reportSchemas`, `resourceBundles` | `title`, `description` |
 | `taxClasses` | `name`, `description`, `retired` |
 | `bankTransactionCostTypes` | `title` |
-| `helpdeskConversations` | `state`, `organization_helpdesk_inbox_id`, `assigned_organization_helpdesk_teammate_id`, `priority`, `source`, `contact_email`, `contact_organization_user_id`, `contact_organization_prospect_id`, `organization_project_id` |
+| `helpdeskConversations` | `state`, `organization_helpdesk_inbox_id`, `assigned_organization_helpdesk_teammate_id`, `assignment` (`mine`, `unassigned`, `all`), `has_unread`, `priority`, `source`, `contact_email`, `contact_organization_user_id`, `contact_organization_prospect_id`, `organization_project_id` |
 | `helpdeskConversationMessages` | `type` |
 | `helpdeskInboxes`, `helpdeskInboundEmailRules`, `helpdeskProactiveMessages` | `is_active`, `organization_helpdesk_inbox_id` |
 | `helpdeskTeammates` | `is_available` |
-| `helpdeskInboundEmails` | `interpretation`, `organization_helpdesk_inbox_id`, `organization_helpdesk_conversation_id`, `processed` |
+| `helpdeskInboundEmails` | `interpretation`, `category`, `organization_helpdesk_inbox_id`, `organization_helpdesk_conversation_id`, `processed` |
 | `helpdeskVisitors` | `identified`, `blocked` |
 
 ### Services with Global Filters Only

@@ -92,5 +92,15 @@ enum TriggerEvent: string
     case CONTRACT_ALL_PARTIES_SIGNED = 'contract.all_parties_signed';
     case HELPDESK_CONVERSATION_CREATED = 'helpdesk_conversation.created';
     case HELPDESK_CONVERSATION_ASSIGNED = 'helpdesk_conversation.assigned';
+    case HELPDESK_CONVERSATION_RESOLVED = 'helpdesk_conversation.resolved';
+    case HELPDESK_CONVERSATION_CLOSED = 'helpdesk_conversation.closed';
+    case HELPDESK_CONVERSATION_REOPENED = 'helpdesk_conversation.reopened';
+    case HELPDESK_CONVERSATION_RATED = 'helpdesk_conversation.rated';
+    case HELPDESK_CONVERSATION_DELETED = 'helpdesk_conversation.deleted';
+    case HELPDESK_CONVERSATION_RESTORED = 'helpdesk_conversation.restored';
+    case HELPDESK_CONVERSATION_SNOOZED = 'helpdesk_conversation.snoozed';
+    case HELPDESK_CONVERSATION_UNSNOOZED = 'helpdesk_conversation.unsnoozed';
+    case HELPDESK_CONVERSATION_UNANSWERED = 'helpdesk_conversation.unanswered';
     case HELPDESK_CONVERSATION_MESSAGE_CREATED = 'helpdesk_conversation_message.created';
+    case HELPDESK_CONVERSATION_MESSAGE_UPDATED = 'helpdesk_conversation_message.updated';
 }

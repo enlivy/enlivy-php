@@ -19,9 +19,9 @@ enum FeaturePacks: string
     case PLAYBOOKS = 'playbooks';
     case REPORTS = 'reports';
     case CUSTOM_DOMAIN = 'custom_domain';
-    case TASKS = 'tasks';
     case PAYROLL = 'payroll';
     case HELPDESK = 'helpdesk';
+    case TASKS = 'tasks';
     case REPORTS_STANDARD = 'reports_standard';
     case REPORTS_UNLIMITED = 'reports_unlimited';
 }

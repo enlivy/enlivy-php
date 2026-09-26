@@ -33,7 +33,7 @@ enum EntityManifest: string
     case PAYSLIP = 'payslip';
     case PROJECT = 'project';
     case TASK = 'task';
-    case TASK_STATUS = 'task_status';
+    case TASK_STAGE = 'task_stage';
     case PROSPECT = 'prospect';
     case PROSPECT_STAGE = 'prospect_stage';
     case PROSPECT_PIPELINE = 'prospect_pipeline';

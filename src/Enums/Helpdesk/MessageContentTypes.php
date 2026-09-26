@@ -16,6 +16,7 @@ enum MessageContentTypes: string
     case ASSIGNED = 'assigned';
     case UNASSIGNED = 'unassigned';
     case SNOOZED = 'snoozed';
+    case UNSNOOZED = 'unsnoozed';
     case REOPENED = 'reopened';
     case RESOLVED = 'resolved';
     case CLOSED = 'closed';
@@ -29,6 +30,7 @@ enum MessageContentTypes: string
     case INACTIVITY_REMINDER = 'inactivity_reminder';
     case AUTO_RESOLVED = 'auto_resolved';
     case AUTO_RESPONSE = 'auto_response';
+    case TRANSCRIPT = 'transcript';
     case MARKED_SPAM = 'marked_spam';
     case MARKED_NOT_SPAM = 'marked_not_spam';
 }

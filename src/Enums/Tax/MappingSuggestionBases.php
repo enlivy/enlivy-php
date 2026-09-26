@@ -15,4 +15,5 @@ enum MappingSuggestionBases: string
     case CATEGORY_MATCH = 'category_match';
     case RATE_MATCH = 'rate_match';
     case FORWARD_RESOLUTION = 'forward_resolution';
+    case FOREIGN_JURISDICTION = 'foreign_jurisdiction';
 }

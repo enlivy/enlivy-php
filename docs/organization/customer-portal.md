@@ -33,6 +33,7 @@ Portal Session
 | `contracts` | View and download contracts |
 | `reports` | View and submit reports |
 | `payment_methods` | Manage saved payment methods |
+| `helpdesk` | Reach the support desk — the one to grant a session minted only for chat |
 
 ### Portal Base URL
 
@@ -208,7 +209,7 @@ echo "Last used: {$session->last_used_at}\n";
 |-------|------|-------------|
 | `organization_user_id` | string | Customer's organization user ID |
 | `email` | string | Customer's email (alternative to user ID) |
-| `permissions` | array | Access permissions (invoices, receipts, contracts, reports, network_exchanges, payment_methods) |
+| `permissions` | array | Access permissions (invoices, receipts, contracts, reports, network_exchanges, payment_methods, helpdesk) |
 | `validity_hours` | integer | Hours until expiration (max 365 days = 8760 hours). Prefer a short window; see [Embedded Support](../embedded-support.md) for the chat-widget recommendation. |
 | `expires_at` | datetime | Specific expiration datetime (max 365 days from now) |
 | `authentication_method` | string | Verification method (email, phone, magic_authentication) |

@@ -89,7 +89,7 @@ final class HasFiltersTest extends TestCase
         $this->assertSame('Standard', $this->httpClient->getLastRequest()['params']['name']);
 
         $this->httpClient->addResponse(200, ['data' => []]);
-        $this->client->taskStatuses->list(['title' => 'In Progress']);
+        $this->client->taskStages->list(['title' => 'In Progress']);
         $this->assertSame('In Progress', $this->httpClient->getLastRequest()['params']['title']);
 
         $this->httpClient->addResponse(200, ['data' => []]);
@@ -147,6 +147,24 @@ final class HasFiltersTest extends TestCase
 
         $request = $this->httpClient->getLastRequest();
         $this->assertSame('outbound', $request['params']['direction']);
+    }
+
+    /**
+     * `include_meta` asks for counts in `meta`; it is not a filter, so validation must let it
+     * through on every list.
+     */
+    public function testIncludeMetaBypassesFilterValidation(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => [], 'meta' => ['navigation_by_state' => ['open' => 3]]]);
+
+        $conversations = $this->client->helpdeskConversations->list([
+            'include_meta' => 'navigation_by_state,navigation_by_assignment',
+            'assignment' => 'mine',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('navigation_by_state,navigation_by_assignment', $request['params']['include_meta']);
+        $this->assertSame(3, $conversations->getMeta()['navigation_by_state']['open']);
     }
 
     public function testOrganizationIdBypassesFilterValidation(): void

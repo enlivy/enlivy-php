@@ -25,6 +25,7 @@ use Enlivy\ApiResource;
  * @property int|null $visitor_retention_days
  * @property array|null $inactivity_reminder_message_lang_map
  * @property array|null $auto_resolved_message_lang_map
+ * @property array|null $inbox_defaults
  * @property string $created_at
  * @property string $updated_at
  */

@@ -21,6 +21,8 @@ class NotificationService extends AbstractService
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'sent_to_organization_user',
+        'sent_by_user',
+        'subjects',
     ];
 
     public const array AVAILABLE_FILTERS = [];

@@ -214,12 +214,31 @@ history, an identifier match, the organization owner, and so on).
 
 $mapping = $client->invoiceNetworkExchanges->taxMapping('org_inv_peppol_xxx');
 
-echo $mapping->outcome;   // Tax\MappingSuggestionOutcomes: candidates | no_tax | unmatched
+foreach ($mapping->treatments ?? [] as $treatment) {
+    // Tax\MappingSuggestionOutcomes: candidates | no_tax | unmatched
+    echo "{$treatment->category} at {$treatment->rate}%: {$treatment->suggestion}\n";
+
+    $best = $treatment->candidates[0] ?? null;
+
+    if ($treatment->vouched && $best !== null) {
+        echo "  record with {$best->organization_tax_rate_id} ({$best->confidence}/100)\n";
+    }
+}
 ```
 
-`candidates` means one or more of your tax rates matched, each scored by a
-`Tax\MappingSuggestionBases` reason; `no_tax` means the document itself carries none; `unmatched`
-means the document declares tax that nothing in your catalog explains — that one needs a human.
+The mapping answers one entry per tax treatment the document states, and no `treatments` at all for
+an exchange that cannot be read as a bill. `suggestion` is `candidates` when one or more of your
+tax rates matched, `no_tax` when the treatment is a zero rate the document marks exempt,
+zero-rated or outside scope, and `unmatched` when it declares tax that nothing in your catalog
+explains — that one needs a human.
+
+Each candidate carries its `bases` (`Tax\MappingSuggestionBases`), the `evidence` behind them and a
+`confidence` from 0 to 100. `vouched` is true only when the first candidate rests on your own
+recording history — this supplier's past bills, or the organization's — so it is safe to apply
+without asking. A match by category or rate alone, or a retired rate, is offered but never vouched,
+and a rate charged by a supplier in another country carries the `foreign_jurisdiction` basis and
+stays below the bar.
+`derived_from` records what the reading started from, such as the counterparty country.
 
 These are suggestions, not decisions: nothing is recorded until you create the invoice yourself.
 

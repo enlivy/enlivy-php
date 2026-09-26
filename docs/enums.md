@@ -66,6 +66,12 @@ set. A selection relevant to recently added features:
 | `Prospect\DuplicateConfidence` | `high`, `medium`, `low` |
 | `Prospect\DuplicateSignals` | `linked_organization_user`, `email`, `phone_number`, `name` |
 | `Prospect\MergeBlockers` | `conflicting_linked_user`, `different_project`, `conflicting_outcome` |
+| `Task\TaskStatuses` | `not_started`, `in_progress`, `waiting`, `completed`, `cancelled` |
+| `Task\TaskCancelReasons` | `no_longer_needed`, `duplicate`, `parent_cancelled` |
+| `Task\TaskOrigins` | `manual`, `automation`, `import`, `request` |
+| `Task\TaskParticipantRoles` | `assignee`, `follower` |
+| `Task\TaskParticipantSources` | `creator`, `assigner`, `assigned`, `mentioned`, `commented`, `manual` |
+| `WebLinkKinds` | `website`, `directory`, and named networks (`linkedin`, `github`, `trustpilot`, …) |
 | `NetworkExchange\RecordingSuggestionBases` | why an inbound bill's recording was suggested (`payment_history`, `identifier_match`, …) |
 | `TenantBilling\TrialChangeSetTypes` | `add`, `drop` |
 | `Helpdesk\ConversationStates` | `open`, `pending`, `snoozed`, `resolved`, `closed`, `spam` |
@@ -78,8 +84,9 @@ set. A selection relevant to recently added features:
 | `Helpdesk\EmailCollectModes` | `never`, `outside_hours`, `always` |
 | `Helpdesk\EmailStyles` | `branded`, `plain` |
 | `Helpdesk\ExpectedReplyTimes` | `minutes`, `hours`, `day` |
-| `Helpdesk\InboundEmailInterpretations` | what the desk decided a message was (`matched`, `new_conversation`, `bounce`, `spam`, …) |
-| `Helpdesk\InboundEmailRuleActions` | `route`, `discard` |
+| `Helpdesk\InboundEmailInterpretations` | what the desk decided a message was (`matched`, `new_conversation`, `quarantined`, `bulk`, `spam`, …) |
+| `Helpdesk\InboundEmailCategories` | `unclassified`, `held`, `tickets`, `marketing`, `automated`, `spam`, `failed` |
+| `Helpdesk\InboundEmailRuleActions` | `route`, `discard`, `trust` |
 | `Helpdesk\ProactiveMessageConditionTypes` | `page_visited`, `time_on_page`, `pages_visited_all`, `pages_visited_any`, `total_page_views` |
 | `Helpdesk\ProactiveMessageMatchModes` | `exact`, `contains`, `starts_with`, `regex` |
 | `Helpdesk\VisitorEventTypes` | `arrival` and the proactive-message outcomes |
@@ -118,6 +125,22 @@ set. A selection relevant to recently added features:
 | `Proposal\StageActors` | `organization`, `customer`, `third_party`, `several` |
 | `Proposal\NotificationLogTypes` | `email`, `email_seller_viewed`, `email_seller_accepted`, `email_seller_rejected`, `email_seller_expired`, `email_seller_contract_generated` |
 
+> `Task\TaskStatuses` is both a task's `status` and a task stage's `stage_type`: a
+> task takes the type of the stage it sits on. The first three are open. Only
+> `no_longer_needed` and `duplicate` may be sent to `tasks->cancel()`;
+> `parent_cancelled` is written when a parent's cancellation carries a subtask with
+> it. `Organization\EntityManifest` renamed `task_status` to `task_stage` in 3.3.0.
+
+> `Helpdesk\InboundEmailCategories` groups the interpretations into what a person
+> needs to know — whether mail was held, became a ticket, or why it is not work.
+> A category is read off the interpretation, so the two never disagree: filter on
+> `category` for the coarse view or `interpretation` for a single verdict
+> (`unclassified` is mail with no interpretation).
+
+> `TenantBilling\FeaturePacks::TASKS` is retired as of 3.3.0: tasks are free, and
+> the pack can no longer be purchased or cancelled. The case stays, like the two
+> retired report packs, so older rows still read.
+
 > `BlockedIdentifier\Sources::ALL` is a filter directive on the list endpoint,
 > not a value a stored row carries — a row is always `organization` or `platform`.
 
@@ -135,7 +158,7 @@ set. A selection relevant to recently added features:
 > `subscription_required` stamped the organization's entitlement onto its schedule
 > rows and has no replacement — the payments cron reads that entitlement directly.
 > `payment_failed` is new: a schedule whose card keeps refusing stops minting
-> cycles. See [UPGRADING](../UPGRADING.md).
+> cycles. See the [2.7.0 upgrade notes](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md#upgrading-to-270).
 
 > `Proposal\Stages` is where a proposal sits across itself, its contracts and
 > their parties — `status` only records what the row was last set to, so two
@@ -150,7 +173,7 @@ set. A selection relevant to recently added features:
 > `connected_partially` and `danger` reported how far along that reconciliation
 > was, which is a property of the connections and not of the transaction. Filter
 > on `state`, or read `is_connected`, rather than pinning the intermediate steps.
-> See [UPGRADING](../UPGRADING.md).
+> See the [3.0.0 upgrade notes](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md#upgrading-to-300).
 
 > `BillingPackage\ExchangeRateGuarantees` picks when the rate for a proposal
 > billed in a second currency is fixed: `invoice` re-quotes at issue time,
@@ -196,7 +219,7 @@ The tax-compliance subsystem ships a family of enums under `Enlivy\Enums\Tax\`:
 | `Tax\TaxEventRegimes` | `accrual`, `cash` |
 | `Tax\TaxEventSupplyTypes` | `goods`, `services`, `triangular` |
 | `Tax\MappingSuggestionOutcomes` | `candidates`, `no_tax`, `unmatched` |
-| `Tax\MappingSuggestionBases` | `supplier_history`, `organization_frequency`, `category_match`, `rate_match`, `forward_resolution` |
+| `Tax\MappingSuggestionBases` | `supplier_history`, `organization_frequency`, `category_match`, `rate_match`, `forward_resolution`, `foreign_jurisdiction` |
 
 ## Employment & working time
 

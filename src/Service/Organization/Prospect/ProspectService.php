@@ -42,6 +42,7 @@ class ProspectService extends AbstractService
         'created_by_user',
         'deleted_by_user',
         'proposals',
+        'organization_tasks',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -172,6 +173,18 @@ class ProspectService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var Prospect */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/advance"), $params, $opts);
+    }
+
+    /**
+     * Reorders within the prospect's own column; changing column is `advance()` or a stage update.
+     * Name the neighbours it lands between, or `place` it at the `top` or `bottom`.
+     */
+    public function moveOnBoard(string $id, array $params, ?RequestOptions $opts = null): Prospect
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+        /** @var Prospect */
+        return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}/board-position"), $params, $opts);
     }
 
     /**

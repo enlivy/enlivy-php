@@ -5,7 +5,7 @@ is somewhere events are delivered to — either an HTTPS **webhook** endpoint or
 **Slack** channel. Each destination has one or more **subscriptions** (the events
 it cares about), and every delivery attempt is recorded so you can inspect it.
 
-> Migrating from the `0.x` `webhooks` API? See [UPGRADING.md](../../UPGRADING.md).
+> Migrating from the `0.x` `webhooks` API? See the [1.0.0 upgrade notes](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md#upgrading-to-100).
 
 ## Key concepts
 
@@ -113,6 +113,11 @@ enum (`TriggerEvent::values()` returns the full list). Common ones:
 | `bank_account.created` / `bank_transaction.created` | Banking changes |
 | `network_exchange.created` / `network_exchange.updated` | PEPPOL network exchange |
 | `user.created` / `user.updated` | Organization user changes |
+| `helpdesk_conversation.created` / `.assigned` / `.resolved` / `.closed` / `.reopened` | Helpdesk conversation lifecycle |
+| `helpdesk_conversation.snoozed` / `.unsnoozed` | A snooze set, and a snooze running out |
+| `helpdesk_conversation.rated` / `.unanswered` | A customer rating, and a reply promise the desk missed |
+| `helpdesk_conversation.deleted` / `.restored` | Conversation trashed or restored |
+| `helpdesk_conversation_message.created` / `.updated` | Messages on a conversation; the payload names its inbox |
 
 ## Listing destinations
 

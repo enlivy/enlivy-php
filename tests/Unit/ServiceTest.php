@@ -955,6 +955,28 @@ final class ServiceTest extends TestCase
         $this->assertInstanceOf(Prospect::class, $merged);
     }
 
+    public function testProspectLinksAreSentAsGivenAndReadAsRows(): void
+    {
+        $links = [
+            ['kind' => 'website', 'url' => 'https://bigcorp.example'],
+            ['kind' => 'linkedin', 'url' => 'https://linkedin.com/in/sarah', 'label' => 'Sarah'],
+        ];
+        $this->httpClient->addResponse(201, ['data' => [
+            'id' => 'org_pros_1',
+            'links' => [
+                ['kind' => 'website', 'url' => 'https://bigcorp.example', 'label' => null],
+                ['kind' => 'linkedin', 'url' => 'https://linkedin.com/in/sarah', 'label' => 'Sarah'],
+            ],
+        ]]);
+
+        $prospect = $this->client->prospects->create(['first_name' => 'Sarah', 'links' => $links]);
+
+        $this->assertSame($links, $this->httpClient->getLastRequest()['params']['links']);
+        $this->assertSame(['website', 'linkedin'], array_map(static fn ($link) => $link['kind'], $prospect->links));
+        $this->assertNull($prospect->links[0]['label']);
+        $this->assertSame('Sarah', $prospect->links[1]->label);
+    }
+
     public function testEmploymentAndWorkingTimeTermResolveTypedUnderTheirPaths(): void
     {
         $this->httpClient->addResponse(200, [

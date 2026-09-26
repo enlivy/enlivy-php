@@ -24,6 +24,7 @@ class HelpdeskSettingsService extends AbstractService
         'organization',
         'branding_logo_file',
         'branding_icon_file',
+        'inbox_defaults',
     ];
 
     public function retrieve(array $params = [], ?RequestOptions $opts = null): HelpdeskSettings

@@ -61,6 +61,7 @@ $session = $client->userClientPortalSessions->create([
 
     'authentication_method' => 'magic_authentication',
     'validity_hours' => 72,
+    'permissions' => ['helpdesk'],
 ]);
 
 // Hand $session->token to the page. Never the API key.
@@ -130,11 +131,16 @@ Two different states, and the desk distinguishes them:
 
 Both show a name to the agent. Only the second is evidence.
 
+Verification also decides what the widget shows. A verified visitor sees every thread in that inbox
+whose contact is them, whichever browser or channel it began in; an identified one sees only the
+threads this browser started, because anyone could have typed the address. An identify that points a browser at a different
+person without a session drops the verification with it.
+
 ## Keeping it safe
 
 1. **The API key stays on your server.** Nothing in this flow needs it in the browser.
 2. **One session per customer.** Never reuse a token between people; it carries their identity.
-3. **Grant only what they need.** `permissions` scopes what the session reaches in the portal — an empty or narrow list is fine for chat.
+3. **Grant only what they need.** A session minted only for the chat can say so with `'permissions' => ['helpdesk']`.
 4. **Re-mint rather than extend.** Issue a fresh token when the old one nears expiry.
 5. **Treat the token like a password in transit.** Render it over HTTPS, and do not log it or put it in a URL.
 

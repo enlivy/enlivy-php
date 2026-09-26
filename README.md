@@ -113,6 +113,7 @@ Detailed guides with code examples for every feature:
 | [Organization Users](docs/organization/users.md) | Customers, employees, and roles |
 | [Blocked Identifiers](docs/organization/blocked-identifiers.md) | Keep an email, domain, or phone number out of your organization |
 | [Projects](docs/organization/projects.md) | Projects, team members, and permissions |
+| [Tasks](docs/organization/tasks.md) | Tasks on a board of typed stages, with assignees, links, comments, and a feed |
 
 ### Support
 
@@ -153,7 +154,7 @@ Detailed guides with code examples for every feature:
 | Guide | Description |
 |-------|-------------|
 | [Event Destinations](docs/organization/event-destinations.md) | Real-time event delivery (webhooks, Slack) and signature verification |
-| [Event Trails](docs/organization/event-trails.md) | Read-only audit history for invoices, receipts, and billing schedules |
+| [Event Trails](docs/organization/event-trails.md) | Read-only audit history for invoices, receipts, billing schedules, users, and tasks |
 | [Customer Portal](docs/organization/customer-portal.md) | Client-facing portal for invoices, contracts, and proposals |
 | [Integrations](docs/integrations.md) | Stripe, ANAF, and other third-party services |
 | [AI Agents](docs/ai-agents.md) | AI-powered automation |

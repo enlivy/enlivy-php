@@ -6,7 +6,8 @@ namespace Enlivy\Tests\Integration\View;
 
 use Enlivy\Collection;
 use Enlivy\Organization\Task;
-use Enlivy\Organization\TaskStatus;
+use Enlivy\Organization\TaskBoardColumn;
+use Enlivy\Organization\TaskStage;
 use Enlivy\Tests\Integration\IntegrationTestCase;
 
 class TaskTest extends IntegrationTestCase
@@ -51,34 +52,47 @@ class TaskTest extends IntegrationTestCase
         $this->assertEquals($taskId, $task->id);
     }
 
-    // Task Statuses
-
-    public function testListTaskStatuses(): void
+    public function testTaskBoard(): void
     {
-        $statuses = $this->getClient()->taskStatuses->list();
+        $board = $this->getClient()->tasks->board();
 
-        $this->assertInstanceOf(Collection::class, $statuses);
-        $this->assertIsArray($statuses->data);
+        $this->assertInstanceOf(Collection::class, $board);
 
-        if (count($statuses->data) > 0) {
-            $status = $statuses->data[0];
-            $this->assertInstanceOf(TaskStatus::class, $status);
-            $this->assertNotNull($status->id);
+        foreach ($board->data as $column) {
+            $this->assertInstanceOf(TaskBoardColumn::class, $column);
+            $this->assertIsInt($column->total_count);
         }
     }
 
-    public function testRetrieveTaskStatus(): void
-    {
-        $statuses = $this->getClient()->taskStatuses->list(['per_page' => 1]);
+    // Task Stages
 
-        if (count($statuses->data) === 0) {
-            $this->markTestSkipped('No task statuses available for testing');
+    public function testListTaskStages(): void
+    {
+        $stages = $this->getClient()->taskStages->list();
+
+        $this->assertInstanceOf(Collection::class, $stages);
+        $this->assertIsArray($stages->data);
+
+        if (count($stages->data) > 0) {
+            $stage = $stages->data[0];
+            $this->assertInstanceOf(TaskStage::class, $stage);
+            $this->assertNotNull($stage->id);
+            $this->assertNotNull($stage->stage_type);
+        }
+    }
+
+    public function testRetrieveTaskStage(): void
+    {
+        $stages = $this->getClient()->taskStages->list(['per_page' => 1]);
+
+        if (count($stages->data) === 0) {
+            $this->markTestSkipped('No task stages available for testing');
         }
 
-        $statusId = $statuses->data[0]->id;
-        $status = $this->getClient()->taskStatuses->retrieve($statusId);
+        $stageId = $stages->data[0]->id;
+        $stage = $this->getClient()->taskStages->retrieve($stageId);
 
-        $this->assertInstanceOf(TaskStatus::class, $status);
-        $this->assertEquals($statusId, $status->id);
+        $this->assertInstanceOf(TaskStage::class, $stage);
+        $this->assertEquals($stageId, $stage->id);
     }
 }

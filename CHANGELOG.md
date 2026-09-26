@@ -3,6 +3,54 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.3.0] - 2026-09-27
+
+Tasks are rebuilt on typed board stages, with assignees and followers, links, comments, a feed
+and email reminders. The helpdesk learns to hold mail from strangers and to file what it did not
+open; prospects carry their links and a place on the board.
+
+Scoped as a minor despite the removals below, matching the 3.1.0 and 3.2.0 precedent.
+New docs: [Tasks](docs/organization/tasks.md). See [UPGRADING](UPGRADING.md).
+
+### Removed
+
+- `$client->taskStatuses`, `Organization\TaskStatus` and `TaskStatusService` — replaced by task stages.
+- `tasks->reorder()` — tasks are placed on the board with `moveOnBoard()`.
+- `Task` fields `assigned_by_organization_user_id`, `assigned_to_organization_user_id`, `organization_task_status_id`, `organization_report_schema_id`, `organization_report_id`, `title_lang_map`, `content_lang_map` and `order`, with their includes and the `assigned_*` and `has_lang_map` filters.
+- `Prospect::$social_profiles` — replaced by `links`.
+- `Organization\EntityManifest::TASK_STATUS` — now `TASK_STAGE`.
+
+### Added
+
+- `taskStages` (list/retrieve/create/update/delete/restore/reorder) and `taskComments` (create/update/delete).
+- `tasks`: `board()`, `complete()`, `cancel()`, `reopen()`, `moveOnBoard()`, `follow()`, `unfollow()`, `feed()`, `notifications()`, `eventTrails()`, `retrieveEventTrail()`.
+- `Task` fields `title`, `content`, `status`, `status_changed_at`, `board_rank`, `origin`, `organization_task_stage_id`, `created_by_organization_user_id`, `cancelled_at`, `cancelled_by_organization_user_id`, `cancel_reason` and the subtask and comment counts; seven new includes and fourteen filters.
+- Resources `TaskStage`, `TaskParticipant`, `TaskBoardColumn`, `TaskFeedEntry`, `Comment`, `NotificationSubject`.
+- `organization_tasks` include on invoices and prospects.
+- `prospects->moveOnBoard()`, `Prospect::$board_rank` and `Prospect::$links`.
+- Helpdesk conversations: `markUnread()`, `blockSender()`, filters `assignment` and `has_unread`, include `lifecycle`, fields `last_message_type` and `last_message_preview`.
+- Helpdesk inbound email: `promote()`, `classify()`, `blockSender()`, `fetchOriginal()`, filter `category`, includes `headers`, `trust_assessment` and `blocked_identifier`, fields `category`, `trust_score`, `trust_symbols`, `content_type` and `organization_blocked_identifier_id`.
+- Helpdesk inboxes: `is_widget_enabled`, `is_widget_origin_restricted`, `is_quarantine_enabled`, `quarantine_score_threshold`, `auto_response_chat_delay_seconds` and the open and pending counts; settings include `inbox_defaults`.
+- `ApiCredential` fields `is_active_sender`, `receives`, `synced_since_at`, `last_synced_at`; `Notification::$sent_by_user_id` with the `sent_by_user` and `subjects` includes.
+- Enums `Task\TaskStatuses`, `Task\TaskCancelReasons`, `Task\TaskOrigins`, `Task\TaskParticipantRoles`, `Task\TaskParticipantSources`, `Helpdesk\InboundEmailCategories`, `WebLinkKinds`.
+- Enum cases: `EventDelivery\TriggerEvent` (10 helpdesk events), `Helpdesk\InboundEmailInterpretations` (`bulk`, `quarantined`, `own_address`), `Helpdesk\InboundEmailRuleActions` (`trust`), `Helpdesk\MessageContentTypes` (`unsnoozed`, `transcript`), `Tax\MappingSuggestionBases` (`foreign_jurisdiction`), `UserClientPortal\SessionPermissions` (`helpdesk`).
+
+### Changed
+
+- `tasks->delete()` returns the status envelope as an `EnlivyObject` rather than a `Task`.
+- Widget embedding is governed by `is_widget_enabled` and `is_widget_origin_restricted`; `widget_origins` applies only while restricted.
+- Inboxes created through the API hold mail from unknown senders unless `is_quarantine_enabled` is sent false.
+- Credential writes merge: keys sent are set, keys sent empty are removed, keys left out are kept.
+- `misc->testEmail()` takes `organization_api_credential_id`, no longer requires `send_to`, and reports `send` and `receive` checks.
+- `HelpdeskConversation::$number` is typed `int|null`; the API no longer guarantees one.
+- The `tasks` feature pack is retired; tasks are free.
+
+### Fixed
+
+- `include_meta` was rejected by client-side filter validation on every list; it now passes through.
+- The tax-mapping docs read a top-level `outcome` the API never sent; each treatment carries a `suggestion`.
+- Stage colour examples used an `rgba(…)` form the API refuses; it takes `r, g, b, a` numbers. Two field tables (prospects, users) rendered partly as raw text.
+
 ## [3.2.0] - 2026-09-15
 
 A support desk: inboxes, conversations, teammates, inbound mail, visitors and proactive messages,

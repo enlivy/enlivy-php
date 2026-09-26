@@ -48,12 +48,15 @@ class HelpdeskConversationService extends AbstractService
         'continued_from',
         'tag_ids',
         'deleted_by_user',
+        'lifecycle',
     ];
 
     public const array AVAILABLE_FILTERS = [
         'state',
         'organization_helpdesk_inbox_id',
         'assigned_organization_helpdesk_teammate_id',
+        'assignment',
+        'has_unread',
         'priority',
         'source',
         'contact_email',
@@ -155,6 +158,15 @@ class HelpdeskConversationService extends AbstractService
         return $this->action('not-spam', $id, $params, $opts);
     }
 
+    /**
+     * Blocks the contact's address, or their whole domain with `whole_domain`, and marks the
+     * thread as spam.
+     */
+    public function blockSender(string $id, array $params = [], ?RequestOptions $opts = null): HelpdeskConversation
+    {
+        return $this->action('block-sender', $id, $params, $opts);
+    }
+
     public function promoteProspect(string $id, array $params = [], ?RequestOptions $opts = null): HelpdeskConversation
     {
         return $this->action('prospect', $id, $params, $opts);
@@ -183,6 +195,14 @@ class HelpdeskConversationService extends AbstractService
             $opts,
             HelpdeskConversationRead::class,
         );
+    }
+
+    /**
+     * Clears only the caller's own read watermark, so the whole thread reads unread for them alone.
+     */
+    public function markUnread(string $id, array $params = [], ?RequestOptions $opts = null): HelpdeskConversation
+    {
+        return $this->action('unread', $id, $params, $opts);
     }
 
     /**

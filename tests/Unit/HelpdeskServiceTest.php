@@ -9,6 +9,7 @@ use Enlivy\EnlivyPortalClient;
 use Enlivy\Organization\HelpdeskConversation;
 use Enlivy\Organization\HelpdeskConversationMessage;
 use Enlivy\Organization\HelpdeskConversationRead;
+use Enlivy\Organization\HelpdeskInboundEmail;
 use Enlivy\Organization\HelpdeskInbox;
 use Enlivy\Tests\Mock\MockHttpClient;
 use PHPUnit\Framework\TestCase;
@@ -73,6 +74,7 @@ final class HelpdeskServiceTest extends TestCase
             'resolve' => 'resolve', 'close' => 'close', 'reopen' => 'reopen',
             'markSpam' => 'spam', 'unmarkSpam' => 'not-spam',
             'promoteProspect' => 'prospect', 'merge' => 'merge',
+            'blockSender' => 'block-sender',
         ];
 
         foreach ($verbs as $method => $segment) {
@@ -190,5 +192,74 @@ final class HelpdeskServiceTest extends TestCase
 
         $this->assertInstanceOf(HelpdeskInbox::class, $inbox);
         $this->assertSame('Salut', $inbox->welcome_title_lang_map['ro']);
+    }
+
+    /**
+     * Unlike `markRead()`, this answers with the conversation rather than the read row.
+     */
+    public function testMarkingUnreadAnswersWithTheConversation(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_hdcnv_1', 'last_message_type' => 'incoming']]);
+
+        $conversation = $this->client->helpdeskConversations->markUnread('org_hdcnv_1');
+
+        $this->assertInstanceOf(HelpdeskConversation::class, $conversation);
+        $this->assertSame('incoming', $conversation->last_message_type);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/helpdesk/conversations/org_hdcnv_1/unread', $request['url']);
+    }
+
+    public function testTheQueueFiltersByAssignmentAndUnread(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->helpdeskConversations->list([
+            'assignment' => 'unassigned',
+            'has_unread' => true,
+            'include' => 'lifecycle',
+        ]);
+
+        $params = $this->httpClient->getLastRequest()['params'];
+        $this->assertSame('unassigned', $params['assignment']);
+        $this->assertTrue($params['has_unread']);
+    }
+
+    public function testEachInboundEmailVerbPostsToItsOwnPath(): void
+    {
+        $verbs = [
+            'reprocess' => ['reprocess', []],
+            'promote' => ['promote', ['trust_sender' => false]],
+            'classify' => ['classify', ['interpretation' => 'bulk', 'apply_to_sender' => true]],
+            'blockSender' => ['block-sender', ['whole_domain' => true]],
+            'fetchOriginal' => ['fetch-original', []],
+        ];
+
+        foreach ($verbs as $method => [$segment, $params]) {
+            $this->httpClient->addResponse(200, ['data' => ['id' => 'org_hdinb_1']]);
+            $email = $this->client->helpdeskInboundEmails->{$method}('org_hdinb_1', $params);
+
+            $this->assertInstanceOf(HelpdeskInboundEmail::class, $email, "{$method} should answer with the email.");
+            $request = $this->httpClient->getLastRequest();
+            $this->assertSame('POST', $request['method']);
+            $this->assertStringContainsString("/helpdesk/inbound-emails/org_hdinb_1/{$segment}", $request['url']);
+        }
+    }
+
+    public function testTheMailLogFiltersByCategory(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => [['id' => 'org_hdinb_1', 'category' => 'held', 'trust_score' => 70]]]);
+
+        $emails = $this->client->helpdeskInboundEmails->list([
+            'category' => 'held',
+            'include' => 'headers,trust_assessment,blocked_identifier',
+            'include_meta' => 'navigation_by_category',
+        ]);
+
+        $this->assertSame('held', $emails->getData()[0]->category);
+        $this->assertSame(70, $emails->getData()[0]->trust_score);
+        $params = $this->httpClient->getLastRequest()['params'];
+        $this->assertSame('held', $params['category']);
+        $this->assertSame('headers,trust_assessment,blocked_identifier', $params['include']);
     }
 }

@@ -21,11 +21,14 @@ use Enlivy\ApiResource;
  * @property string|null $display_name
  * @property string|null $branding_name
  * @property bool $is_personal
+ * @property int|null $pending_conversations_count
+ * @property int|null $open_conversations_count
  * @property array|null $welcome_title_lang_map
  * @property array|null $welcome_description_lang_map
  * @property array|null $success_title_lang_map
  * @property array|null $success_description_lang_map
  * @property array|null $auto_response_chat_lang_map
+ * @property int|null $auto_response_chat_delay_seconds
  * @property array|null $auto_response_email_lang_map
  * @property array|null $out_of_office_message_lang_map
  * @property array|null $inactivity_reminder_message_lang_map
@@ -33,6 +36,8 @@ use Enlivy\ApiResource;
  * @property array|null $sender_name_lang_map
  * @property string|null $sender_email_address
  * @property array|null $widget_origins
+ * @property bool $is_widget_enabled
+ * @property bool $is_widget_origin_restricted
  * @property string $locale
  * @property array|null $locale_list
  * @property string|null $timezone
@@ -45,6 +50,8 @@ use Enlivy\ApiResource;
  * @property bool $is_visitor_tracking_enabled
  * @property array|null $tracked_query_parameters
  * @property bool $auto_response_enabled
+ * @property bool $is_quarantine_enabled
+ * @property int|null $quarantine_score_threshold
  * @property bool $allow_messages_after_resolved
  * @property int|null $close_after_resolved_days
  * @property int|null $inactivity_reminder_days

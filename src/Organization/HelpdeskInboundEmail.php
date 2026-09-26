@@ -13,16 +13,23 @@ use Enlivy\ApiResource;
  * @property string|null $organization_api_credential_id
  * @property string|null $organization_helpdesk_conversation_id
  * @property string|null $organization_helpdesk_conversation_message_id
+ * @property string|null $organization_blocked_identifier_id
  * @property string $from_email_address
  * @property string|null $from_name
  * @property array|null $to_email_addresses
  * @property array|null $cc_email_addresses
  * @property string|null $subject
  * @property string|null $content
+ * @property string|null $content_type
  * @property string|null $header_message_id
  * @property string|null $header_in_reply_to
  * @property string|null $header_references
+ * @property array|null $headers
  * @property string|null $interpretation
+ * @property string $category
+ * @property int|null $trust_score
+ * @property array|null $trust_symbols
+ * @property array|null $trust_assessment
  * @property string|null $error_message
  * @property string|null $bounced_email_address
  * @property string|null $processed_at

@@ -49,6 +49,27 @@ $available = $client->invoices::AVAILABLE_INCLUDES;
 // ['bank_account', 'invoice_prefix', 'sender_user', 'receiver_user', ...]
 ```
 
+## Reading an Include
+
+An included record or list arrives wrapped in `data`, the way a list does, so read through it
+(`tag_ids` and the computed includes noted below arrive bare):
+
+```php
+$task = $client->tasks->retrieve('org_task_xxx', [
+    'include' => ['organization_task_stage', 'organization_task_participants'],
+]);
+
+echo $task->organization_task_stage->data->title_lang_map['en'];
+
+foreach ($task->organization_task_participants->data as $participant) {
+    echo $participant->role;
+}
+```
+
+A single relation that is missing arrives as `null` rather than a wrapper, and so does a list the
+reader may not view (a task's `organization_invoices`, say); an empty list otherwise arrives as an
+empty `data`.
+
 ## Virtual Includes
 
 Some resources support virtual (dot-notation) includes that load nested relationships:
@@ -71,7 +92,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `invoices` | `bank_account`, `invoice_prefix`, `sender_user`, `receiver_user`, `receiver_user_address`, `line_items`, `receipts`, `deleted_by_user`, `party_locales`, `tag_ids`, `taxes`, `last_peppol_exchange`, `contract`, `charge_logs`, `latest_charge_log`, `reversal_invoices`, `parent_invoice` |
+| `invoices` | `bank_account`, `invoice_prefix`, `sender_user`, `receiver_user`, `receiver_user_address`, `line_items`, `receipts`, `deleted_by_user`, `party_locales`, `tag_ids`, `taxes`, `last_peppol_exchange`, `contract`, `charge_logs`, `latest_charge_log`, `reversal_invoices`, `parent_invoice`, `organization_tasks` |
 | `invoices` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `invoicePrefixes` | `organization`, `deleted_by_user`, `custom_logo` |
 | `invoiceNetworkExchanges` | `organization`, `parsed_data`, `tax_mapping`¹, `recording_suggestions`¹, `invoice`, `tag_ids` |
@@ -88,7 +109,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `prospects` | `organization`, `organization_prospect_stage`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user`, `proposals` |
+| `prospects` | `organization`, `organization_prospect_stage`, `linked_organization_user`, `assigned_organization_user`, `assigned_organization_project`, `source_referrer_organization_user`, `created_by_user`, `deleted_by_user`, `proposals`, `organization_tasks` |
 | `prospectActivities` | `organization`, `organization_prospect`, `performed_by_organization_user`, `organization_report`, `organization_file`, `organization_prospect_stage_path`, `created_by_user`, `deleted_by_user` |
 | `prospectStages` | `organization`, `deleted_by_user`, `paths`, `pipeline` |
 | `prospectPipelines` | `organization`, `deleted_by_user`, `stages` |
@@ -141,14 +162,14 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `helpdeskConversations` | `organization`, `inbox`, `organization_project`, `visitor`, `assigned_teammate`, `contact_organization_user`, `contact_organization_prospect`, `messages`, `attachments`, `participants`, `reads`, `merged_into`, `continued_from`, `tag_ids`, `deleted_by_user` |
+| `helpdeskConversations` | `organization`, `inbox`, `organization_project`, `visitor`, `assigned_teammate`, `contact_organization_user`, `contact_organization_prospect`, `messages`, `attachments`, `participants`, `reads`, `merged_into`, `continued_from`, `tag_ids`, `deleted_by_user`, `lifecycle` |
 | `helpdeskConversationMessages` | `organization`, `conversation`, `author_organization_user`, `author_organization_prospect`, `attachments`, `deliveries` |
 | `helpdeskConversationAttachments` | `organization`, `conversation`, `message`, `visitor`, `uploaded_by_user` |
 | `helpdeskConversationParticipants` | `organization`, `conversation`, `organization_user`, `organization_prospect` |
 | `helpdeskInboxes` | `organization`, `organization_project`, `owner_teammate`, `default_teammate`, `organization_api_credential`, `branding_logo_file`, `branding_icon_file`, `deleted_by_user` |
 | `helpdeskTeammates` | `organization`, `organization_user`, `owned_inboxes` |
-| `helpdeskSettings` | `organization`, `branding_logo_file`, `branding_icon_file` |
-| `helpdeskInboundEmails` | `organization`, `inbox`, `organization_api_credential`, `conversation`, `message`, `content` |
+| `helpdeskSettings` | `organization`, `branding_logo_file`, `branding_icon_file`, `inbox_defaults` |
+| `helpdeskInboundEmails` | `organization`, `inbox`, `organization_api_credential`, `blocked_identifier`, `conversation`, `message`, `content`, `headers`, `trust_assessment` |
 | `helpdeskInboundEmailRules` | `organization`, `inbox`, `deleted_by_user` |
 | `helpdeskProactiveMessages` | `organization`, `inbox`, `sender_teammate`, `deleted_by_user` |
 | `helpdeskVisitors` | `organization`, `organization_user`, `organization_prospect`, `events` |
@@ -158,8 +179,11 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 On the portal lane, a customer's conversation offers only `messages`, and a message always carries
 its `attachments`.
 
-`helpdeskInboundEmails` treats `content` as an include on purpose: the raw body of a message is
-withheld until it is asked for by name.
+`helpdeskInboundEmails` withholds `content` (and with it `content_type`), `headers` and
+`trust_assessment` until they are asked for by name; each reads null otherwise, and `content` also
+reads null once the stored body has aged out. A conversation's
+`lifecycle` and the settings' `inbox_defaults` work the same way. None of these arrive wrapped in
+`data`.
 
 ### Payroll & Reports
 
@@ -182,8 +206,16 @@ withheld until it is asked for by name.
 | `guidelines` | `deleted_by_user`, `organization`, `organization_owner_user`, `organization_project`, `tag_ids` |
 | `playbooks` | `organization`, `procedure_organization_owner_user`, `deleted_by_user`, `organization_project`, `parent_organization_playbook`, `tag_ids` |
 | `playbooks` | `organization`, `procedure_organization_owner_user`, `deleted_by_user`, `organization_project`, `parent_organization_playbook`, `tag_ids`, `procedure_process_steps_files`, `procedure_files` |
-| `tasks` | `assigned_by_organization_user`, `assigned_to_organization_user`, `completed_by_organization_user`, `deleted_by_user`, `organization`, `parent_organization_task`, `organization_project`, `organization_task_status`, `organization_report_schema`, `organization_report` |
-| `taskStatuses` | `organization`, `deleted_by_user` |
+| `tasks` | `created_by_organization_user`, `completed_by_organization_user`, `cancelled_by_organization_user`, `deleted_by_user`, `organization`, `parent_organization_task`, `organization_project`, `organization_task_stage`, `organization_task_participants`, `organization_invoices`, `organization_prospects`, `related_organization_tasks` |
+| `taskStages` | `organization`, `deleted_by_user` |
+| `taskComments` | `author_organization_user`, `deleted_by_user` |
+
+`tasks->board()` takes the `tasks` includes and applies them to every card. `tasks->feed()` always
+carries each comment's author and each event's changes and actor. `tasks->follow()` answers with a
+participant row, whose includes are `TaskService::PARTICIPANT_INCLUDES`, and
+`tasks->notifications()` takes the `notifications` includes. A task's `organization_invoices` and `organization_prospects`,
+and the `organization_tasks` on an invoice or prospect, read null for someone who may not view
+that kind of record.
 
 ### Other
 
@@ -194,7 +226,7 @@ withheld until it is asked for by name.
 | `eventDestinations` | `organization`, `deleted_by_user`, `event_subscriptions`, `event_deliveries` |
 | `billingPackages` | `organization`, `project`, `groups`, `payment_plans`, `contract_templates`, `created_by_user`, `deleted_by_user`, `expired_by_user` |
 | `proposals` | `organization`, `project`, `billing_package`, `billing_package_payment_plan`, `subscription_term`, `payments`, `proposal_contracts`, `billing_schedule`, `invoice`, `proforma_invoice`, `prospect`, `receiver_user`, `sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user`, `stage_detail` |
-| `notifications` | `organization`, `sent_to_organization_user` |
+| `notifications` | `organization`, `sent_to_organization_user`, `sent_by_user`, `subjects` |
 
 ### Global Services
 

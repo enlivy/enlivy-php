@@ -2,7 +2,7 @@
 
 An **event trail** is the read-only audit history of a record — who changed it,
 when, from where, and exactly which fields moved. Trails are available for
-**invoices**, **receipts**, **billing schedules** and **organization users**.
+**invoices**, **receipts**, **billing schedules**, **organization users** and **tasks**.
 
 Each trail entry has an `event_type` (what happened), an `origin` (where it came
 from), an optional acting organization user, and — when you request the `changes`
@@ -33,7 +33,8 @@ foreach ($trail as $entry) {
 }
 ```
 
-The same methods exist on `$client->receipts`, `$client->billingSchedules` and `$client->organizationUsers`.
+The same methods exist on `$client->receipts`, `$client->billingSchedules`, `$client->organizationUsers`
+and `$client->tasks`.
 
 ## Filtering
 

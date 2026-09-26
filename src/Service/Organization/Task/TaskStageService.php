@@ -5,26 +5,28 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization\Task;
 
 use Enlivy\Collection;
-use Enlivy\Organization\TaskStatus;
+use Enlivy\EnlivyObject;
+use Enlivy\Organization\TaskStage;
 use Enlivy\Service\AbstractService;
-use Enlivy\Service\Concern\HasReorder;
-use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
+use Enlivy\Service\Concern\HasReorder;
+use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Util\RequestOptions;
 
 /**
- * @method TaskStatus restore(string $id, array $params = [], ?RequestOptions $opts = null)
+ * `stage_type` is locked while the stage holds any task, trashed ones included, and the last
+ * `not_started` or `completed` stage can be neither retyped nor deleted.
  */
-class TaskStatusService extends AbstractService
+class TaskStageService extends AbstractService
 {
     use HasRestore;
     use HasReorder;
     use HasIncludes;
     use HasFilters;
 
-    protected const string RESOURCE = 'task-statuses';
-    protected const ?string RESOURCE_CLASS = TaskStatus::class;
+    protected const string RESOURCE = 'task-stages';
+    protected const ?string RESOURCE_CLASS = TaskStage::class;
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
@@ -37,7 +39,7 @@ class TaskStatusService extends AbstractService
     ];
 
     /**
-     * @return Collection<TaskStatus>
+     * @return Collection<TaskStage>
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
@@ -45,39 +47,45 @@ class TaskStatusService extends AbstractService
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var Collection<TaskStatus> */
+        /** @var Collection<TaskStage> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
-    public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): TaskStatus
+    public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): TaskStage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        /** @var TaskStatus */
+
+        /** @var TaskStage */
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function create(array $params, ?RequestOptions $opts = null): TaskStatus
+    public function create(array $params, ?RequestOptions $opts = null): TaskStage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        /** @var TaskStatus */
+
+        /** @var TaskStage */
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
     }
 
-    public function update(string $id, array $params, ?RequestOptions $opts = null): TaskStatus
+    public function update(string $id, array $params, ?RequestOptions $opts = null): TaskStage
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        /** @var TaskStatus */
+
+        /** @var TaskStage */
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
-    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): TaskStatus
+    /**
+     * A stage that still holds tasks needs `move_to_organization_task_stage_id`, a stage of the
+     * same type. Answers with a status envelope rather than the stage.
+     */
+    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
-        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
-        /** @var TaskStatus */
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+
+        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts, EnlivyObject::class);
     }
 }

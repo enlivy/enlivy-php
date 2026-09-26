@@ -593,6 +593,20 @@ $addresses = $client->userAddresses->list([
 | `address_country_code` | string | Country the address is in, when it differs from `country_code` |
 | `locale` | string | Language locale (e.g., 'en', 'ro'). Must be one the organization operates in — see below. |
 | `timezone` | string\|null | Timezone (e.g., 'Europe/Bucharest') |
+| `birthdate` | string | Birth date (YYYY-MM-DD) |
+| `birthplace` | string | Place of birth |
+| `citizenship` | string | Citizenship, as a 2-letter country code |
+| `organization_type` | string | Company type (SRL, SA, etc.) |
+| `information` | object | Country-specific personal info (JSON) |
+| `organization_information` | object | Company info (tax ID, etc.) (JSON) |
+| `bank_account_bank_name` | string | Bank name |
+| `bank_account_type` | string | 'standard' or 'stripe_external' |
+| `bank_account_currency` | string | ISO 4217 currency code |
+| `bank_account_country_code` | string | Bank country code |
+| `bank_account_information` | object | Bank details (IBAN, SWIFT, etc.) |
+| `bank_account_address` | string | Bank address |
+| `payment_stripe_customer_id` | string | Primary Stripe customer ID |
+| `payment_stripe_customer_ids` | array | All linked Stripe customer IDs |
 
 A user's `locale` must be one of the organization's own locales (its `locale` plus its
 `locale_list`); anything else is a 422 rather than a silently stored value. Widen the organization's
@@ -623,20 +637,6 @@ profile lane too.
 value that no longer applies. Plenty of countries have no county or state layer at all, so requiring
 one made those addresses unstorable. On the organization itself, `address_county`, `address_state`
 and `timezone` are clearable the same way.
-| `birthdate` | string | Birth date (YYYY-MM-DD) |
-| `birthplace` | string | Place of birth |
-| `citizenship` | string | Citizenship, as a 2-letter country code |
-| `organization_type` | string | Company type (SRL, SA, etc.) |
-| `information` | object | Country-specific personal info (JSON) |
-| `organization_information` | object | Company info (tax ID, etc.) (JSON) |
-| `bank_account_bank_name` | string | Bank name |
-| `bank_account_type` | string | 'standard' or 'stripe_external' |
-| `bank_account_currency` | string | ISO 4217 currency code |
-| `bank_account_country_code` | string | Bank country code |
-| `bank_account_information` | object | Bank details (IBAN, SWIFT, etc.) |
-| `bank_account_address` | string | Bank address |
-| `payment_stripe_customer_id` | string | Primary Stripe customer ID |
-| `payment_stripe_customer_ids` | array | All linked Stripe customer IDs |
 
 ## Complete Example: Customer Onboarding
 

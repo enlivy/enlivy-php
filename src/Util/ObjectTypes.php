@@ -17,6 +17,7 @@ use Enlivy\Organization\BankTransaction;
 use Enlivy\Organization\BankTransactionCostType;
 use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\BillingSchedule;
+use Enlivy\Organization\Comment;
 use Enlivy\Organization\Contract;
 use Enlivy\Organization\Connection;
 use Enlivy\Organization\HelpdeskConversation;
@@ -55,6 +56,7 @@ use Enlivy\Organization\InvoiceNetworkExchange;
 use Enlivy\Organization\InvoiceNotificationLog;
 use Enlivy\Organization\InvoicePrefix;
 use Enlivy\Organization\Notification;
+use Enlivy\Organization\NotificationSubject;
 use Enlivy\Organization\BillingPackage;
 use Enlivy\Organization\BillingPackageSubscriptionTerm;
 use Enlivy\Organization\BillingPackageSubscriptionTermItem;
@@ -80,7 +82,10 @@ use Enlivy\Organization\ResourceBundle;
 use Enlivy\Organization\ReusableContent;
 use Enlivy\Organization\Tag;
 use Enlivy\Organization\Task;
-use Enlivy\Organization\TaskStatus;
+use Enlivy\Organization\TaskBoardColumn;
+use Enlivy\Organization\TaskFeedEntry;
+use Enlivy\Organization\TaskParticipant;
+use Enlivy\Organization\TaskStage;
 use Enlivy\Organization\TenantBilling;
 use Enlivy\Organization\TaxClass;
 use Enlivy\Organization\TaxEvent;
@@ -215,11 +220,16 @@ final class ObjectTypes
 
         // Organization-scoped: Tasks
         'task' => Task::class,
-        'task_status' => TaskStatus::class,
+        'task_stage' => TaskStage::class,
+        'task_participant' => TaskParticipant::class,
+        'task_board_column' => TaskBoardColumn::class,
+        'task_feed_entry' => TaskFeedEntry::class,
+        'comment' => Comment::class,
 
         // Organization-scoped: Settings & Tags
         'tag' => Tag::class,
         'notification' => Notification::class,
+        'notification_subject' => NotificationSubject::class,
 
         // Organization-scoped: Event Delivery & Export
         'event_destination' => EventDestination::class,

@@ -15,6 +15,7 @@ use Enlivy\ApiResource;
  * @property string|null $title
  * @property string|null $sent_to_email_address
  * @property string|null $sent_to_organization_user_id
+ * @property string|null $sent_by_user_id
  * @property string|null $sent_from_email_address
  * @property string|null $sent_from_email_name
  * @property string $created_at

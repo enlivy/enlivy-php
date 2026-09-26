@@ -16,4 +16,5 @@ enum SessionPermissions: string
     case CONTRACTS = 'contracts';
     case REPORTS = 'reports';
     case PAYMENT_METHODS = 'payment_methods';
+    case HELPDESK = 'helpdesk';
 }

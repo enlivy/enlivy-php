@@ -437,3 +437,4 @@ try {
 - [Prospects](prospects.md) - Manage prospects within projects
 - [Organization Users](users.md) - Team members
 - [Reports](reports.md) - Reports accessible in projects
+- [Tasks](tasks.md) - Work tracked on a board, optionally within a project

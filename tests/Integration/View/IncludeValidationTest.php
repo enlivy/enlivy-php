@@ -236,9 +236,9 @@ class IncludeValidationTest extends IntegrationTestCase
         $this->assertAllIncludesWork('tasks');
     }
 
-    public function testTaskStatusAllIncludes(): void
+    public function testTaskStageAllIncludes(): void
     {
-        $this->assertAllIncludesWork('taskStatuses');
+        $this->assertAllIncludesWork('taskStages');
     }
 
     // Tags & Event Destinations

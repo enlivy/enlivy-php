@@ -109,7 +109,8 @@ use Enlivy\Service;
  *
  * Organization-scoped services - Tasks:
  * @property Service\Organization\Task\TaskService $tasks
- * @property Service\Organization\Task\TaskStatusService $taskStatuses
+ * @property Service\Organization\Task\TaskStageService $taskStages
+ * @property Service\Organization\Task\TaskCommentService $taskComments
  *
  * Organization-scoped services - Settings & Tags:
  * @property Service\Organization\TagService $tags

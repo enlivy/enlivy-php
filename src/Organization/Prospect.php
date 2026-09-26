@@ -11,6 +11,7 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string|null $organization_prospect_stage_id
+ * @property string|null $board_rank
  * @property string|null $linked_organization_user_id
  * @property string|null $assigned_organization_user_id
  * @property string|null $title
@@ -22,7 +23,7 @@ use Enlivy\ApiResource;
  * @property string|null $country_code
  * @property string|null $phone_number
  * @property string|null $phone_number_country_code
- * @property array|null $social_profiles
+ * @property array|null $links
  * @property string|null $source_type
  * @property string|null $source_channel
  * @property string|null $source_medium

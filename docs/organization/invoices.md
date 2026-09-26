@@ -960,3 +960,4 @@ $reversal = $client->invoices->retrieve('org_inv_reversal_xxx', ['include' => 'p
 - [Taxes](taxes.md) - Configure tax classes
 - [Receipts](receipts.md) - Create receipts for payments
 - [Tenant Billing](tenant-billing.md) - Enlivy subscription invoices
+- [Tasks](tasks.md) - Link follow-up work to an invoice (`organization_tasks` include)

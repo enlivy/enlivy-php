@@ -17,7 +17,7 @@ use Enlivy\ApiResource;
  * @property string|null $contact_organization_prospect_id
  * @property string|null $merged_into_organization_helpdesk_conversation_id
  * @property string|null $continued_from_organization_helpdesk_conversation_id
- * @property int $number
+ * @property int|null $number
  * @property string $display_number
  * @property string $source
  * @property string $state
@@ -35,7 +35,10 @@ use Enlivy\ApiResource;
  * @property string|null $closed_at
  * @property string|null $spam_at
  * @property int|null $unread_count
+ * @property string|null $last_message_type
+ * @property string|null $last_message_preview
  * @property string|null $last_message_at
+ * @property array|null $lifecycle
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at

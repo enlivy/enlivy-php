@@ -12,4 +12,5 @@ enum InboundEmailRuleActions: string
 
     case ROUTE = 'route';
     case DISCARD = 'discard';
+    case TRUST = 'trust';
 }

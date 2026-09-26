@@ -12,7 +12,7 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property array|null $title_lang_map
  * @property array|null $description_lang_map
- * @property bool $can_be_completed
+ * @property string $stage_type
  * @property string|null $rgba_color_code
  * @property int|null $order
  * @property string $created_at
@@ -20,7 +20,7 @@ use Enlivy\ApiResource;
  * @property string|null $deleted_at
  * @property string|null $deleted_by_user_id
  */
-class TaskStatus extends ApiResource
+class TaskStage extends ApiResource
 {
-    public const ?string OBJECT_NAME = 'task_status';
+    public const ?string OBJECT_NAME = 'task_stage';
 }

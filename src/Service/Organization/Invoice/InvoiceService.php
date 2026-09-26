@@ -50,6 +50,7 @@ class InvoiceService extends AbstractService
         'latest_charge_log',
         'reversal_invoices',
         'parent_invoice',
+        'organization_tasks',
     ];
 
     public const array AVAILABLE_FILTERS = [

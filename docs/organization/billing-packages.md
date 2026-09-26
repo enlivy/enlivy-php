@@ -618,7 +618,7 @@ The field is writable on both `create()` and `update()`, and reads back on the s
 > explicit `phases`/`payments` only; `organization_billing_package_id`,
 > `organization_billing_package_subscription_term_id`, `selected_group_items` and `start_at`
 > are rejected there. Use `fromBillingPackage()`. (Earlier SDK versions accepted a package on
-> `create()` — see [UPGRADING](../../UPGRADING.md).)
+> `create()` — see the [2.3.0 upgrade notes](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md#upgrading-to-230).)
 
 ## Client Portal: Billing Packages
 

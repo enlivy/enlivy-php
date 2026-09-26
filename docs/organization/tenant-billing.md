@@ -55,6 +55,9 @@ $preview = $client->tenantBilling->preview($change);
 $result  = $client->tenantBilling->apply($change);
 ```
 
+The `tasks` pack is retired as of 3.3.0 — tasks are free for every organization — so neither a
+change nor a trial toggle accepts it any more.
+
 ## Trial
 
 ```php

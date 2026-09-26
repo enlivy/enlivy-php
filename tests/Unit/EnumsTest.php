@@ -20,10 +20,13 @@ use Enlivy\Enums\Receipt\Directions as ReceiptDirections;
 use Enlivy\Enums\Receipt\Sources as ReceiptSources;
 use Enlivy\Enums\Import\StopReasons;
 use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
+use Enlivy\Enums\Organization\EntityManifest;
 use Enlivy\Enums\Organization\Environments;
 use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Contract\PartyIdentityRequirements;
+use Enlivy\Enums\Helpdesk\InboundEmailCategories;
+use Enlivy\Enums\Helpdesk\InboundEmailInterpretations;
 use Enlivy\Enums\Proposal\NotificationLogTypes as ProposalNotificationLogTypes;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
 use Enlivy\Enums\Proposal\StageActors as ProposalStageActors;
@@ -31,7 +34,11 @@ use Enlivy\Enums\Proposal\Stages as ProposalStages;
 use Enlivy\Enums\Proposal\Statuses as ProposalStatuses;
 use Enlivy\Enums\Tax\TaxApplicabilityReasons;
 use Enlivy\Enums\Tax\TaxEventDirections;
+use Enlivy\Enums\Task\TaskCancelReasons;
+use Enlivy\Enums\Task\TaskParticipantRoles;
+use Enlivy\Enums\Task\TaskStatuses;
 use Enlivy\Enums\TenantBilling\BillingCycles;
+use Enlivy\Enums\WebLinkKinds;
 use PHPUnit\Framework\TestCase;
 
 final class EnumsTest extends TestCase
@@ -132,6 +139,29 @@ final class EnumsTest extends TestCase
             ['backlog', 'completed', 'unbalanced', 'trashed'],
             BankTransactionStates::values(),
         );
+        $this->assertSame(
+            ['not_started', 'in_progress', 'waiting', 'completed', 'cancelled'],
+            TaskStatuses::values(),
+        );
+        $this->assertSame(['no_longer_needed', 'duplicate', 'parent_cancelled'], TaskCancelReasons::values());
+        $this->assertSame(['assignee', 'follower'], TaskParticipantRoles::values());
+        $this->assertSame(
+            ['unclassified', 'held', 'tickets', 'marketing', 'automated', 'spam', 'failed'],
+            InboundEmailCategories::values(),
+        );
+        $this->assertContains('quarantined', InboundEmailInterpretations::values());
+        $this->assertContains('bulk', InboundEmailInterpretations::values());
+        $this->assertContains('website', WebLinkKinds::values());
+        $this->assertContains('directory', WebLinkKinds::values());
+    }
+
+    /**
+     * Task statuses became typed task stages in 3.3.0, and the entity was renamed with them.
+     */
+    public function testTaskStatusEntityStaysRenamed(): void
+    {
+        $this->assertContains('task_stage', EntityManifest::values());
+        $this->assertNotContains('task_status', EntityManifest::values());
     }
 
     /**
@@ -193,6 +223,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(164, $count, 'Expected at least 164 mirrored enums');
+        $this->assertGreaterThanOrEqual(171, $count, 'Expected at least 171 mirrored enums');
     }
 }

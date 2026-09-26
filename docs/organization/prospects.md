@@ -58,10 +58,10 @@ $prospect = $client->prospects->create([
     'company_name' => 'BigCorp Industries',
     'country_code' => 'US',
 
-    // Social profiles (optional array)
-    'social_profiles' => [
-        ['platform' => 'linkedin', 'url' => 'https://linkedin.com/in/sarah-johnson'],
-        ['platform' => 'twitter', 'handle' => '@sarahjohnson'],
+    // Where they are on the web (optional array)
+    'links' => [
+        ['kind' => 'website', 'url' => 'https://bigcorp.example'],
+        ['kind' => 'linkedin', 'url' => 'https://linkedin.com/in/sarah-johnson'],
     ],
 
     // Deal info (budget is string, not numeric)
@@ -93,6 +93,11 @@ $prospect = $client->prospects->create([
 echo "Created: {$prospect->title}\n";
 echo "Budget: {$prospect->budget} {$prospect->budget_currency}\n";
 ```
+
+Each link's `kind` is one of `Enums\WebLinkKinds` — `website` for a page the prospect publishes,
+`directory` for a listing somebody else publishes about them, or a named network such as
+`linkedin` or `github`. A `url` typed without a scheme gets `https://`. Up to 25 links, each with
+an optional `label`; sending `links` replaces the whole list, since a link has no id to match on.
 
 ### Prospect with State Tracking
 
@@ -362,7 +367,7 @@ foreach ($pipelines->data as $pipeline) {
 $pipeline = $client->prospectPipelines->create([
     'title_lang_map' => ['en' => 'Enterprise'],
     'description_lang_map' => ['en' => 'Deals over 50k'],
-    'rgba_color_code' => 'rgba(156, 39, 176, 1)',
+    'rgba_color_code' => '156, 39, 176, 1',
     'order' => 2,
 ]);
 ```
@@ -402,7 +407,7 @@ $stage = $client->prospectStages->create([
     'organization_prospect_pipeline_id' => $pipeline->id,
     'title_lang_map' => ['en' => 'Technical Review'],
     'stage_type' => \Enlivy\Enums\Prospect\StageTypes::OPEN->value,
-    'rgba_color_code' => 'rgba(156, 39, 176, 1)',
+    'rgba_color_code' => '156, 39, 176, 1',
     'order' => 4,
     'is_stuck_threshold_days' => 14,
 ]);
@@ -430,6 +435,29 @@ $prospect = $client->prospects->advance('org_pros_xxx', [
     'note' => 'Client confirmed budget and timeline.',
 ]);
 ```
+
+### Arrange Cards Within a Column
+
+A board column is read a page at a time, so a card is placed between neighbours rather than at an
+index. `moveOnBoard()` reorders within the prospect's own column; changing column is `advance()` or
+a stage update.
+
+```php
+<?php
+
+$prospect = $client->prospects->moveOnBoard('org_pros_xxx', [
+    'previous_organization_prospect_id' => 'org_pros_above',
+    'next_organization_prospect_id' => 'org_pros_below',
+]);
+
+// Or to either end of the column
+$client->prospects->moveOnBoard('org_pros_xxx', ['place' => 'top']);
+```
+
+The board sorts by `board_rank`, then newest first for cards nobody has placed. `board_rank` is
+read-only and only `moveOnBoard()` sets it. A rank is lowercase letters and digits, so a plain
+string comparison orders it as the server does. Sort any cards you cache that way, and name
+neighbours in that order, or the move is refused.
 
 ## Finding and Merging Duplicates
 
@@ -640,7 +668,7 @@ echo "Restored: {$prospect->title}\n";
 | `phone_number` | string | Phone number |
 | `phone_number_country_code` | string | Phone country code |
 | `country_code` | string | Country code |
-| `social_profiles` | array | Social media profiles |
+| `links` | array | Where the prospect is on the web (`kind`, `url`, optional `label`) |
 | `budget` | string | Budget amount (as string) |
 | `budget_currency` | string | Budget currency (ISO 4217) |
 | `summary` | string | Deal summary/notes |
@@ -652,13 +680,6 @@ echo "Restored: {$prospect->title}\n";
 | `source_content` | string | Which creative or link variant was clicked |
 | `source_click_id` | string | Ad-network click identifier, for matching spend back to the lead |
 | `source_referrer_organization_user_id` | string | Referrer user ID |
-
-The five `source_*` attribution fields are writable on the customer-portal lane too
-(`$portal->prospects->create()` / `->update()`), so a lead captured through a portal form carries the
-same attribution as one created through the back office.
-
-`source_channel` is capped at 100 characters on both lanes. The portal lane previously accepted 255
-and now matches the back office, so an over-long value that used to be stored is a 422.
 | `organization_prospect_stage_id` | string | Pipeline stage ID |
 | `assigned_organization_user_id` | string | Assigned sales rep ID |
 | `assigned_organization_project_id` | string | Assigned project ID |
@@ -669,6 +690,13 @@ and now matches the back office, so an over-long value that used to be stored is
 | `state_won_at` | datetime | When won |
 | `state_lost_at` | datetime | When lost |
 | `state_lost_reason` | string | Loss reason |
+
+`links` and every `source_*` field except `source_referrer_organization_user_id` are writable on the
+customer-portal lane too (`$portal->prospects->create()` / `->update()`), so a lead captured through
+a portal form carries the same attribution as one created through the back office.
+
+`source_channel` is capped at 100 characters on both lanes. The portal lane previously accepted 255
+and now matches the back office, so an over-long value that used to be stored is a 422.
 
 ## Complete Example: Sales Pipeline Workflow
 
@@ -784,3 +812,4 @@ try {
 - [Proposals](proposals.md) - Send formal proposals to prospects
 - [Projects](projects.md) - Manage prospects within projects
 - [Data Imports](data-imports.md) - Bulk-load leads from a CSV file
+- [Tasks](tasks.md) - Link follow-up work to a prospect (`organization_tasks` include)

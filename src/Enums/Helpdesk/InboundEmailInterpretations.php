@@ -17,6 +17,9 @@ enum InboundEmailInterpretations: string
     case BOUNCE = 'bounce';
     case AUTO_REPLY = 'auto_reply';
     case SPAM = 'spam';
+    case BULK = 'bulk';
+    case QUARANTINED = 'quarantined';
+    case OWN_ADDRESS = 'own_address';
     case BLOCKED = 'blocked';
     case DISCARDED = 'discarded';
 }
