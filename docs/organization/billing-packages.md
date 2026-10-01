@@ -117,6 +117,24 @@ $package = $client->billingPackages->create([
 echo "Billing package created: {$package->id}\n";
 ```
 
+A payment plan's `phases` say how it is paid: each phase repeats on its `frequency` up to
+`max_occurrences` times. Leave `max_occurrences` out, or null, and the phase bills until the
+schedule is cancelled: a lifetime plan, which is priced per payment and never totalled.
+
+```php
+'payment_plans' => [
+    [
+        'name_lang_map' => ['en' => 'Lifetime membership'],
+        'currency' => 'EUR',
+        'phases' => [
+            ['days_after_anchor' => 0, 'frequency' => 'monthly', 'max_occurrences' => null, 'line_items' => [
+                ['organization_product_id' => 'org_prod_xxx', 'quantity' => 1, 'price' => 29],
+            ]],
+        ],
+    ],
+],
+```
+
 ## Currencies
 
 A package is quoted in one currency and may transact in several. `currency` is the quote currency and
@@ -517,10 +535,13 @@ customer-portal claim.
 A subscription package becomes recurring billing in one of two ways:
 
 - **Via a proposal** (above) — you quote the customer, they accept and pay, and the
-  billing schedule activates on that first payment.
+  billing schedule activates on that first payment. To sell on your own page instead, open a
+  [Checkout Session](checkout-sessions.md).
 - **Directly** — when you already have the customer and their payment method and just
   want to start billing. `billingSchedules->fromBillingPackage()` materializes the
   subscription schedule straight from the package, and can charge the first cycle inline.
+  That charge runs without the customer present, so their bank cannot ask them to approve it;
+  when they are at the checkout, open a [Checkout Session](checkout-sessions.md) instead.
 
 ```php
 <?php
@@ -568,8 +589,8 @@ $charge    = $meta['charge_result'] ?? null;   // null when nothing was billed
 $invoiceId = $meta['invoice_id'] ?? null;      // the invoice the first cycle generated
 
 if ($charge !== null && $charge['status'] === 'requires_action') {
-    // Card needs 3DS/SCA — send the customer to complete it:
-    $redirectTo = $charge['next_action_url'];
+    // The customer's bank wants them to approve it. Enlivy has already emailed them this link:
+    $approvalLink = $charge['next_action_url'];
 }
 ```
 
@@ -577,16 +598,20 @@ if ($charge !== null && $charge['status'] === 'requires_action') {
 
 | Field | Meaning |
 |-------|---------|
-| `status` | `succeeded` (charged) · `requires_action` (needs 3DS/SCA — see `next_action_url`) · `failed` (declined; the invoice stays open and the cron retries) · `already_paid` |
+| `status` | `succeeded` (charged) · `requires_action` (the customer's bank wants them to approve it — see `next_action_url`) · `failed` (declined; the invoice stays open and the cron retries) · `already_paid` |
 | `error_code` | Stable machine code (e.g. `card_declined`) to localize on the frontend |
 | `error_message` | Raw provider message (audit detail) |
 | `provider_reference` | Payment-provider reference for the attempt |
-| `next_action_url` | Authentication URL when `status` is `requires_action`; null otherwise |
+| `next_action_url` | When `status` is `requires_action`: a link to pay the invoice without signing in, already emailed to the customer and reminded on days 3 and 7. Null otherwise |
 
 `charge_result` is `null` when nothing was billed — the schedule isn't `active`, it starts
 in the future, or the organization's billing-schedules feature is inactive. A non-card
 payment method still generates the invoice (collect it manually) and reports `status`
 `failed` with `error_code` `payment_method_not_auto_chargeable`.
+
+While that link is open, automatic retries wait for the customer and report `error_code`
+`awaiting_customer_action`. A charge you make on purpose with `invoices->charge()` withdraws the
+link first.
 
 > The same `meta.charge_result` / `meta.invoice_id` rides on `billingSchedules->create()`
 > (raw phases/payments) when a schedule is created `active` and due — read it the same way.
@@ -622,7 +647,8 @@ The field is writable on both `create()` and `update()`, and reads back on the s
 
 ## Client Portal: Billing Packages
 
-Customers can browse and claim billing packages through the Client Portal:
+Customers can browse billing packages through the Client Portal and buy one through a checkout
+session:
 
 ```php
 <?php
@@ -640,18 +666,25 @@ $packages = $portal->billingPackages->list();
 // View package details
 $package = $portal->billingPackages->retrieve('org_bp_xxx');
 
-// Claim a package (creates an accepted proposal)
-$result = $portal->billingPackages->claim('org_bp_xxx', [
+// Buy one: open a checkout session and hand its token to the browser that runs the checkout
+$session = $portal->billingPackages->openCheckoutSession('org_bp_xxx', [
     // subscription packages: the chosen cadence variant (omit = the package default)
     'organization_billing_package_subscription_term_id' => 'org_bp_st_xxx',
     // one_time packages: the chosen payment plan
     // 'organization_billing_package_payment_plan_id' => 'org_bp_plan_xxx',
 ]);
+$clientToken = $session->lastResponse()?->json['meta']['client_token']; // shown once
 ```
+
+A session created with a permission list needs `checkout` to buy. See
+[Checkout Sessions](checkout-sessions.md) for what the session sells and how it settles.
+
+`claim()` takes the same parameters and returns the accepted proposal it creates. It is being
+retired in favour of checkout sessions; use it only for a package a checkout session refuses.
 
 ### Managing a Subscription
 
-Claiming a subscription package creates a **billing schedule**. The customer manages it
+Buying a subscription package creates a **billing schedule**. The customer manages it
 through the portal:
 
 ```php

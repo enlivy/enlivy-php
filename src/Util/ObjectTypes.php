@@ -17,6 +17,7 @@ use Enlivy\Organization\BankTransaction;
 use Enlivy\Organization\BankTransactionCostType;
 use Enlivy\Organization\BlockedIdentifier;
 use Enlivy\Organization\BillingSchedule;
+use Enlivy\Organization\CheckoutSession;
 use Enlivy\Organization\Comment;
 use Enlivy\Organization\Contract;
 use Enlivy\Organization\Connection;
@@ -162,6 +163,7 @@ final class ObjectTypes
         'bank_transaction_cost_type' => BankTransactionCostType::class,
         'blocked_identifier' => BlockedIdentifier::class,
         'billing_schedule' => BillingSchedule::class,
+        'checkout_session' => CheckoutSession::class,
 
         // Organization-scoped: Contracts
         'contract' => Contract::class,

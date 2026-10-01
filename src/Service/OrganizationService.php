@@ -16,6 +16,8 @@ class OrganizationService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
+    protected const ?string RESOURCE_CLASS = Organization::class;
+
     public const array AVAILABLE_INCLUDES = [
         'schema',
         'user_abilities',

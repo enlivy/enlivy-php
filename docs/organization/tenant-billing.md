@@ -106,7 +106,7 @@ $invoice = $client->tenantBillingInvoices->charge('org_inv_xxx');
 $result = $invoice->lastResponse()?->json['meta']['charge_result'] ?? null;
 ```
 
-The returned record is the refreshed invoice; the outcome of the attempt itself is on the response meta as `charge_result`. An API-charged invoice also carries the retry state directly:
+The returned record is the refreshed invoice; the outcome of the attempt itself is on the response meta as `charge_result`. When your bank wants you to approve the payment, the meta also carries `payment` (`client_secret`, `stripe_publishable_key`, `amount` in minor units, `currency`, and `stripe_account_id`, always null), for confirming it with Stripe.js where you are. `charge_result.next_action_url` is the fallback when it is absent. An API-charged invoice also carries the retry state directly:
 
 | Field | Description |
 |-------|-------------|

@@ -15,6 +15,7 @@ use Enlivy\Service\Organization\BankAccount\BankTransactionCostTypeService;
 use Enlivy\Service\Organization\BlockedIdentifierService;
 use Enlivy\Service\Organization\BankAccount\BankTransactionService;
 use Enlivy\Service\Organization\BillingScheduleService;
+use Enlivy\Service\Organization\CheckoutSessionService;
 use Enlivy\Service\Organization\Contract\ContractPrefixService;
 use Enlivy\Service\Organization\Contract\ContractService;
 use Enlivy\Service\Organization\Contract\ContractSignatureNotificationLogService;
@@ -170,6 +171,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'blockedIdentifiers' => BlockedIdentifierService::class,
             'bankAccountData' => BankAccountDataService::class,
             'billingSchedules' => BillingScheduleService::class,
+            'checkoutSessions' => CheckoutSessionService::class,
 
             // Org-scoped: Contracts
             'contracts' => ContractService::class,

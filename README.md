@@ -101,6 +101,7 @@ Detailed guides with code examples for every feature:
 | [Invoices](docs/organization/invoices.md) | Create, send, charge, and chase invoices, including scheduled payment reminders |
 | [Receipts](docs/organization/receipts.md) | Receipt management and tracking |
 | [Billing Packages](docs/organization/billing-packages.md) | Reusable billing templates with payment plans |
+| [Checkout Sessions](docs/organization/checkout-sessions.md) | Open a checkout for a customer from your server, paid by card or transfer, ending as a billing schedule |
 | [Proposals](docs/organization/proposals.md) | Send proposals to prospects and customers |
 | [Products](docs/organization/products.md) | Product and service catalog |
 | [Taxes](docs/organization/taxes.md) | Tax classes and rates, plus the compliance engine: registrations, the tax-event subledger, and filing periods |

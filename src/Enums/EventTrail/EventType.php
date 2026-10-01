@@ -31,4 +31,5 @@ enum EventType: string
     case SCHEDULED_PAYMENT_CHANGED = 'scheduled_payment_changed';
     case JURISDICTION_CHANGED = 'jurisdiction_changed';
     case AGREEMENT_CHANGED = 'agreement_changed';
+    case NEEDS_ATTENTION = 'needs_attention';
 }

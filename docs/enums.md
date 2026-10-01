@@ -66,6 +66,9 @@ set. A selection relevant to recently added features:
 | `Prospect\DuplicateConfidence` | `high`, `medium`, `low` |
 | `Prospect\DuplicateSignals` | `linked_organization_user`, `email`, `phone_number`, `name` |
 | `Prospect\MergeBlockers` | `conflicting_linked_user`, `different_project`, `conflicting_outcome` |
+| `CheckoutSession\Statuses` | `open`, `complete`, `expired` |
+| `CheckoutSession\PaymentStatuses` | `unpaid`, `paid`, `no_payment_required` |
+| `CheckoutSession\Modes` | `payment`, `setup` |
 | `Task\TaskStatuses` | `not_started`, `in_progress`, `waiting`, `completed`, `cancelled` |
 | `Task\TaskCancelReasons` | `no_longer_needed`, `duplicate`, `parent_cancelled` |
 | `Task\TaskOrigins` | `manual`, `automation`, `import`, `request` |
@@ -101,6 +104,7 @@ set. A selection relevant to recently added features:
 | `BillingSchedule\Statuses` | `pending`, `active`, `payment_method_required`, `payment_failed`, `paused`, `completed`, `cancelled` |
 | `BillingSchedule\InvoiceIssueTrigger` | `on_generation`, `on_payment` |
 | `Payment\RefundStatus` | `succeeded`, `failed`, `pending` |
+| `Payment\AttentionIssue` | the `issue` in a `needs_attention` event-trail entry's metadata: `double_payment`, `amount_mismatch`, `checkout_not_settled`, `proforma_part_paid`, `payment_on_cancelled_proforma` |
 | `BillingPackage\ContractSectionContentSources` | `standard`, `reusable_content`, `purchase_items`, `purchase_terms`, `purchase_summary`, `product_list`, `purchased_product_list` |
 | `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
 | `ExportData\Types` | `full`, `accounting_saga` |

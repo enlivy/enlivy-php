@@ -32,6 +32,7 @@ use Enlivy\ApiResource;
  * @property float $discount
  * @property float $total
  * @property array|null $allowed_payment_methods
+ * @property string|null $payment_method_kind
  * @property array|null $organization_bank_account_ids
  * @property string|null $outcome_mode
  * @property string|null $currency_conversion_fee

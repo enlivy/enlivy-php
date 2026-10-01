@@ -1,8 +1,23 @@
 # Upgrading
 
-What may need a change on your side in the last three releases, newest first. Older versions,
-and the full notes for 3.2.0 and 3.1.0, are in
-[UPGRADING.md at 3.2.0](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md).
+What may need a change on your side in the last three releases, newest first. The notes for
+3.1.0 are in [UPGRADING.md at 3.3.0](https://github.com/enlivy/enlivy-php/blob/3.3.0/UPGRADING.md),
+and older versions in [UPGRADING.md at 3.2.0](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md).
+
+## 3.4.0
+
+The customer portal's proposal payment is one call now. The two routes it replaced are gone from
+the API, so the old methods answered `404`.
+
+| Before | After |
+|---|---|
+| `$portal->proposals->selectPaymentMethod($id, ['payment_method_kind' => …])` then `createPaymentIntent($id)` | `$portal->proposals->pay($id, ['payment_method_kind' => 'card'])` |
+
+- `pay()` answers `payment_method_kind`, `payment_provider` and what Stripe.js confirms for a card,
+  or the transfer instructions for a bank transfer. `confirmPayment()` is unchanged.
+- `charge_result.next_action_url` is no longer a 3DS page to redirect to: it is a payment link the
+  customer has already been emailed. Show it if they are with you; do not email it again.
+- An OAuth access token can no longer mint personal access tokens or register OAuth clients.
 
 ## 3.3.0
 
@@ -56,21 +71,3 @@ still need; your task statuses were kept, as task stages.
   prefix `current_number` that is not a positive integer or would reissue a number, and a product
   naming a retired `organization_tax_class_id`.
 - Payroll writes need the `payroll` feature pack, and answer `402` without it.
-
-## 3.1.0
-
-The prospect **status** became the prospect **stage** everywhere, with no aliases. A search for
-`prospect_status`, `ProspectStatus` and `prospectStatuses` finds most uses; the table has the rest.
-
-| Before | After |
-|---|---|
-| `$client->prospectStatuses`, `$client->projectProspectStatuses` | `$client->prospectStages`, `$client->projectProspectStages` |
-| `Organization\ProspectStatus` | `Organization\ProspectStage` |
-| `Enums\Prospect\StatusTypes` | `Enums\Prospect\StageTypes`, same cases |
-| `prospect_status` in include, filter and field names; `status_type` | `prospect_stage`; `stage_type` |
-| board column `status`; analytics `by_status`, `by_status_type`, `*_in_current_status` | `stage`; `by_stage`, `by_stage_type`, `*_in_current_stage` |
-| portal board filter `status_types` | `stage_types` |
-
-- Prospect stages belong to a pipeline: name `organization_prospect_pipeline_id` when you create
-  one.
-- Payslip totals are computed from `lines`: send lines, not totals.

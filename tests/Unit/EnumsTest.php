@@ -15,6 +15,9 @@ use Enlivy\Enums\BlockedIdentifier\Sources as BlockedIdentifierSources;
 use Enlivy\Enums\BlockedIdentifier\Types as BlockedIdentifierTypes;
 use Enlivy\Enums\BillingSchedule\InvoiceIssueTrigger;
 use Enlivy\Enums\BillingSchedule\Statuses as BillingScheduleStatuses;
+use Enlivy\Enums\CheckoutSession\Modes as CheckoutSessionModes;
+use Enlivy\Enums\CheckoutSession\PaymentStatuses as CheckoutSessionPaymentStatuses;
+use Enlivy\Enums\CheckoutSession\Statuses as CheckoutSessionStatuses;
 use Enlivy\Enums\Concern\EnumValues;
 use Enlivy\Enums\Receipt\Directions as ReceiptDirections;
 use Enlivy\Enums\Receipt\Sources as ReceiptSources;
@@ -22,6 +25,8 @@ use Enlivy\Enums\Import\StopReasons;
 use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
 use Enlivy\Enums\Organization\EntityManifest;
 use Enlivy\Enums\Organization\Environments;
+use Enlivy\Enums\EventTrail\EventType as EventTrailEventType;
+use Enlivy\Enums\Payment\AttentionIssue;
 use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Contract\PartyIdentityRequirements;
@@ -127,6 +132,9 @@ final class EnumsTest extends TestCase
             BillingScheduleStatuses::values(),
         );
         $this->assertSame(['on_generation', 'on_payment'], InvoiceIssueTrigger::values());
+        $this->assertSame(['open', 'complete', 'expired'], CheckoutSessionStatuses::values());
+        $this->assertSame(['unpaid', 'paid', 'no_payment_required'], CheckoutSessionPaymentStatuses::values());
+        $this->assertSame(['payment', 'setup'], CheckoutSessionModes::values());
         $this->assertSame(['sale', 'funding', 'agreement'], OutcomeMode::values());
         $this->assertSame(['fixed', 'percent_of_baseline'], TierPriceType::values());
         $this->assertSame(['standard', 'custom'], ContractPartySelections::values());
@@ -153,6 +161,11 @@ final class EnumsTest extends TestCase
         $this->assertContains('bulk', InboundEmailInterpretations::values());
         $this->assertContains('website', WebLinkKinds::values());
         $this->assertContains('directory', WebLinkKinds::values());
+        $this->assertContains('needs_attention', EventTrailEventType::values());
+        $this->assertSame(
+            ['double_payment', 'amount_mismatch', 'checkout_not_settled', 'proforma_part_paid', 'payment_on_cancelled_proforma'],
+            AttentionIssue::values(),
+        );
     }
 
     /**
@@ -223,6 +236,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(171, $count, 'Expected at least 171 mirrored enums');
+        $this->assertGreaterThanOrEqual(175, $count, 'Expected at least 175 mirrored enums');
     }
 }

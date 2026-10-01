@@ -35,6 +35,12 @@ Third-Party App         Enlivy API            User Browser
       | 7. Access + Refresh tokens                  |
 ```
 
+### What an Access Token Reaches
+
+An access token acts only inside the organizations the user granted, within its scopes. Outside
+them it reaches its own grant (`oauth/me`) and the organization list, and nothing else: it cannot
+mint personal access tokens, register OAuth clients or read an organization it was not granted.
+
 ## Managing OAuth Clients
 
 ### Create OAuth Client

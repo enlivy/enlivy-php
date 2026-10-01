@@ -34,6 +34,18 @@ Portal Session
 | `reports` | View and submit reports |
 | `payment_methods` | Manage saved payment methods |
 | `helpdesk` | Reach the support desk — the one to grant a session minted only for chat |
+| `working_time` | Record and review working time |
+| `payslips` | View and download payslips |
+| `knowledge` | Read guidelines and playbooks |
+| `billing_schedules` | View and manage subscriptions |
+| `projects` | View the projects they belong to |
+| `prospects` | Work the prospect pipelines a project grants them |
+| `checkout` | Buy a billing package from the catalogue |
+
+A session created with a list reaches only what it lists. One created without `permissions` reaches
+everything. Every session keeps its profile, proposals, the package catalogue and the choice of
+session, which a narrow session needs to identify the customer and finish what it was opened for.
+The portal overview follows the same rule: a section the session cannot reach answers empty.
 
 ### Portal Base URL
 
@@ -112,14 +124,7 @@ $session = $client->userClientPortalSessions->create([
     'name' => 'Full Portal Access',
     'organization_user_id' => 'org_user_xxx',
 
-    // Grant all permissions
-    'permissions' => [
-        'invoices',
-        'network_exchanges',
-        'receipts',
-        'contracts',
-        'reports',
-    ],
+    // No `permissions`: the session reaches everything
 
     'validity_hours' => 48,
     'authentication_method' => 'magic_authentication', // No verification needed

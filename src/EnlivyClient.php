@@ -58,6 +58,7 @@ use Enlivy\Service;
  * @property Service\Organization\BankAccount\BankTransactionCostTypeService $bankTransactionCostTypes
  * @property Service\Organization\BankAccount\BankAccountDataService $bankAccountData
  * @property Service\Organization\BillingScheduleService $billingSchedules
+ * @property Service\Organization\CheckoutSessionService $checkoutSessions
  *
  * Organization-scoped services - Contracts:
  * @property Service\Organization\Contract\ContractService $contracts

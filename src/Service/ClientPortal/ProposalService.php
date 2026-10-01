@@ -61,18 +61,21 @@ class ProposalService extends AbstractPortalService
         return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/reject"), $params, $opts);
     }
 
-    public function selectPaymentMethod(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
+    /**
+     * Pay the first payment of an accepted proposal. A card answers `payment_method_kind`, `payment_provider`
+     * and what Stripe.js confirms; a bank transfer answers `payment_method_kind` and the transfer instructions.
+     *
+     * @param array{
+     *     organization_id?: string,
+     *     payment_method_kind: 'card'|'bank_transfer',
+     *     organization_user_payment_method_id?: string|null,
+     * } $params
+     */
+    public function pay(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/select-payment-method"), $params, $opts);
-    }
-
-    public function createPaymentIntent(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
-    {
-        $orgId = $this->resolveOrganizationId($params, $opts);
-
-        return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/create-payment-intent"), $params, $opts);
+        return $this->request('POST', $this->portalPath($orgId, "proposals/{$id}/pay"), $params, $opts, EnlivyObject::class);
     }
 
     public function confirmPayment(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject

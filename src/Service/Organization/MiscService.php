@@ -26,6 +26,35 @@ class MiscService extends AbstractService
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/calculate-currency-conversion'), $params, $opts);
     }
 
+    /**
+     * What a checkout session for this order and buyer would charge, priced exactly as creating one does and
+     * never saved. The buyer is `organization_receiver_user_id`, or `country_code` with `is_business_entity`
+     * before they are a customer. Needs the billing schedules pack.
+     *
+     * @param array{
+     *     organization_id?: string,
+     *     organization_billing_package_id: string,
+     *     organization_billing_package_subscription_term_id?: string,
+     *     organization_billing_package_payment_plan_id?: string,
+     *     line_quantities?: list<array{id: string, quantity: int}>,
+     *     selected_group_items?: list<array{id: string, quantity?: int}>,
+     *     currency?: string,
+     *     start_at?: string,
+     *     organization_receiver_user_id?: string,
+     *     country_code?: string,
+     *     is_business_entity?: bool,
+     *     is_eu_vat_registered?: bool,
+     *     iso_3166?: string,
+     *     zip_code?: string,
+     * } $params
+     */
+    public function calculateBillingPackagePrice(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/calculate-billing-package-price'), $params, $opts);
+    }
+
     public function calculateDueDate(array $params, ?RequestOptions $opts = null): EnlivyObject
     {
         $orgId = $this->resolveOrganizationId($params, $opts);

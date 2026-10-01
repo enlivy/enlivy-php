@@ -522,6 +522,7 @@ Returned on read, not writable:
 | `portal_url` | string\|null | Customer-portal address for this proposal |
 | `stage` | string | Where the proposal sits — see [Stages](#stages) |
 | `outcome_mode` | string\|null | What the proposal settles into — see below |
+| `payment_method_kind` | string\|null | The way of paying the customer chose, `card` or `bank_transfer`; null until chosen |
 
 `outcome_mode` is inherited from the billing package the proposal was built from, or set once on
 `create()` for a custom proposal. It is rejected on `update()`: what a document settles into is
@@ -625,7 +626,7 @@ currency they are accepting in:
 use Enlivy\EnlivyPortalClient;
 
 $portal = new EnlivyPortalClient([
-    'session_token' => $sessionToken,
+    'portal_token' => $sessionToken,
     'organization_id' => 'org_xxx',
 ]);
 
@@ -655,6 +656,29 @@ choice at all.
 `amount` is a **decimal string**, not a float — it is money, already rounded to the currency's minor
 unit and with the conversion fee applied. Keep it in string or decimal form; casting it to a float to
 do arithmetic is how rounding errors get into invoices.
+
+## Paying an Accepted Proposal
+
+The customer pays the first payment of an accepted proposal in one call, by card or by bank
+transfer. A card answers what Stripe.js confirms in their browser, so a server cannot finish it
+alone; a transfer answers the bank details and the reference to pay with.
+
+```php
+<?php
+
+$payment = $portal->proposals->pay('org_prop_xxx', [
+    'payment_method_kind' => 'card', // or 'bank_transfer'
+    // 'organization_user_payment_method_id' => 'org_userpm_xxx', // a saved card
+]);
+
+// After Stripe.js confirms a new card in the browser
+$proposal = $portal->proposals->confirmPayment('org_prop_xxx', [
+    'payment_intent_id' => 'pi_xxx',
+]);
+```
+
+A card proposal's invoice is issued with the payment, not at acceptance. Read the proposal's
+`payment_method_kind` to resume a customer at the right step.
 
 ## Notification Logs
 

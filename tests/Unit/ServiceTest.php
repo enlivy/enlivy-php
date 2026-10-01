@@ -433,6 +433,94 @@ final class ServiceTest extends TestCase
         $this->assertSame(4995.00, $request['params']['displayed_amount']);
     }
 
+    public function testPortalProposalPaysInOneCallAndAnswersWhatTheBrowserConfirms(): void
+    {
+        $portal = new \Enlivy\EnlivyPortalClient([
+            'portal_token' => 'portal_tok',
+            'organization_id' => 'org_default',
+            'http_client' => $this->httpClient,
+        ]);
+        $this->httpClient->addResponse(200, ['data' => [
+            'payment_method_kind' => 'card',
+            'payment_provider' => 'stripe',
+            'client_secret' => 'pi_1_secret',
+        ]]);
+
+        $payment = $portal->proposals->pay('org_prop_1', [
+            'payment_method_kind' => 'card',
+            'organization_user_payment_method_id' => 'org_userpm_1',
+        ]);
+
+        $this->assertNotInstanceOf(\Enlivy\Organization\Proposal::class, $payment);
+        $this->assertSame('pi_1_secret', $payment->client_secret);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringEndsWith('/proposals/org_prop_1/pay', $request['url']);
+        $this->assertSame('card', $request['params']['payment_method_kind']);
+        $this->assertFalse(method_exists($portal->proposals, 'selectPaymentMethod'));
+        $this->assertFalse(method_exists($portal->proposals, 'createPaymentIntent'));
+    }
+
+    public function testPortalCustomerOpensACheckoutSessionAndGetsItsTokenOnce(): void
+    {
+        $portal = new \Enlivy\EnlivyPortalClient([
+            'portal_token' => 'portal_tok',
+            'organization_id' => 'org_default',
+            'http_client' => $this->httpClient,
+        ]);
+        $this->httpClient->addResponse(201, [
+            'data' => ['id' => 'org_chk_sess_1', 'object' => 'checkout_session', 'payment_method_kinds' => ['card']],
+            'meta' => ['client_token' => 'tok_once'],
+        ]);
+
+        $session = $portal->billingPackages->openCheckoutSession('org_bp_1', [
+            'organization_billing_package_subscription_term_id' => 'org_bp_st_1',
+            'source_campaign' => 'autumn',
+        ]);
+
+        $this->assertSame(['card'], $session->payment_method_kinds);
+        $this->assertSame('tok_once', $session->lastResponse()?->json['meta']['client_token']);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringEndsWith('/billing-packages/org_bp_1/checkout-session', $request['url']);
+        $this->assertSame('autumn', $request['params']['source_campaign']);
+    }
+
+    public function testStaffSendAnInvoicesPaymentLink(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['message' => 'sent']]);
+
+        $result = $this->client->invoices->sendPaymentLink('org_inv_1', ['message' => 'Pay online']);
+
+        $this->assertNotInstanceOf(\Enlivy\Organization\Invoice::class, $result);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringEndsWith('/organizations/org_default/invoices/org_inv_1/payment-link', $request['url']);
+        $this->assertSame('Pay online', $request['params']['message']);
+    }
+
+    public function testMiscPreviewsABillingPackagePriceForAVisitor(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => [
+            'mode' => 'payment',
+            'total' => '121.000000',
+            'payments' => [['frequency' => 'monthly', 'occurrences' => null]],
+        ]]);
+
+        $preview = $this->client->misc->calculateBillingPackagePrice([
+            'organization_billing_package_id' => 'org_bp_1',
+            'country_code' => 'RO',
+            'is_business_entity' => false,
+        ]);
+
+        $this->assertSame('payment', $preview->mode);
+        $this->assertNull($preview->payments[0]['occurrences']);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/misc/calculate-billing-package-price', $request['url']);
+        $this->assertSame('org_bp_1', $request['params']['organization_billing_package_id']);
+    }
+
     public function testProspectAnalyticsResolveUnderTheProspectsPath(): void
     {
         $this->httpClient->addResponse(200, ['data' => []]);
@@ -633,6 +721,16 @@ final class ServiceTest extends TestCase
         $request = $this->httpClient->getLastRequest();
         $this->assertSame('POST', $request['method']);
         $this->assertStringContainsString('/organizations/org_1/sandboxes', $request['url']);
+    }
+
+    public function testOrganizationRetrieveIsTypedWithoutAnObjectField(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_1', 'name' => 'Acme']]);
+
+        $organization = $this->client->organizations->retrieve('org_1');
+
+        $this->assertInstanceOf(Organization::class, $organization);
+        $this->assertSame('Acme', $organization->name);
     }
 
     /**

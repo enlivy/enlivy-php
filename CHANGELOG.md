@@ -3,6 +3,47 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.4.0] - 2026-10-01
+
+Packages sell through checkout sessions, an accepted proposal is paid in one call, and an open
+invoice can be paid from an emailed link without signing in.
+Scoped as a minor: the two removed methods called routes the API had already retired.
+New docs: [Checkout Sessions](docs/organization/checkout-sessions.md). See [UPGRADING](UPGRADING.md).
+
+### Removed
+
+- Portal `proposals->selectPaymentMethod()` and `proposals->createPaymentIntent()`: the API replaced both routes with `proposals->pay()`.
+
+### Added
+
+- `checkoutSessions` (list/retrieve/create/expire) and the `CheckoutSession` resource; `create()` honours `RequestOptions::$idempotencyKey`, and the browser's token is on the response meta as `client_token`.
+- `checkoutSessions->update()`: corrects the reference, campaign fields and metadata, and moves an open session's expiry later.
+- `Enlivy\Embed\CheckoutEmbed`: renders the checkout embed for a session's client token, escaped for an inline script, with an optional CSP nonce.
+- `examples/checkout` (in the repository, left out of the Composer package): a runnable site that sells a package end to end against a sandbox organization.
+- `misc->calculateBillingPackagePrice()`: what a checkout session would charge, priced as one and never saved.
+- `invoices->sendPaymentLink()`: email the customer a link to pay an open invoice without signing in.
+- Portal `proposals->pay()` (card or bank transfer) and `billingPackages->openCheckoutSession()`.
+- `Proposal::$payment_method_kind`.
+- Enums `CheckoutSession\Statuses`, `CheckoutSession\PaymentStatuses`, `CheckoutSession\Modes`, `Payment\AttentionIssue`.
+- Enum cases: `UserClientPortal\SessionPermissions` (`working_time`, `payslips`, `knowledge`, `billing_schedules`, `projects`, `prospects`, `checkout`), `EventDelivery\TriggerEvent` (`checkout_session.completed`, `checkout_session.expired`), `EventTrail\EventType` (`needs_attention`).
+
+### Changed
+
+- A charge whose `charge_result.status` is `requires_action` now answers a `next_action_url` that is a payment link already emailed to the customer, and automatic retries wait for it with `error_code` `awaiting_customer_action`. A tenant charge needing approval also answers `meta.payment` for Stripe.js.
+- A card proposal's invoice is issued with its payment, not at acceptance.
+- An OAuth access token reaches only the organizations it was granted, its own grant and the organization list.
+- Portal `billingPackages->claim()` returns the claimed `Proposal`, with typed params; it is being retired in favour of `openCheckoutSession()`.
+- A portal session created with `permissions` now reaches only what it lists; one created without them reaches everything. The profile, proposals, the package catalogue and session selection stay open to every session.
+- A payment plan phase without `max_occurrences` bills until the schedule is cancelled.
+- Deleting a prospect stage also deletes the paths into and out of it, and restoring the stage brings them back; a path cannot lead to a deleted stage.
+
+### Fixed
+
+- The invoice email examples sent `to`, `cc` and `subject`, which the API does not read; it takes `send_to`, `message`, `locale` and `type`.
+- `organizations->retrieve()`, `create()`, `update()`, `delete()`, `restore()` and `createSandbox()` threw a `TypeError`; they return `Organization`.
+- The portal proposal example built the client with `session_token`; the key is `portal_token`.
+- The `prospects->advance()` example left out the required `organization_prospect_stage_path_id` and sent a `note` the API does not read.
+
 ## [3.3.0] - 2026-09-27
 
 Tasks are rebuilt on typed board stages, with assignees and followers, links, comments, a feed

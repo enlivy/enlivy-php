@@ -81,6 +81,8 @@ enum TriggerEvent: string
     case PROPOSAL_EXPIRED = 'proposal.expired';
     case PROPOSAL_VIEWED = 'proposal.viewed';
     case PROPOSAL_REOPENED = 'proposal.reopened';
+    case CHECKOUT_SESSION_COMPLETED = 'checkout_session.completed';
+    case CHECKOUT_SESSION_EXPIRED = 'checkout_session.expired';
     case PRODUCT_CREATED = 'product.created';
     case PRODUCT_UPDATED = 'product.updated';
     case PRODUCT_DELETED = 'product.deleted';

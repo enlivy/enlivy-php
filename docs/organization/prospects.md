@@ -80,7 +80,7 @@ $prospect = $client->prospects->create([
     'source_referrer_organization_user_id' => 'org_user_referrer_xxx', // Optional referrer
 
     // Pipeline position
-    'organization_prospect_stage_id' => 'org_pros_stage_qualified_xxx',
+    'organization_prospect_stage_id' => 'org_pros_stat_qualified',
 
     // Assignment
     'assigned_organization_user_id' => 'org_user_sales_rep_xxx',
@@ -160,7 +160,7 @@ echo "Total prospects: {$prospects->getTotalCount()}\n";
 
 // By status
 $qualified = $client->prospects->list([
-    'organization_prospect_stage_id' => 'org_pros_stage_qualified_xxx',
+    'organization_prospect_stage_id' => 'org_pros_stat_qualified',
 ]);
 
 // By assigned user
@@ -422,19 +422,27 @@ longer than that is reported as stalled by the `is_stalled` filter and the analy
 <?php
 
 $prospect = $client->prospects->update('org_pros_xxx', [
-    'organization_prospect_stage_id' => 'org_pros_stage_qualified_xxx',
+    'organization_prospect_stage_id' => 'org_pros_stat_qualified',
 ]);
 ```
 
 ### Advance to the Next Stage
 
+A stage's paths say where a prospect can go next, and `advance()` follows one that leads out of
+the prospect's current stage. A stage lists them under its `paths` include.
+
 ```php
 <?php
 
 $prospect = $client->prospects->advance('org_pros_xxx', [
-    'note' => 'Client confirmed budget and timeline.',
+    'organization_prospect_stage_path_id' => 'org_pros_status_path_xxx',
+    'description' => 'Client confirmed budget and timeline.',
 ]);
 ```
+
+Deleting a stage also deletes the paths into and out of it, and restoring the stage brings back
+the ones removed with it, unless the stage at their other end is still deleted. A path cannot lead
+to a deleted stage.
 
 ### Arrange Cards Within a Column
 

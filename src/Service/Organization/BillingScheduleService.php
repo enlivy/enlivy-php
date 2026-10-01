@@ -116,7 +116,7 @@ class BillingScheduleService extends AbstractService
      *   $schedule = $client->billingSchedules->fromBillingPackage([...]);
      *   $meta = $schedule->lastResponse()?->json['meta'] ?? [];
      *   $meta['charge_result']['status'] ?? null;  // succeeded | requires_action | failed | already_paid
-     *   $meta['charge_result']['next_action_url'] ?? null;  // 3DS/SCA redirect when requires_action
+     *   $meta['charge_result']['next_action_url'] ?? null;  // the approval link already emailed to the customer
      *   $meta['invoice_id'] ?? null;  // the invoice the first cycle generated
      *
      * `charge_result` is null when nothing was billed (schedule not active, starts

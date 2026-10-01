@@ -526,14 +526,33 @@ $invoice = $client->invoices->update('org_inv_xxx', [
 <?php
 
 $result = $client->invoices->email('org_inv_xxx', [
-    'to' => ['customer@example.com'],
-    'cc' => ['accounting@mycompany.com'],
-    'subject' => 'Invoice #INV-2026-0001 from Acme Corp',
+    'send_to' => 'customer@example.com', // omit to use the customer's own address
     'message' => 'Please find attached your invoice. Payment is due within 30 days.',
+    'locale' => 'auto', // or a locale code
+    'type' => 'pdf',    // or 'ro_xml'
 ]);
 
 echo "Email sent successfully\n";
 ```
+
+### Via Payment Link
+
+The customer gets the invoice and a link to pay it online, without signing in. The link works for
+30 days, or until the invoice is paid. The message is optional; the other keys are those of
+`email()`.
+
+```php
+<?php
+
+$client->invoices->sendPaymentLink('org_inv_xxx', [
+    'message' => 'You can pay this invoice online.',
+]);
+```
+
+Only an open invoice the organization issued in Enlivy takes a link. The API answers `422` with the
+reason for a bill you received, a credit note, an invoice imported from another system, one already
+paid, part paid or cancelled, one awaiting approval, one with nothing to pay, or one with no
+customer, and `503` when the organization has no way to send email.
 
 ### Via PEPPOL (E-Invoicing)
 
@@ -773,8 +792,6 @@ try {
     ]);
 
     $client->invoices->email($invoice->id, [
-        'to' => ['customer@example.com'],
-        'subject' => "Invoice {$invoice->number}",
         'message' => 'Please find your invoice attached.',
     ]);
 

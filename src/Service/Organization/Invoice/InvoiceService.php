@@ -141,6 +141,25 @@ class InvoiceService extends AbstractService
     }
 
     /**
+     * Email the customer a link to pay this invoice online, without signing in. Only for an open invoice the
+     * organization issued in Enlivy; the API answers 422 with the reason otherwise.
+     *
+     * @param array{
+     *     organization_id?: string,
+     *     send_to?: string|null,
+     *     message?: string|null,
+     *     locale?: string,
+     *     type?: 'pdf'|'ro_xml',
+     * } $params
+     */
+    public function sendPaymentLink(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/payment-link"), $params, $opts, EnlivyObject::class);
+    }
+
+    /**
      * Push an invoice to a tax-authority e-invoicing network. Pass an optional
      * `document_type_code` (`380` commercial invoice, `381` credit note) to
      * override the document type inferred from the invoice.

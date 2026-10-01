@@ -90,8 +90,10 @@ $portal = new \Enlivy\EnlivyPortalClient([
 - Include keys are always `snake_case` in `AVAILABLE_INCLUDES` and must match
   the API exactly.
 - Global filters (`q`, `q_in`, `ids`, `order_by`, `order`, `page`, `per_page`,
-  `deleted`, `tag_ids`) are handled by the `HasFilters` trait — never redeclare
+  `limit`, `deleted`, `tag_ids`) are handled by the `HasFilters` trait — never redeclare
   them in a service's `AVAILABLE_FILTERS`.
+- A response's `meta` (a one-time `client_token`, a `charge_result`) is read through
+  `$obj->lastResponse()?->json['meta']`; document it on the method, never as a resource property.
 - Date-range filters (`created_at_from/to`, `updated_at_from/to`, …) are **not**
   global; only declare them on services whose endpoint actually supports them.
 - Only declare includes/filters the API actually accepts for that entity. Don't
