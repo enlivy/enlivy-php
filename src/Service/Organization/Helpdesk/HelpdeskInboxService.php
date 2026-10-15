@@ -29,6 +29,7 @@ class HelpdeskInboxService extends AbstractService
         'organization_project',
         'owner_teammate',
         'default_teammate',
+        'team',
         'organization_api_credential',
         'branding_logo_file',
         'branding_icon_file',
@@ -87,6 +88,6 @@ class HelpdeskInboxService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts, EnlivyObject::class);
     }
 }

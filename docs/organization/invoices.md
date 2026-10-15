@@ -156,6 +156,30 @@ $invoice = $client->invoices->create([
 ]);
 ```
 
+### Invoice Languages
+
+`locale` and `locale_list` are writable on `create()` and `update()`:
+
+| Field | Meaning |
+|---|---|
+| `locale` | The invoice's primary language. `null` means the organization's language. |
+| `locale_list` | Extra languages the invoice prints in, besides `locale`. Refused when `source` is `external`. |
+
+Once a request sends either field, the keys of every line's `name_lang_map` and of `note_lang_map`
+are held to those languages, and each line's `name_lang_map` must carry the primary language. A
+request that sends neither validates as before.
+
+```php
+$invoice = $client->invoices->create([
+    // ...
+    'locale' => 'en',
+    'locale_list' => ['ro'],
+    'line_items' => [
+        ['name_lang_map' => ['en' => 'Website Design', 'ro' => 'Design Website'] /* , ... */],
+    ],
+]);
+```
+
 ### Line Item with Billing Period
 
 ```php
@@ -432,7 +456,7 @@ foreach ($invoices as $invoice) {
 
 // Unpaid invoices
 $unpaid = $client->invoices->list([
-    'status' => ['draft', 'sent'],
+    'status' => ['draft', 'sent_email'],
 ]);
 
 // Invoices for specific customer
@@ -448,7 +472,7 @@ $thisMonth = $client->invoices->list([
 
 // Overdue invoices
 $overdue = $client->invoices->list([
-    'status' => 'sent',
+    'status' => 'sent_email',
     'due_at_to' => date('Y-m-d'), // Due before today
 ]);
 ```
@@ -463,12 +487,9 @@ $invoices = $client->invoices->list([
 ]);
 
 foreach ($invoices as $invoice) {
-    $customerName = $invoice->receiver_user->name
-        ?? "{$invoice->receiver_user->first_name} {$invoice->receiver_user->last_name}";
+    echo "{$invoice->number} - {$invoice->receiver_user?->data->name}\n";
 
-    echo "{$invoice->number} - {$customerName}\n";
-
-    foreach ($invoice->line_items ?? [] as $item) {
+    foreach ($invoice->line_items->data ?? [] as $item) {
         $name = $item->name_lang_map['en'] ?? array_values($item->name_lang_map)[0] ?? 'Item';
         echo "  - {$name}: {$item->quantity} x {$item->price}\n";
     }
@@ -481,11 +502,11 @@ foreach ($invoices as $invoice) {
 <?php
 
 $invoice = $client->invoices->retrieve('org_inv_xxx', [
-    'include' => ['receiver_user', 'line_items', 'notification_logs'],
+    'include' => ['receiver_user', 'line_items'],
 ]);
 
 echo "Invoice: {$invoice->number}\n";
-echo "Customer: {$invoice->receiver_user->email}\n";
+echo "Customer: {$invoice->receiver_user?->data->email}\n";
 echo "Status: {$invoice->status}\n";
 echo "Sub Total: {$invoice->sub_total} {$invoice->currency}\n";
 echo "Tax: {$invoice->tax_total} {$invoice->currency}\n";
@@ -507,7 +528,7 @@ $invoice = $client->invoices->update('org_inv_xxx', [
 
 // Change status
 $invoice = $client->invoices->update('org_inv_xxx', [
-    'status' => 'sent',
+    'status' => 'sent_email',
     'issued_at' => date('Y-m-d'),
 ]);
 
@@ -618,15 +639,12 @@ echo "Invoice restored: {$invoice->number}\n";
 ```php
 <?php
 
-// Add tags
-$invoice = $client->invoices->tag('org_inv_xxx', [
-    'tags' => ['priority', 'q1-2026'],
-]);
+// Add existing tags by id or alias (create them with $client->tags)
+$client->invoices->addTag('org_inv_xxx', 'priority');
+$client->invoices->addTag('org_inv_xxx', 'q1-2026');
 
 // Remove tags
-$invoice = $client->invoices->untag('org_inv_xxx', [
-    'tags' => ['priority'],
-]);
+$client->invoices->removeTag('org_inv_xxx', 'priority');
 ```
 
 ## Working with Invoice Prefixes
@@ -667,7 +685,7 @@ invoices sent through another system, etc. They differ from internal invoices in
 
 $invoice = $client->invoices->create([
     'organization_receiver_user_id' => 'org_user_xxx',
-    'status' => 'sent',
+    'status' => 'sent_email',
     'currency' => 'EUR',
     'source' => 'external', // Uploaded, not generated
     'direction' => 'inbound', // Received from someone
@@ -707,7 +725,7 @@ Accepted file types: PDF, PNG, JPEG, DOC, DOCX, TXT.
 // Upload file when creating an external invoice
 $invoice = $client->invoices->create([
     'organization_receiver_user_id' => 'org_user_xxx',
-    'status' => 'sent',
+    'status' => 'sent_email',
     'currency' => 'EUR',
     'source' => 'external',
     'direction' => 'inbound',
@@ -787,7 +805,7 @@ try {
 
     // 5. Send to customer
     $invoice = $client->invoices->update($invoice->id, [
-        'status' => 'sent',
+        'status' => 'sent_email',
         'issued_at' => date('Y-m-d'),
     ]);
 

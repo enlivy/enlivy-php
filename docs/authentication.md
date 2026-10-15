@@ -4,7 +4,7 @@ The Enlivy SDK supports two authentication methods: API Keys and OAuth 2.0.
 
 ## API Key Authentication
 
-API keys are the simplest way to authenticate. Get your API key from your Enlivy dashboard.
+API keys are the simplest way to authenticate. Create one in the Enlivy app.
 
 ### Global Configuration (Recommended)
 
@@ -269,117 +269,20 @@ $config = Enlivy::toArray();
 print_r($config);
 ```
 
-## API Token Management
+## Signing In and Managing API Keys
 
-The SDK provides methods for managing API tokens programmatically.
+Signing in, registering, resetting a password and verifying an email or phone number happen in the
+Enlivy app, not through the API. API keys are created, re-scoped and revoked there too: the
+endpoints that manage them accept only a dashboard sign-in, which an API key or OAuth token cannot
+obtain.
 
-### List Tokens
-
-```php
-<?php
-
-use Enlivy\EnlivyClient;
-
-$client = new EnlivyClient([
-    'api_key' => '1|your_api_token',
-]);
-
-$tokens = $client->userTokens->list('user_xxx');
-
-foreach ($tokens as $token) {
-    echo "{$token->name}: {$token->token}\n";
-    echo "  Description: {$token->description}\n";
-    echo "  Last used: {$token->last_used_at}\n";
-}
-```
-
-### Create Token
+With an API key or OAuth token you can still end the current credential's session:
 
 ```php
 <?php
 
-$token = $client->userTokens->create('user_xxx', [
-    // Required
-    'name' => 'Production API Key',
-
-    // Optional
-    'description' => 'Key for production server',
-    'abilities' => ['read', 'write'],           // Token abilities/permissions
-    'organizations' => ['org_xxx', 'org_yyy'],  // Restrict to specific orgs
-    'custom_data' => [                          // Custom metadata
-        'environment' => 'production',
-        'server' => 'web-01',
-    ],
-]);
-
-// IMPORTANT: The full token is only returned on creation
-echo "Token created: {$token->plainTextToken}\n";
-echo "Store this securely - it cannot be retrieved later.\n";
+$client->authentication->logout();
 ```
-
-### Update Token
-
-```php
-<?php
-
-$token = $client->userTokens->update('user_xxx', 'pat_xxx', [
-    'name' => 'Updated Token Name',
-    'description' => 'Updated description',
-
-    // Re-scope an existing token without re-minting it
-    'abilities' => ['read'],
-    'organizations' => ['org_xxx'],
-]);
-
-echo "Token updated: {$token->name}\n";
-```
-
-`abilities` and `organizations` are editable after creation, so narrowing a token's reach no longer
-means issuing a new one and updating every caller. Both replace the existing set rather than merging
-into it — send the full list you want the token to end up with.
-
-### Delete Token
-
-```php
-<?php
-
-$client->userTokens->delete('user_xxx', 'pat_xxx');
-
-echo "Token deleted\n";
-```
-
-### Token Field Reference
-
-#### Create Token Fields
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Token name (max 255 chars) |
-| `description` | string | No | Token description (max 255 chars) |
-| `abilities` | array | No | Array of token abilities |
-| `organizations` | array | No | Array of organization IDs to restrict access |
-| `custom_data` | object | No | Custom metadata object |
-
-#### Update Token Fields
-
-Same shape as create, minus `name` being mandatory: `name`, `description`, `abilities`,
-`organizations` and `custom_data` are all writable. The token value itself is never re-issued.
-
-#### Token Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Token ID (pat_xxx) |
-| `name` | string | Token name |
-| `description` | string | Token description |
-| `token` | string | Masked token (last 5 chars visible) |
-| `abilities` | array | Token abilities |
-| `organizations` | array | Organization IDs the token is scoped to; empty when unscoped |
-| `custom_data` | object | Custom metadata |
-| `user_agent` | string | Last used user agent |
-| `last_used_at` | datetime | Last usage timestamp |
-| `created_at` | datetime | Creation timestamp |
-| `updated_at` | datetime | Last update timestamp |
 
 ## Security Best Practices
 
@@ -388,4 +291,4 @@ Same shape as create, minus `name` being mandatory: `name`, `description`, `abil
 3. **Use minimal permissions** - Create keys with only needed scopes
 4. **Monitor usage** - Review API logs for suspicious activity
 5. **Use OAuth for user actions** - API keys are for server-to-server
-6. **Restrict to organizations** - Use the `organizations` field to limit token scope
+6. **Restrict to organizations** - Limit each API key to the organizations it needs

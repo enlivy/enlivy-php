@@ -7,14 +7,31 @@ namespace Enlivy\Service\ClientPortal;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Proposal;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class ProposalService extends AbstractPortalService
 {
+    use HasIncludes;
+
     protected const ?string RESOURCE_CLASS = Proposal::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'billing_package',
+        'subscription_term',
+        'payments',
+        'payments.line_items',
+        'proposal_contracts',
+        'stage_detail',
+        'invoice',
+        'proforma_invoice',
+        'receiver_user',
+        'sender_user',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->portalPath($orgId, 'proposals'), $params, $opts);
@@ -22,6 +39,7 @@ class ProposalService extends AbstractPortalService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Proposal */

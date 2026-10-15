@@ -83,6 +83,6 @@ class HelpdeskProactiveMessageService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts, EnlivyObject::class);
     }
 }

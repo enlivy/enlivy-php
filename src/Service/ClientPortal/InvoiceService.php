@@ -7,14 +7,32 @@ namespace Enlivy\Service\ClientPortal;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Invoice;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class InvoiceService extends AbstractPortalService
 {
+    use HasIncludes;
+
     protected const ?string RESOURCE_CLASS = Invoice::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'bank_account',
+        'invoice_prefix',
+        'line_items',
+        'sender_user',
+        'receiver_user',
+        'receiver_user_address',
+        'receipts',
+        'last_peppol_exchange',
+        'contract',
+        'charge_logs',
+        'latest_charge_log',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->portalPath($orgId, 'invoices'), $params, $opts);
@@ -22,6 +40,7 @@ class InvoiceService extends AbstractPortalService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Invoice
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Invoice */

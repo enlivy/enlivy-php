@@ -11,13 +11,10 @@ use Enlivy\Service;
  * @property Service\AuthenticationService $authentication
  * @property Service\OrganizationService $organizations
  * @property Service\UserService $users
- * @property Service\UserTokenService $userTokens
  * @property Service\AiAgentService $aiAgents
  * @property Service\InvitationCodeService $invitationCodes
  * @property Service\FrontendService $frontend
  * @property Service\DiscoveryService $discovery
- * @property Service\OAuth\OAuthClientService $oauthClients
- * @property Service\OAuth\OAuthAuthorizationService $oauthAuthorizations
  * @property Service\OAuth\OAuthTokenService $oauthTokens
  *
  * Organization-scoped services - Users & Roles:
@@ -77,6 +74,7 @@ use Enlivy\Service;
  * @property Service\Organization\Helpdesk\HelpdeskSettingsService $helpdeskSettings
  * @property Service\Organization\Helpdesk\HelpdeskInboundEmailService $helpdeskInboundEmails
  * @property Service\Organization\Helpdesk\HelpdeskInboundEmailRuleService $helpdeskInboundEmailRules
+ * @property Service\Organization\Helpdesk\HelpdeskTeamService $helpdeskTeams
  * @property Service\Organization\Helpdesk\HelpdeskProactiveMessageService $helpdeskProactiveMessages
  * @property Service\Organization\Helpdesk\HelpdeskVisitorService $helpdeskVisitors
  *

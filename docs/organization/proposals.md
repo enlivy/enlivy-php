@@ -361,7 +361,7 @@ $pending = $client->proposals->list([
 <?php
 
 $proposal = $client->proposals->retrieve('org_prop_xxx', [
-    'include' => ['billing_package', 'prospect', 'payments', 'payments.line_items'],
+    'include' => ['billing_package', 'prospect', 'payments'],
 ]);
 
 echo "Proposal: {$proposal->id}\n";
@@ -386,11 +386,11 @@ if ($proposal->rejected_at) {
 }
 
 // Display payments
-foreach ($proposal->payments as $payment) {
+foreach ($proposal->payments->data as $payment) {
     echo "\nPayment: " . ($payment->name_lang_map['en'] ?? 'Untitled') . "\n";
     echo "  Due: {$payment->days_after_order} days after order\n";
 
-    foreach ($payment->line_items as $item) {
+    foreach ($payment->line_items->data as $item) {
         $name = $item->name_lang_map['en'] ?? 'Item';
         echo "  - {$item->quantity} x {$name} @ {$item->price}\n";
     }
@@ -578,7 +578,7 @@ $proposal = $client->proposals->retrieve('org_prop_xxx', [
     'include' => ['stage_detail'],
 ]);
 
-$detail = $proposal->stage_detail;
+$detail = $proposal->stage_detail->data;
 
 echo $detail->stage;              // e.g. "awaiting_signature"
 echo $detail->awaits;             // organization | customer | third_party | several
@@ -679,6 +679,16 @@ $proposal = $portal->proposals->confirmPayment('org_prop_xxx', [
 
 A card proposal's invoice is issued with the payment, not at acceptance. Read the proposal's
 `payment_method_kind` to resume a customer at the right step.
+
+## The Portal Shape
+
+`$portal->proposals` (`list`, `retrieve`, `accept`, `reject`) and `$portal->billingPackages->claim()`
+answer the proposal as its recipient reads it. It adds `settlement_previews`, `locale` and
+`locale_list`, and leaves out the organization-only fields: `portal_url`, `organization_prospect_id`,
+`exchange_rate_guarantee`, `can_create_billing_schedule`, `expired_by_user_id`, `note_lang_map`,
+`accepted_by_ip`, `accepted_by_user_agent`, `rejected_by_ip`, `rejected_by_user_agent`,
+`created_by_user_id`, `deleted_by_user_id` and `deleted_at`. On the portal, `allowed_currencies` lists
+the currencies the customer is offered.
 
 ## Notification Logs
 

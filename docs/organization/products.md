@@ -220,7 +220,7 @@ $products = $client->products->list([
 
 $products = $client->products->list([
     'page' => 1,
-    'per_page' => 25,
+    'limit' => 25,
 ]);
 
 echo "Total: {$products->getTotalCount()}\n";
@@ -297,15 +297,12 @@ echo "Restored product: {$product->id}\n";
 ```php
 <?php
 
-// Add tags
-$product = $client->products->tag('org_prod_xxx', [
-    'tags' => ['featured', 'bestseller'],
-]);
+// Add existing tags by id or alias (create them with $client->tags)
+$client->products->addTag('org_prod_xxx', 'featured');
+$client->products->addTag('org_prod_xxx', 'bestseller');
 
 // Remove tags
-$product = $client->products->untag('org_prod_xxx', [
-    'tags' => ['featured'],
-]);
+$client->products->removeTag('org_prod_xxx', 'featured');
 ```
 
 ## Using Products in Invoices
@@ -440,9 +437,8 @@ try {
     ]);
 
     // 4. Tag products
-    $client->products->tag($consulting->id, [
-        'tags' => ['featured', 'services'],
-    ]);
+    $client->products->addTag($consulting->id, 'featured');
+    $client->products->addTag($consulting->id, 'services');
 
     echo "Product catalog created successfully!\n";
     echo "Consulting: {$consulting->id}\n";

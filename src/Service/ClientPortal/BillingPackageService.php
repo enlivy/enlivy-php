@@ -6,6 +6,7 @@ namespace Enlivy\Service\ClientPortal;
 
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
+use Enlivy\Exception\InvalidArgumentException;
 use Enlivy\Organization\BillingPackage;
 use Enlivy\Organization\Proposal;
 use Enlivy\Util\RequestOptions;
@@ -13,6 +14,8 @@ use Enlivy\Util\RequestOptions;
 class BillingPackageService extends AbstractPortalService
 {
     protected const ?string RESOURCE_CLASS = BillingPackage::class;
+
+    public const array CLAIM_INCLUDES = ProposalService::AVAILABLE_INCLUDES;
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
@@ -41,6 +44,7 @@ class BillingPackageService extends AbstractPortalService
      */
     public function claim(string $id, array $params = [], ?RequestOptions $opts = null): Proposal
     {
+        $this->validateClaimIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Proposal */
@@ -72,5 +76,28 @@ class BillingPackageService extends AbstractPortalService
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('POST', $this->portalPath($orgId, "billing-packages/{$id}/checkout-session"), $params, $opts, EnlivyObject::class);
+    }
+
+    private function validateClaimIncludes(array &$params): void
+    {
+        if (!isset($params['include'])) {
+            return;
+        }
+
+        $requested = is_array($params['include'])
+            ? $params['include']
+            : array_map('trim', explode(',', $params['include']));
+        $requested = array_values(array_filter($requested, fn (string $v): bool => $v !== ''));
+
+        $invalid = array_diff($requested, self::CLAIM_INCLUDES);
+        if (count($invalid) > 0) {
+            throw new InvalidArgumentException(sprintf(
+                'Invalid include(s): %s. Available includes for this resource: %s',
+                implode(', ', $invalid),
+                implode(', ', self::CLAIM_INCLUDES),
+            ));
+        }
+
+        $params['include'] = implode(',', $requested);
     }
 }

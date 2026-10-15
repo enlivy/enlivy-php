@@ -16,6 +16,8 @@ class InvitationCodeService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
+    protected const ?string RESOURCE_CLASS = InvitationCode::class;
+
     public const array AVAILABLE_INCLUDES = [
         'deleted_by_user',
     ];
@@ -52,20 +54,18 @@ class InvitationCodeService extends AbstractService
         return $this->request('PUT', "/invitation-codes/{$id}", $params, $opts);
     }
 
-    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): InvitationCode
+    public function delete(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
 
-        /** @var InvitationCode */
-        return $this->request('DELETE', "/invitation-codes/{$id}", $params, $opts);
+        return $this->request('DELETE', "/invitation-codes/{$id}", $params, $opts, EnlivyObject::class);
     }
 
-    public function restore(string $id, array $params = [], ?RequestOptions $opts = null): InvitationCode
+    public function restore(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
 
-        /** @var InvitationCode */
-        return $this->request('POST', "/invitation-codes/restore/{$id}", $params, $opts);
+        return $this->request('POST', "/invitation-codes/restore/{$id}", $params, $opts, EnlivyObject::class);
     }
 
     /**

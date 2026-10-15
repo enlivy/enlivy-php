@@ -215,8 +215,8 @@ $taxRates = $client->taxRates->list([
 foreach ($taxRates as $rate) {
     echo "{$rate->name}: {$rate->rate}%\n";
 
-    if ($rate->has_locations && !empty($rate->locations)) {
-        foreach ($rate->locations as $location) {
+    if ($rate->has_locations && !empty($rate->locations->data)) {
+        foreach ($rate->locations->data as $location) {
             echo "  - {$location->country_code}\n";
         }
     }

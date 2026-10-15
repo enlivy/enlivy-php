@@ -843,19 +843,6 @@ final class ServiceTest extends TestCase
         );
     }
 
-    public function testOAuthAuthorizationUpdateSendsPatch(): void
-    {
-        $this->httpClient->addResponse(200, [
-            'data' => ['id' => 'oauth_cua_1', 'scopes' => ['accounting:read']],
-        ]);
-
-        $this->client->oauthAuthorizations->update('oauth_cua_1', ['scopes' => ['accounting:read']]);
-
-        $request = $this->httpClient->getLastRequest();
-        $this->assertSame('PATCH', $request['method']);
-        $this->assertStringContainsString('/oauth/authorizations/oauth_cua_1', $request['url']);
-    }
-
     public function testTrashedItemsReportsInventoryAndPurges(): void
     {
         $this->httpClient->addResponse(200, [

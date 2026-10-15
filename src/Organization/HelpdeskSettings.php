@@ -21,6 +21,13 @@ use Enlivy\ApiResource;
  * @property int $close_after_resolved_days
  * @property int|null $inactivity_reminder_days
  * @property int|null $auto_resolve_after_days
+ * @property int|null $reply_target_hours
+ * @property int|null $reply_target_urgent_hours
+ * @property int|null $reply_target_high_hours
+ * @property string $reply_target_clock
+ * @property string|null $timezone
+ * @property array|null $working_hours
+ * @property array|null $notification_preferences
  * @property int|null $visitor_event_retention_days
  * @property int|null $visitor_retention_days
  * @property array|null $inactivity_reminder_message_lang_map

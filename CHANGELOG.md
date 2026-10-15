@@ -3,6 +3,42 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.5.0] - 2026-10-15
+
+Helpdesk teams and reply deadlines. Sign-in and account management moved to the Enlivy app.
+See [UPGRADING](UPGRADING.md).
+
+### Removed
+
+- Sign-in, registration and password reset
+- Email and phone verification on users
+- API key, OAuth client and OAuth consent management
+
+### Added
+
+- Helpdesk teams, who a conversation waits on, reply deadlines, bulk actions and reply performance
+- Recording that a bank transaction paid an invoice or receipt
+- A person's summary overview
+- Invoice and proposal languages
+- Contract signature filters, a payslip person filter and billing schedule subscription filters
+- Six helpdesk enums and new enum cases
+
+### Changed
+
+- Portal includes are checked before sending
+- Invitation code and user address delete and restore return the status
+
+### Fixed
+
+- Retrieving users, invitation codes, AI agents and user addresses no longer throws
+- Helpdesk activity rows no longer fail to read
+- Helpdesk deletes return the status instead of an empty resource
+
+### Docs
+
+- Page size is limit, not per_page
+- All OAuth scopes and refresh token rules
+
 ## [3.4.0] - 2026-10-01
 
 Packages sell through checkout sessions, an accepted proposal is paid in one call, and an open

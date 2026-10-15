@@ -39,6 +39,7 @@ class PayslipService extends AbstractService
         'status',
         'organization_receiver_user_id',
         'organization_sender_user_id',
+        'organization_user_id',
         'paid_at_from',
         'paid_at_to',
         'issued_at_from',

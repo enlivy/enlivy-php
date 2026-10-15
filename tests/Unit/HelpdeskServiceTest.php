@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Enlivy\Tests\Unit;
 
 use Enlivy\EnlivyClient;
+use Enlivy\EnlivyObject;
 use Enlivy\EnlivyPortalClient;
 use Enlivy\Organization\HelpdeskConversation;
 use Enlivy\Organization\HelpdeskConversationMessage;
 use Enlivy\Organization\HelpdeskConversationRead;
 use Enlivy\Organization\HelpdeskInboundEmail;
 use Enlivy\Organization\HelpdeskInbox;
+use Enlivy\Organization\HelpdeskTeam;
 use Enlivy\Tests\Mock\MockHttpClient;
 use PHPUnit\Framework\TestCase;
 
@@ -41,6 +43,7 @@ final class HelpdeskServiceTest extends TestCase
             'helpdeskConversations', 'helpdeskConversationMessages', 'helpdeskConversationAttachments',
             'helpdeskConversationParticipants', 'helpdeskInboxes', 'helpdeskTeammates', 'helpdeskSettings',
             'helpdeskInboundEmails', 'helpdeskInboundEmailRules', 'helpdeskProactiveMessages', 'helpdeskVisitors',
+            'helpdeskTeams',
         ];
 
         foreach ($accessors as $accessor) {
@@ -64,13 +67,106 @@ final class HelpdeskServiceTest extends TestCase
         $this->assertSame('open', $request['params']['state']);
     }
 
+    public function testTeamsReplaceTheirMembersInOnePut(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_hdteam_1', 'name' => 'Billing', 'member_count' => 2]]);
+
+        $team = $this->client->helpdeskTeams->replaceMembers('org_hdteam_1', ['members' => [
+            ['organization_helpdesk_teammate_id' => 'org_hdteammate_1', 'role' => 'lead'],
+            ['organization_helpdesk_teammate_id' => 'org_hdteammate_2', 'role' => 'member'],
+        ]]);
+
+        $this->assertInstanceOf(HelpdeskTeam::class, $team);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('PUT', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/helpdesk/teams/org_hdteam_1/members', $request['url']);
+    }
+
+    public function testEveryDeskDeleteAnswersWithTheStatusEnvelope(): void
+    {
+        $deletes = [
+            'helpdesk/teams/org_hdteam_1' => fn () => $this->client->helpdeskTeams->delete('org_hdteam_1'),
+            'helpdesk/conversations/org_hdcnv_1' => fn () => $this->client->helpdeskConversations->delete('org_hdcnv_1'),
+            'helpdesk/inboxes/org_hdinbox_1' => fn () => $this->client->helpdeskInboxes->delete('org_hdinbox_1'),
+            'helpdesk/teammates/org_hdteammate_1' => fn () => $this->client->helpdeskTeammates->delete('org_hdteammate_1'),
+            'helpdesk/inbound-email-rules/org_hdrule_1' => fn () => $this->client->helpdeskInboundEmailRules->delete('org_hdrule_1'),
+            'helpdesk/proactive-messages/org_hdpm_1' => fn () => $this->client->helpdeskProactiveMessages->delete('org_hdpm_1'),
+            'helpdesk/conversations/org_hdcnv_1/participants/org_hdpart_1' => fn () => $this->client->helpdeskConversationParticipants->delete('org_hdcnv_1', 'org_hdpart_1'),
+            'helpdesk/conversations/org_hdcnv_1/attachments/org_hdatt_1' => fn () => $this->client->helpdeskConversationAttachments->delete('org_hdcnv_1', 'org_hdatt_1'),
+        ];
+
+        foreach ($deletes as $path => $delete) {
+            $this->httpClient->addResponse(200, ['status' => 'ok']);
+
+            $deleted = $delete();
+
+            $this->assertSame(EnlivyObject::class, $deleted::class, "Deleting {$path} hydrated a resource.");
+            $this->assertSame('ok', $deleted->status);
+            $request = $this->httpClient->getLastRequest();
+            $this->assertSame('DELETE', $request['method']);
+            $this->assertStringEndsWith('/organizations/org_default/' . $path, $request['url']);
+        }
+    }
+
+    public function testTheReplyReportIsReadFromItsOwnPathAtTheRoot(): void
+    {
+        $this->httpClient->addResponse(200, ['period' => ['from' => '2026-10-01', 'to' => '2026-10-12'], 'group_by' => 'team', 'totals' => ['waits' => 4], 'groups' => []]);
+
+        $report = $this->client->helpdeskConversations->replyPerformance(['group_by' => 'team']);
+
+        $this->assertSame(4, $report->totals['waits']);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('GET', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/helpdesk/conversations/analytics/reply-performance', $request['url']);
+    }
+
+    public function testBulkActionsPostOnceAndAnswerPerConversation(): void
+    {
+        $this->httpClient->addResponse(200, ['results' => [['id' => 'org_hdcnv_1', 'status' => 'ok', 'message' => null]], 'succeeded' => 1, 'failed' => 0]);
+
+        $answer = $this->client->helpdeskConversations->bulk(['ids' => ['org_hdcnv_1'], 'action' => 'resolve']);
+
+        $this->assertSame(1, $answer->succeeded);
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/helpdesk/conversations/bulk', $request['url']);
+    }
+
+    public function testATeammateSavesTheirOwnNotificationChoices(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_hdteammate_1', 'notification_preferences' => ['reply_due' => false]]]);
+
+        $this->client->helpdeskTeammates->updateMe(['notification_preferences' => ['reply_due' => false]]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('PUT', $request['method']);
+        $this->assertStringContainsString('/helpdesk/teammates/me', $request['url']);
+    }
+
+    public function testMeIsNullWithoutASeat(): void
+    {
+        $this->httpClient->addResponse(404, ['message' => 'Not found']);
+
+        $this->assertNull($this->client->helpdeskTeammates->me());
+        $this->assertStringContainsString('/helpdesk/teammates/me', $this->httpClient->getLastRequest()['url']);
+    }
+
+    public function testTheQueueFiltersByWhoItWaitsOnAndByTeam(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->helpdeskConversations->list(['waiting_on' => 'team', 'reply_due' => 'overdue', 'organization_helpdesk_team_id' => 'org_hdteam_1']);
+
+        $this->assertSame('overdue', $this->httpClient->getLastRequest()['params']['reply_due']);
+    }
+
     /**
      * The verbs are the only way to move a thread, because its state is derived rather than stored.
      */
     public function testEachLifecycleVerbPostsToItsOwnPath(): void
     {
         $verbs = [
-            'assign' => 'assign', 'unassign' => 'unassign', 'snooze' => 'snooze',
+            'assign' => 'assign', 'unassign' => 'unassign', 'snooze' => 'snooze', 'setWaitingOn' => 'waiting-on',
             'resolve' => 'resolve', 'close' => 'close', 'reopen' => 'reopen',
             'markSpam' => 'spam', 'unmarkSpam' => 'not-spam',
             'promoteProspect' => 'prospect', 'merge' => 'merge',

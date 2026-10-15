@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization\Helpdesk;
 
 use Enlivy\Collection;
+use Enlivy\Exception\NotFoundException;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\HelpdeskTeammate;
 use Enlivy\Service\AbstractService;
@@ -31,6 +32,7 @@ class HelpdeskTeammateService extends AbstractService
 
     public const array AVAILABLE_FILTERS = [
         'is_available',
+        'organization_helpdesk_team_id',
     ];
 
     /**
@@ -44,6 +46,34 @@ class HelpdeskTeammateService extends AbstractService
 
         /** @var Collection<HelpdeskTeammate> */
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE), $params, $opts);
+    }
+
+    /**
+     * The caller's own seat, or null when they have none.
+     */
+    public function me(array $params = [], ?RequestOptions $opts = null): ?HelpdeskTeammate
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        try {
+            /** @var HelpdeskTeammate */
+            return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/me'), $params, $opts);
+        } catch (NotFoundException) {
+            return null;
+        }
+    }
+
+    /**
+     * Saves the caller's own `notification_preferences`; open to anyone with a seat.
+     */
+    public function updateMe(array $params, ?RequestOptions $opts = null): HelpdeskTeammate
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var HelpdeskTeammate */
+        return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . '/me'), $params, $opts);
     }
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): HelpdeskTeammate
@@ -80,6 +110,6 @@ class HelpdeskTeammateService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts, EnlivyObject::class);
     }
 }

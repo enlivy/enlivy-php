@@ -54,4 +54,5 @@ enum EntityManifest: string
     case HELPDESK_VISITOR = 'helpdesk_visitor';
     case HELPDESK_PROACTIVE_MESSAGE = 'helpdesk_proactive_message';
     case HELPDESK_INBOUND_EMAIL_RULE = 'helpdesk_inbound_email_rule';
+    case HELPDESK_TEAM = 'helpdesk_team';
 }

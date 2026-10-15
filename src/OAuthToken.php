@@ -5,15 +5,11 @@ declare(strict_types=1);
 namespace Enlivy;
 
 /**
- * @property string $id
- * @property string $user_id
- * @property string $client_id
- * @property string $name
- * @property array $scopes
- * @property bool $revoked
- * @property int|null $expires_at
- * @property string $created_at
- * @property string $updated_at
+ * @property string $access_token
+ * @property string $token_type
+ * @property int $expires_in
+ * @property string $refresh_token
+ * @property string $scope
  */
 class OAuthToken extends ApiResource
 {

@@ -17,6 +17,9 @@ use Enlivy\ApiResource;
  * @property string|null $away_until
  * @property bool $is_present
  * @property bool $away_reassign_enabled
+ * @property int|null $max_active_conversations
+ * @property array|null $notification_preferences
+ * @property array $effective_notification_preferences
  * @property array|null $schedule
  * @property string $created_at
  * @property string $updated_at

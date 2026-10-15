@@ -67,8 +67,13 @@ desk exchanged; notes, activity rows and the desk's automatic notices never coun
 
 A desk reads its queue by who owes the work. `assignment` takes `mine` (read off your own seat),
 `unassigned` or `all`, and `has_unread` narrows to threads with something you have not read.
-Counts per state and per assignment — each under the rest of the filters you sent, across every
-page — ride along in the response `meta` when you ask for them:
+Every conversation says who owes the next reply: `waiting_on` is `team` or `customer`, from
+`waiting_since`. With a reply target on the inbox, `reply_due_soon_at` and `reply_due_at` say when
+the team's reply turns due soon and overdue. Filter the queue with `waiting_on` and `reply_due`
+(`due_soon` or `overdue`), and sort it with `order_by=reply_urgency`.
+
+Counts per state, per assignment and per waiting-on party, each under the rest of the filters you
+sent and across every page, ride along in the response `meta` when you ask for them:
 
 ```php
 <?php
@@ -81,7 +86,24 @@ $queue = $client->helpdeskConversations->list([
 
 $byState = $queue->getMeta()['navigation_by_state'];           // pending, open, snoozed, …
 $byAssignment = $queue->getMeta()['navigation_by_assignment']; // mine, unassigned, all
+
+$waiting = $client->helpdeskConversations->list([
+    'include_meta' => 'navigation_by_waiting_on',
+])->getMeta()['navigation_by_waiting_on'];                    // total, inboxes, has_reply_target
+
+$byTeammate = $client->helpdeskConversations->list([
+    'include_meta' => 'navigation_by_teammate,navigation_by_team',
+])->getMeta();
+$byTeammate['navigation_by_teammate']['unassigned']['overdue'];
+$byTeammate['navigation_by_team']['no_team']['team'];
 ```
+
+`navigation_by_waiting_on` holds a `total`, the same counts per active inbox under `inboxes` (each
+with its `reply_target_hours`), and `has_reply_target`. `navigation_by_teammate` is keyed by teammate
+id, with `unassigned` for nobody's, and `navigation_by_team` by team id, with `no_team`. Every group
+carries `team`, `customer`, `unassigned`, `snoozed`, `overdue`, `due_soon`, `open` (not resolved or
+closed, snoozed included) and `oldest_waiting_since`. These counts ignore `state`, `waiting_on` and
+`reply_due`, so a filtered queue still shows the whole picture.
 
 Reading moves forward only, with one exception: `markUnread()` clears your own read watermark so
 the whole thread reads unread again, for you and nobody else.
@@ -110,6 +132,11 @@ $client->helpdeskConversationMessages->create('org_hdconv_xxx', [
 
 Pass `deliver_email` as false to record a reply you have already sent by other means.
 
+A reply hands the conversation to the customer. Pass `waiting_on` as `team` on an outgoing reply
+when you promised to come back, and it stays on the team until the next message from either side:
+the latest message outranks a hand-set party, so the team's next reply without `waiting_on` hands it
+to the customer, and a message from the customer keeps it on the team.
+
 To take back a line that should not have been sent, `redact()` it. There is no edit and no delete:
 a thread is a record.
 
@@ -129,6 +156,9 @@ $client->helpdeskConversations->assign('org_hdconv_xxx', [
 $client->helpdeskConversations->snooze('org_hdconv_xxx', [
     'snoozed_until' => '2026-09-22T09:00:00Z',
 ]);
+
+// The customer only said thanks: nothing is owed until they write again.
+$client->helpdeskConversations->setWaitingOn('org_hdconv_xxx', ['waiting_on' => 'customer']);
 
 $client->helpdeskConversations->resolve('org_hdconv_xxx');
 $client->helpdeskConversations->close('org_hdconv_xxx');
@@ -165,12 +195,16 @@ $client->helpdeskConversations->blockSender('org_hdconv_xxx', [
 The `lifecycle` include says what the desk's timers will do next on a thread — `reminder`,
 `auto_resolve` and the `reopen_window` in which an emailed reply still reopens it — each with a
 `status`, its date (`due_at`, or `ends_at` for the window) and the `source` of the setting it
-follows (`inbox`, `organization` or `platform`):
+follows (`inbox`, `organization` or `platform`). `reply_target` says where the team's reply
+stands: a `status` (`running`, `due_soon`, `overdue`, `off` or `not_applicable`), the `reason` when
+it is not running, `due_at`, `due_soon_at`, the target's `hours`, its `source` and its `clock`
+(`calendar` or `working_hours`):
 
 ```php
 $conversation = $client->helpdeskConversations->retrieve('org_hdconv_xxx', ['include' => 'lifecycle']);
 
 echo $conversation->lifecycle['auto_resolve']['due_at'];
+echo $conversation->lifecycle['reply_target']['status'];
 ```
 
 ## Attachments
@@ -226,7 +260,8 @@ $client->helpdeskInboxes->update('org_hdinbox_xxx', [
 ```
 
 `auto_response_chat_delay_seconds` is how long the chat waits before acknowledging, so a teammate
-can speak first. `pending_conversations_count` and `open_conversations_count` are read-only.
+can speak first. `pending_conversations_count`, `open_conversations_count`,
+`waiting_on_team_conversations_count` and `waiting_on_customer_conversations_count` are read-only.
 
 Desk-wide defaults live in settings, and an inbox that sets the same field wins. Ask for
 `inbox_defaults` to see what an empty inbox field falls back to, and where that value comes from:
@@ -256,6 +291,71 @@ $client->helpdeskTeammates->create([
 
 There is no inactive flag. Somebody who should not be answering has no row; somebody on holiday has
 an `away_until`.
+
+`max_active_conversations` caps how many open conversations automatic assignment gives a teammate;
+empty means no limit.
+
+`notification_preferences` turns a teammate's helpdesk emails on or off (`assigned`, `reply_due`,
+`reply_overdue`, `held_mail`) and opts into `browser` notifications; empty follows the desk's own
+`notification_preferences` in settings. Webhooks fire either way, so a desk that follows a shared
+Slack channel can turn every email off. `helpdeskTeammates->me()` returns the caller's own seat, or
+null, and `helpdeskTeammates->updateMe()` saves their own `notification_preferences` without needing to
+manage the desk.
+
+Many conversations move at once with `bulk()`:
+
+```php
+<?php
+
+$answer = $client->helpdeskConversations->bulk([
+    'ids' => ['org_hdconv_xxx', 'org_hdconv_yyy'],
+    'action' => 'assign',
+    'organization_helpdesk_teammate_id' => 'org_hdteammate_xxx',
+]);
+```
+
+## Teams
+
+A team groups teammates, some of them leads. An inbox staffed by a team gives its new conversations
+to that team, a conversation can be handed to a team, and only its members can then be assigned.
+Leads hear when an unassigned reply is due, and again when any reply is overdue. A desk without teams
+works as one team of everybody.
+
+```php
+<?php
+
+$team = $client->helpdeskTeams->create(['name' => 'Billing']);
+
+$client->helpdeskTeams->replaceMembers($team->id, ['members' => [
+    ['organization_helpdesk_teammate_id' => 'org_hdteammate_xxx', 'role' => 'lead'],
+    ['organization_helpdesk_teammate_id' => 'org_hdteammate_yyy', 'role' => 'member'],
+]]);
+
+$client->helpdeskInboxes->update('org_hdinbox_xxx', ['organization_helpdesk_team_id' => $team->id]);
+$client->helpdeskConversations->assign('org_hdconv_xxx', ['organization_helpdesk_team_id' => $team->id]);
+```
+
+## Reply targets and the reply report
+
+The desk settings hold the general reply target, shorter ones for `urgent` and `high` priority, and
+whether targets count every hour or only working hours (`reply_target_clock`), with a baseline
+`timezone` and `working_hours`. Each inbox can override any of them; empty inherits.
+
+The reply report covers waits that started in a period, at most a year, in the organization's time
+zone:
+
+```php
+<?php
+
+$report = $client->helpdeskConversations->replyPerformance([
+    'from' => '2026-10-01',
+    'to' => '2026-10-31',
+    'group_by' => 'team', // inbox, team, teammate or priority
+]);
+
+$report->totals['met_percent'];          // share of replies on time
+$report->totals['median_reply_seconds'];
+```
 
 ## Mail
 

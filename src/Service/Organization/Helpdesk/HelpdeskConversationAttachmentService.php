@@ -62,6 +62,6 @@ class HelpdeskConversationAttachmentService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, "helpdesk/conversations/{$conversationId}/attachments/{$attachmentId}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, "helpdesk/conversations/{$conversationId}/attachments/{$attachmentId}"), $params, $opts, EnlivyObject::class);
     }
 }

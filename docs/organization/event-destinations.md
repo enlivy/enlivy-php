@@ -115,7 +115,9 @@ enum (`TriggerEvent::values()` returns the full list). Common ones:
 | `user.created` / `user.updated` | Organization user changes |
 | `helpdesk_conversation.created` / `.assigned` / `.resolved` / `.closed` / `.reopened` | Helpdesk conversation lifecycle |
 | `helpdesk_conversation.snoozed` / `.unsnoozed` | A snooze set, and a snooze running out |
-| `helpdesk_conversation.rated` / `.unanswered` | A customer rating, and a reply promise the desk missed |
+| `helpdesk_conversation.rated` | A customer rating |
+| `helpdesk_conversation.unanswered` | The team's reply turned due soon |
+| `helpdesk_conversation.overdue` | The team's reply passed its reply target |
 | `helpdesk_conversation.deleted` / `.restored` | Conversation trashed or restored |
 | `helpdesk_conversation_message.created` / `.updated` | Messages on a conversation; the payload names its inbox |
 

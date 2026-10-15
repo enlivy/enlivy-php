@@ -294,7 +294,8 @@ $package = $client->billingPackages->create([
 > `primary_currency`). An item with `is_available => false` is not offered under that cadence.
 
 Frequencies: `weekly`, `biweekly`, `monthly`, `every_3_months`, `every_6_months`, `yearly`.
-A term's `status` is `active` (sellable) or `archived` (hidden from public/portal lanes).
+A term's `status` is `active` (sellable) or `archived` (hidden from public/portal lanes). Leave the
+key out rather than sending `null`: the API refuses a null `status`.
 
 ## Listing Billing Packages
 

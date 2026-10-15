@@ -30,8 +30,11 @@ use Enlivy\Enums\Payment\AttentionIssue;
 use Enlivy\Enums\Payment\PaymentProvider;
 use Enlivy\Enums\Payment\RefundStatus;
 use Enlivy\Enums\Contract\PartyIdentityRequirements;
+use Enlivy\Enums\Helpdesk\ConversationWaitingOnParties;
 use Enlivy\Enums\Helpdesk\InboundEmailCategories;
 use Enlivy\Enums\Helpdesk\InboundEmailInterpretations;
+use Enlivy\Enums\Helpdesk\MessageContentTypes;
+use Enlivy\Enums\Helpdesk\ReplyDues;
 use Enlivy\Enums\Proposal\NotificationLogTypes as ProposalNotificationLogTypes;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
 use Enlivy\Enums\Proposal\StageActors as ProposalStageActors;
@@ -159,6 +162,10 @@ final class EnumsTest extends TestCase
         );
         $this->assertContains('quarantined', InboundEmailInterpretations::values());
         $this->assertContains('bulk', InboundEmailInterpretations::values());
+        $this->assertSame(['team', 'customer'], ConversationWaitingOnParties::values());
+        $this->assertSame(['due_soon', 'overdue'], ReplyDues::values());
+        $this->assertContains('waiting_on_set', MessageContentTypes::values());
+        $this->assertContains('team_assigned', MessageContentTypes::values());
         $this->assertContains('website', WebLinkKinds::values());
         $this->assertContains('directory', WebLinkKinds::values());
         $this->assertContains('needs_attention', EventTrailEventType::values());
@@ -236,6 +243,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(175, $count, 'Expected at least 175 mirrored enums');
+        $this->assertGreaterThanOrEqual(181, $count, 'Expected at least 181 mirrored enums');
     }
 }

@@ -66,7 +66,7 @@ $entry = $client->invoices->retrieveEventTrail('org_evt_trl_xxx', [
     'include' => 'changes',
 ]);
 
-foreach ($entry->changes as $change) {
+foreach ($entry->changes->data as $change) {
     foreach ($change['changed_fields'] as $field) {
         $old = $change['old_values'][$field] ?? null;
         $new = $change['new_values'][$field] ?? null;

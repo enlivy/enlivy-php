@@ -37,6 +37,8 @@ use Enlivy\ApiResource;
  * @property string|null $due_at
  * @property string|null $paid_at
  * @property string|null $finalized_at
+ * @property string|null $locale
+ * @property list<string>|null $locale_list
  * @property array|null $note_lang_map
  * @property string|null $peppol_project_reference
  * @property string|null $peppol_purchase_order_reference

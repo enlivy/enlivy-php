@@ -23,6 +23,8 @@ use Enlivy\ApiResource;
  * @property bool $is_personal
  * @property int|null $pending_conversations_count
  * @property int|null $open_conversations_count
+ * @property int|null $waiting_on_team_conversations_count
+ * @property int|null $waiting_on_customer_conversations_count
  * @property array|null $welcome_title_lang_map
  * @property array|null $welcome_description_lang_map
  * @property array|null $success_title_lang_map
@@ -56,6 +58,16 @@ use Enlivy\ApiResource;
  * @property int|null $close_after_resolved_days
  * @property int|null $inactivity_reminder_days
  * @property int|null $auto_resolve_after_days
+ * @property int|null $reply_target_hours
+ * @property int|null $effective_reply_target_hours
+ * @property string $effective_reply_target_hours_source
+ * @property int|null $reply_target_urgent_hours
+ * @property int|null $effective_reply_target_urgent_hours
+ * @property int|null $reply_target_high_hours
+ * @property int|null $effective_reply_target_high_hours
+ * @property string|null $reply_target_clock
+ * @property string $effective_reply_target_clock
+ * @property string|null $organization_helpdesk_team_id
  * @property bool $is_active
  * @property bool $is_default
  * @property int $order

@@ -14,6 +14,8 @@ class UserService extends AbstractService
 {
     use HasIncludes;
 
+    protected const ?string RESOURCE_CLASS = User::class;
+
     public const array AVAILABLE_INCLUDES = [
         'organizations',
     ];
@@ -26,6 +28,11 @@ class UserService extends AbstractService
         return $this->request('GET', "/users/{$id}", $params, $opts);
     }
 
+    /**
+     * Accepts `username`, `first_name`, `last_name`, `name`, `locale`, `country_code` and
+     * `timezone`; any other field is ignored. Email, phone and password are changed in the
+     * Enlivy app.
+     */
     public function update(string $id, array $params, ?RequestOptions $opts = null): User
     {
         $this->validateIncludes($params);
@@ -34,45 +41,8 @@ class UserService extends AbstractService
         return $this->request('PUT', "/users/{$id}", $params, $opts);
     }
 
-    public function sendEmailVerificationToken(string $id, ?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('GET', "/users/{$id}/email/verification-token", null, $opts);
-    }
-
-    public function confirmEmailVerificationToken(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('POST', "/users/{$id}/email/confirm-verification-token", $params, $opts);
-    }
-
-    public function sendPhoneVerificationToken(string $id, ?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('GET', "/users/{$id}/phone/verification-token", null, $opts);
-    }
-
-    public function confirmPhoneVerificationToken(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('POST', "/users/{$id}/phone/confirm-verification-token", $params, $opts);
-    }
-
-    public function updatePhone(string $id, array $params, ?RequestOptions $opts = null): User
-    {
-        /** @var User */
-        return $this->request('PUT', "/users/{$id}/phone", $params, $opts);
-    }
-
-    public function requestUnlinkPhone(string $id, ?RequestOptions $opts = null): EnlivyObject
-    {
-        return $this->request('POST', "/users/{$id}/phone/request-unlink", null, $opts);
-    }
-
-    public function unlinkPhone(string $id, ?RequestOptions $opts = null): User
-    {
-        /** @var User */
-        return $this->request('DELETE', "/users/{$id}/phone", null, $opts);
-    }
-
     public function sendSummaryEmail(string $id, ?RequestOptions $opts = null): EnlivyObject
     {
-        return $this->request('GET', "/users/{$id}/summary-email", null, $opts);
+        return $this->request('GET', "/users/{$id}/summary-email", null, $opts, EnlivyObject::class);
     }
 }

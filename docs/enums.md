@@ -93,6 +93,12 @@ set. A selection relevant to recently added features:
 | `Helpdesk\ProactiveMessageConditionTypes` | `page_visited`, `time_on_page`, `pages_visited_all`, `pages_visited_any`, `total_page_views` |
 | `Helpdesk\ProactiveMessageMatchModes` | `exact`, `contains`, `starts_with`, `regex` |
 | `Helpdesk\VisitorEventTypes` | `arrival` and the proactive-message outcomes |
+| `Helpdesk\ConversationWaitingOnParties` | `team`, `customer` |
+| `Helpdesk\ReplyDues` | `due_soon`, `overdue` |
+| `Helpdesk\ReplyTargetClocks` | `calendar`, `working_hours` |
+| `Helpdesk\SettingSources` | `inbox`, `organization`, `platform` |
+| `Helpdesk\ConversationWaitEndReasons` | `answered`, `handed_to_customer`, `resolved`, `closed`, `merged`, `spam`, `deleted` |
+| `Helpdesk\TeamMemberRoles` | `member`, `lead` |
 | `BankAccount\StatementFormats` | `pdf`, `mt940`, `camt_053`, `csv`, `spreadsheet`, `other` |
 | `Organization\ConnectionLiveness` | `live`, `historical`, `trashed` |
 | `Project\ProspectAccessScopes` | `none`, `own`, `own_and_unassigned`, `all` |
@@ -110,7 +116,7 @@ set. A selection relevant to recently added features:
 | `ExportData\Types` | `full`, `accounting_saga` |
 | `NetworkExchange\DocumentTypeCodes` | `380` (commercial invoice), `381` (credit note) |
 | `Invoice\NotificationLogTypes` | `network_exchange_auto_push`, `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue` |
-| `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `blocked_identifiers`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `personalization` |
+| `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `blocked_identifiers`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `ai`, `personalization` |
 | `Organization\Environments` | `live`, `sandbox` |
 | `Import\StopReasons` | `usage_limit`, `ai_limit`, `consecutive_failures`, `file_unreadable` |
 | `BlockedIdentifier\Types` | `email`, `email_domain`, `phone_number` |

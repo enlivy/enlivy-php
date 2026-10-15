@@ -239,15 +239,12 @@ echo "Restored: {$account->name}\n";
 ```php
 <?php
 
-// Add tags
-$account = $client->bankAccounts->tag('org_bank_xxx', [
-    'tags' => ['primary', 'operational'],
-]);
+// Add existing tags by id or alias (create them with $client->tags)
+$client->bankAccounts->addTag('org_bank_xxx', 'primary');
+$client->bankAccounts->addTag('org_bank_xxx', 'operational');
 
 // Remove tags
-$account = $client->bankAccounts->untag('org_bank_xxx', [
-    'tags' => ['operational'],
-]);
+$client->bankAccounts->removeTag('org_bank_xxx', 'operational');
 ```
 
 ## Using Bank Accounts in Invoices
@@ -341,6 +338,33 @@ $invoice = $client->invoices->create([
 | `tag_ids` | Associated tag IDs |
 | `deleted_by_user` | User who deleted (if soft-deleted) |
 
+## Recording a Document Payment
+
+Record that a bank transaction paid an invoice or a receipt. The transaction is filed under a cost type
+that takes that document, and the document takes its share of the money:
+
+```php
+<?php
+
+$transaction = $client->bankTransactions->recordDocumentPayment('org_banktran_xxx', [
+    'connection_entity_type' => 'invoice', // or 'receipt'
+    'connection_entity_id' => 'org_inv_xxx',
+    // 'organization_bank_transaction_cost_type_id' => 'org_banktrct_xxx',
+    // 'amount' => 250.00,
+]);
+```
+
+| Field | Rule |
+|-------|------|
+| `connection_entity_type` | Required: `invoice` or `receipt` |
+| `connection_entity_id` | Required: the document's id |
+| `organization_bank_transaction_cost_type_id` | Nullable: without it the API picks a cost type that takes the document, or answers `422` when it cannot decide |
+| `amount` | Optional, greater than 0: defaults to what the transaction has not settled yet, and can never take more |
+
+The money must flow the document's way (an inbound transaction pays an outbound document), and a
+document is recorded once per transaction; both are refused with a `422`. The document's own status
+is left as it was: set it yourself when it is paid. The call answers the updated bank transaction.
+
 ## Complete Example: Bank Account Setup
 
 ```php
@@ -387,13 +411,10 @@ try {
     ]);
 
     // 3. Tag accounts
-    $client->bankAccounts->tag($eurAccount->id, [
-        'tags' => ['primary', 'invoicing'],
-    ]);
+    $client->bankAccounts->addTag($eurAccount->id, 'primary');
+    $client->bankAccounts->addTag($eurAccount->id, 'invoicing');
 
-    $client->bankAccounts->tag($ronAccount->id, [
-        'tags' => ['operational'],
-    ]);
+    $client->bankAccounts->addTag($ronAccount->id, 'operational');
 
     echo "Bank accounts created successfully!\n";
     echo "EUR Account: {$eurAccount->id}\n";

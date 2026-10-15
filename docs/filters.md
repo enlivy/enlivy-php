@@ -9,7 +9,7 @@ All `list()` endpoints support filtering via query parameters. The SDK validates
 $invoices = $client->invoices->list([
     'status' => 'draft',
     'direction' => 'outbound',
-    'per_page' => 25,
+    'limit' => 25,
 ]);
 
 // Date range filtering
@@ -22,7 +22,7 @@ $invoices = $client->invoices->list([
 $prospects = $client->prospects->list([
     'source_type' => 'inbound',
     'include' => ['organization_prospect_stage', 'assigned_organization_user'],
-    'per_page' => 10,
+    'limit' => 10,
 ]);
 ```
 
@@ -38,8 +38,7 @@ These filters are available on **every** list endpoint:
 | `order_by` | string | Sort by attribute (default: `created_at`) |
 | `order` | string (`asc`\|`desc`) | Sort direction (default: `desc`) |
 | `page` | integer | Pagination page number |
-| `per_page` | integer (max: 50) | Items per page (default: 30) |
-| `limit` | integer | Cap results on a search (`q`) query |
+| `limit` | integer (max: 50) | Page size (default: 30, maximum: 50). The API reads no `per_page` |
 | `deleted` | integer (`-1`\|`0`\|`1`) | `-1` = include deleted, `0` = active only, `1` = deleted only |
 | `tag_ids` | string (comma-separated) | Filter by tag IDs |
 
@@ -47,8 +46,8 @@ Global filters are **not** listed in each service's `AVAILABLE_FILTERS` constant
 
 `include_meta` is passed through on every list too. It is not a filter: it asks for count blocks in
 the response `meta`, read with `getMeta()`. Most lists answer `navigation`; some add their own —
-`navigation_by_state` and `navigation_by_assignment` on `helpdeskConversations`,
-`navigation_by_category` on `helpdeskInboundEmails`.
+`navigation_by_state`, `navigation_by_assignment`, `navigation_by_waiting_on`, `navigation_by_teammate`
+and `navigation_by_team` on `helpdeskConversations`, `navigation_by_category` on `helpdeskInboundEmails`.
 
 ```php
 $queue = $client->helpdeskConversations->list(['include_meta' => 'navigation_by_state']);
@@ -59,7 +58,7 @@ $counts = $queue->getMeta()['navigation_by_state'];
 // Search and pagination
 $results = $client->invoices->list([
     'q' => 'Acme Corp',
-    'per_page' => 10,
+    'limit' => 10,
     'page' => 2,
     'order_by' => 'issued_at',
     'order' => 'desc',
@@ -134,9 +133,22 @@ $invoices = $client->invoices->list([
 | Filter | Type |
 |--------|------|
 | `direction` | `inbound`, `outbound` |
-| `status` | `approval_required`, `draft`, `scheduled`, `pending`, `sent_email`, `sent_physical`, `payment_partial`, `paid`, `solved`, `overdue`, `cancelled` |
+| `status` | `approval_required`, `draft`, `scheduled`, `pending`, `sent_email`, `sent_physical`, `payment_partial`, `paid`, `solved`, `overdue`, `cancelled`; one value or several, as an array or comma separated |
 | `is_downloadable` | bool |
 | `is_tax_charged` | bool |
+| `source` | `internal`, `external` |
+| `currency` | string (3-char ISO code) |
+| `total` | numeric (exact match) |
+| `bank_account_id` | string |
+| `organization_sender_user_id` | string |
+| `organization_receiver_user_id` | string |
+| `organization_user_id` | string (sender or receiver) |
+| `product_ids` | string[] (any line item on one of these products) |
+| `network_exchange` | `not_available`, `available`, `available_scheduled`, `not_exchanged`, `not_exchanged_and_not_scheduled`, `exchanged` |
+| `peppol_exchange_push_option` | string |
+| `peppol_exchange_pushed` | string |
+| `is_api_charge` | bool |
+| `api_charged_organization_id` | string |
 | `paid_at_from`, `paid_at_to` | datetime |
 | `issued_at_from`, `issued_at_to` | datetime |
 | `due_at_from`, `due_at_to` | datetime |
@@ -233,6 +245,9 @@ $invoices = $client->invoices->list([
 | `organization_sender_user_id` | string |
 | `organization_user_id` | string |
 | `parent_organization_contract_id` | string |
+| `awaiting_signature` | bool (not yet signed by every party, and not settled) |
+| `awaiting_my_signature` | bool (with `organization_user_id`: that party still owes a required signature) |
+| `awaiting_others_signature` | bool (with `organization_user_id`: awaiting signatures, none of them that party's) |
 | `category` | `core`, `amendment`, `addenda`, `supplement` |
 | `locale` | `en`, `ro`, `de`, `fr`, `nl`, `da` |
 | `source` | `uploaded`, `internal` |
@@ -262,13 +277,17 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
-| `status` | `pending`, `active`, `cancelled` |
-| `type` | `payment_plan`, `subscription` |
+| `status` | `pending`, `active`, `payment_method_required`, `payment_failed`, `paused`, `completed`, `cancelled` |
+| `status_not` | any `status` value, excluded |
+| `name` | string |
 | `direction` | `inbound`, `outbound` |
 | `organization_sender_user_id` | string |
 | `organization_receiver_user_id` | string |
+| `organization_user_id` | string (sender or receiver) |
 | `organization_contract_id` | string |
 | `organization_bank_account_id` | string |
+| `subscription_only` | bool (only schedules built from a subscription package) |
+| `exclude_tenant_billing` | bool (leave out schedules that bill your Enlivy subscription) |
 | `starts_at_from`, `starts_at_to` | datetime |
 | `ends_at_from`, `ends_at_to` | datetime |
 | `created_at_from`, `created_at_to` | datetime |
@@ -309,6 +328,9 @@ $invoices = $client->invoices->list([
 | Filter | Type |
 |--------|------|
 | `status` | `pending`, `approval_required`, `rejected`, `approved`, `paid` |
+| `organization_sender_user_id` | string |
+| `organization_receiver_user_id` | string |
+| `organization_user_id` | string (sender or receiver) |
 | `paid_at_from`, `paid_at_to` | datetime |
 | `issued_at_from`, `issued_at_to` | datetime |
 | `created_at_from`, `created_at_to` | datetime |
@@ -535,15 +557,19 @@ depends on what the resource calls its label:
 | `prospectPipelines`, `contractStatuses`, `taskStages`, `reportSchemas`, `resourceBundles` | `title`, `description` |
 | `taxClasses` | `name`, `description`, `retired` |
 | `bankTransactionCostTypes` | `title` |
-| `helpdeskConversations` | `state`, `organization_helpdesk_inbox_id`, `assigned_organization_helpdesk_teammate_id`, `assignment` (`mine`, `unassigned`, `all`), `has_unread`, `priority`, `source`, `contact_email`, `contact_organization_user_id`, `contact_organization_prospect_id`, `organization_project_id` |
+| `helpdeskConversations` | `state`, `organization_helpdesk_inbox_id`, `assigned_organization_helpdesk_teammate_id`, `organization_helpdesk_team_id`, `assignment` (`mine`, `unassigned`, `all`), `waiting_on` (`team`, `customer`), `reply_due` (`due_soon`, `overdue`), `has_unread`, `priority`, `source`, `contact_email`, `contact_organization_user_id`, `contact_organization_prospect_id`, `organization_project_id` |
 | `helpdeskConversationMessages` | `type` |
 | `helpdeskInboxes`, `helpdeskInboundEmailRules`, `helpdeskProactiveMessages` | `is_active`, `organization_helpdesk_inbox_id` |
-| `helpdeskTeammates` | `is_available` |
+| `helpdeskTeammates` | `is_available`, `organization_helpdesk_team_id` |
+| `helpdeskTeams` | `organization_helpdesk_teammate_id` |
 | `helpdeskInboundEmails` | `interpretation`, `category`, `organization_helpdesk_inbox_id`, `organization_helpdesk_conversation_id`, `processed` |
 | `helpdeskVisitors` | `identified`, `blocked` |
 
+`helpdeskConversations` also take `order_by=reply_urgency`: highest priority first, then the earliest
+reply deadline, then the longest wait.
+
 ### Services with Global Filters Only
 
-The following services accept only global filters (q, q_in, ids, page, per_page, limit, order_by, order, deleted, tag_ids):
+The following services accept only global filters (q, q_in, ids, page, limit, order_by, order, deleted, tag_ids):
 
-`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `oauthAuthorizations`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`, `tenantBillingPaymentMethods`, `userRoles`, `userTokens`
+`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`, `tenantBillingPaymentMethods`, `userRoles`

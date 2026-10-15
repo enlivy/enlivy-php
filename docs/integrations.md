@@ -51,7 +51,7 @@ Monitor Stripe webhook events for your organization.
 <?php
 
 $callbacks = $client->stripeWebhookCallbacks->list([
-    'per_page' => 50,
+    'limit' => 50,
 ]);
 
 foreach ($callbacks as $callback) {
@@ -285,7 +285,7 @@ try {
 
     // 3. Monitor webhook callbacks
     $callbacks = $client->stripeWebhookCallbacks->list([
-        'per_page' => 10,
+        'limit' => 10,
     ]);
 
     echo "\nRecent Stripe events:\n";

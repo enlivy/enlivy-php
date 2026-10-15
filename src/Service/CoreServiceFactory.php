@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Enlivy\Service;
 
-use Enlivy\Service\OAuth\OAuthAuthorizationService;
-use Enlivy\Service\OAuth\OAuthClientService;
 use Enlivy\Service\OAuth\OAuthTokenService;
 use Enlivy\Service\Organization\AnalyticsService;
 use Enlivy\Service\Organization\ApiCredentialService;
@@ -52,6 +50,7 @@ use Enlivy\Service\Organization\Helpdesk\HelpdeskTeammateService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskSettingsService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskInboundEmailService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskInboundEmailRuleService;
+use Enlivy\Service\Organization\Helpdesk\HelpdeskTeamService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskProactiveMessageService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskVisitorService;
 use Enlivy\Service\Organization\BankAccount\BankAccountStatementService;
@@ -122,10 +121,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'authentication' => AuthenticationService::class,
             'organizations' => OrganizationService::class,
             'users' => UserService::class,
-            'userTokens' => UserTokenService::class,
             'aiAgents' => AiAgentService::class,
-            'oauthClients' => OAuthClientService::class,
-            'oauthAuthorizations' => OAuthAuthorizationService::class,
             'oauthTokens' => OAuthTokenService::class,
             'invitationCodes' => InvitationCodeService::class,
             'serviceIntegration' => ServiceIntegrationService::class,
@@ -190,6 +186,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             'helpdeskSettings' => HelpdeskSettingsService::class,
             'helpdeskInboundEmails' => HelpdeskInboundEmailService::class,
             'helpdeskInboundEmailRules' => HelpdeskInboundEmailRuleService::class,
+            'helpdeskTeams' => HelpdeskTeamService::class,
             'helpdeskProactiveMessages' => HelpdeskProactiveMessageService::class,
             'helpdeskVisitors' => HelpdeskVisitorService::class,
 

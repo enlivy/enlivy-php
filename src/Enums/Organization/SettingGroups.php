@@ -23,5 +23,6 @@ enum SettingGroups: string
     case STRIPE_CONNECT = 'stripe_connect';
     case NETWORK_EXCHANGE = 'network_exchange';
     case NETWORK_EXCHANGE_AUTO_PUSH = 'network_exchange_auto_push';
+    case AI = 'ai';
     case PERSONALIZATION = 'personalization';
 }

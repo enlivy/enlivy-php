@@ -210,7 +210,7 @@ $payslip = $client->payslips->retrieve($payslip->id, [
     'include' => 'lines,organization_employment',
 ]);
 
-foreach ($payslip->lines as $line) {
+foreach ($payslip->lines->data as $line) {
     echo "{$line->code}: {$line->amount} {$line->currency}\n";
 }
 ```

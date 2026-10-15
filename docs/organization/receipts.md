@@ -266,8 +266,8 @@ $receipts = $client->receipts->list([
 
 foreach ($receipts as $receipt) {
     echo "{$receipt->receipt_number}\n";
-    echo "  From: {$receipt->sender_user->name}\n";
-    echo "  To: {$receipt->receiver_user->name}\n";
+    echo "  From: {$receipt->sender_user?->data->name}\n";
+    echo "  To: {$receipt->receiver_user?->data->name}\n";
     echo "  Total: {$receipt->total} {$receipt->currency}\n";
 }
 ```
@@ -298,9 +298,9 @@ if ($receipt->paid_at) {
 }
 
 // Show taxes
-if (!empty($receipt->taxes)) {
+if (!empty($receipt->taxes->data)) {
     echo "Taxes:\n";
-    foreach ($receipt->taxes as $tax) {
+    foreach ($receipt->taxes->data as $tax) {
         echo "  - {$tax->amount} ({$tax->organization_tax_class_id})\n";
     }
 }
@@ -346,15 +346,12 @@ echo "Restored: {$receipt->receipt_number}\n";
 ```php
 <?php
 
-// Add tags
-$receipt = $client->receipts->tag('org_rcpt_xxx', [
-    'tags' => ['q1-2026', 'verified'],
-]);
+// Add existing tags by id or alias (create them with $client->tags)
+$client->receipts->addTag('org_rcpt_xxx', 'q1-2026');
+$client->receipts->addTag('org_rcpt_xxx', 'verified');
 
 // Remove tags
-$receipt = $client->receipts->untag('org_rcpt_xxx', [
-    'tags' => ['verified'],
-]);
+$client->receipts->removeTag('org_rcpt_xxx', 'verified');
 ```
 
 ## Receipt Prefixes
@@ -524,9 +521,8 @@ try {
     ]);
 
     // 5. Tag receipt
-    $client->receipts->tag($receipt->id, [
-        'tags' => ['payment', '2026'],
-    ]);
+    $client->receipts->addTag($receipt->id, 'payment');
+    $client->receipts->addTag($receipt->id, '2026');
 
     echo "Receipt created: {$receipt->receipt_number}\n";
     echo "Total: {$receipt->total} {$receipt->currency}\n";

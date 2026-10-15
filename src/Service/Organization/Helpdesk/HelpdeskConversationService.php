@@ -38,6 +38,7 @@ class HelpdeskConversationService extends AbstractService
         'organization_project',
         'visitor',
         'assigned_teammate',
+        'team',
         'contact_organization_user',
         'contact_organization_prospect',
         'messages',
@@ -55,7 +56,10 @@ class HelpdeskConversationService extends AbstractService
         'state',
         'organization_helpdesk_inbox_id',
         'assigned_organization_helpdesk_teammate_id',
+        'organization_helpdesk_team_id',
         'assignment',
+        'waiting_on',
+        'reply_due',
         'has_unread',
         'priority',
         'source',
@@ -112,7 +116,7 @@ class HelpdeskConversationService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts, EnlivyObject::class);
     }
 
     public function assign(string $id, array $params, ?RequestOptions $opts = null): HelpdeskConversation
@@ -128,6 +132,37 @@ class HelpdeskConversationService extends AbstractService
     public function snooze(string $id, array $params, ?RequestOptions $opts = null): HelpdeskConversation
     {
         return $this->action('snooze', $id, $params, $opts);
+    }
+
+    /**
+     * Sets who owes the next reply, `team` or `customer`, until the next written message.
+     */
+    public function setWaitingOn(string $id, array $params, ?RequestOptions $opts = null): HelpdeskConversation
+    {
+        return $this->action('waiting-on', $id, $params, $opts);
+    }
+
+    /**
+     * One action over up to 100 conversations: `ids` and `action` (assign, unassign, resolve, close,
+     * reopen, snooze, waiting_on, priority) with that action's own fields. One refusal does not stop
+     * the rest; `results` names every id with `ok`, `failed` or `not_found`.
+     */
+    public function bulk(array $params, ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . '/bulk'), $params, $opts, EnlivyObject::class);
+    }
+
+    /**
+     * Waits on the team that started in a period, whether the reply target was met and how long
+     * replies took; `group_by` is `inbox`, `team`, `teammate` or `priority`.
+     */
+    public function replyPerformance(array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, 'helpdesk/conversations/analytics/reply-performance'), $params, $opts, EnlivyObject::class);
     }
 
     public function resolve(string $id, array $params = [], ?RequestOptions $opts = null): HelpdeskConversation

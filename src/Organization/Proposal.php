@@ -22,10 +22,13 @@ use Enlivy\ApiResource;
  * @property string|null $recipient_email
  * @property string|null $recipient_name
  * @property string|null $organization_sender_user_id
+ * @property string|null $locale
+ * @property array|null $locale_list
  * @property string $currency
  * @property string|null $billed_currency
  * @property string|null $exchange_rate_guarantee
  * @property array|null $allowed_currencies
+ * @property array|null $settlement_previews
  * @property array|null $billed_conversion
  * @property bool $billed_currency_is_choosable
  * @property float $sub_total

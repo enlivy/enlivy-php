@@ -1,8 +1,35 @@
 # Upgrading
 
 What may need a change on your side in the last three releases, newest first. The notes for
-3.1.0 are in [UPGRADING.md at 3.3.0](https://github.com/enlivy/enlivy-php/blob/3.3.0/UPGRADING.md),
+3.2.0 are in [UPGRADING.md at 3.4.0](https://github.com/enlivy/enlivy-php/blob/3.4.0/UPGRADING.md),
+3.1.0 in [UPGRADING.md at 3.3.0](https://github.com/enlivy/enlivy-php/blob/3.3.0/UPGRADING.md),
 and older versions in [UPGRADING.md at 3.2.0](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md).
+
+## 3.5.0
+
+Signing in, starting an account and managing API keys, OAuth clients and OAuth consent happen in the
+Enlivy app now. The API removed those routes, or accepts them only from a signed-in dashboard, so
+the methods that called them are gone.
+
+| Before | After |
+|---|---|
+| `authentication->login/register/forgotPassword/resetPassword` | sign in and register in the Enlivy app |
+| `users->sendEmailVerificationToken()` and the other email and phone methods | managed in the Enlivy app |
+| `$client->userTokens`, `authentication->listTokens/deleteToken` | create and revoke API keys in the Enlivy app |
+| `$client->oauthClients`, `$client->oauthAuthorizations` | register clients and review consent in the Enlivy app |
+| `User::$email_verification_sent_at`, `User::$remember_token` | — |
+
+- `users->update()` accepts only `username`, `first_name`, `last_name`, `name`, `locale`,
+  `country_code` and `timezone`, and a user's names may be null.
+- `invitationCodes` and `userAddresses` `delete()`/`restore()` return an `EnlivyObject`: read
+  `->status`, not resource fields.
+- Read `access_token` and `refresh_token` from `oauthTokens->create()`. A rotated refresh token
+  presented again more than a minute later revokes every token issued from it, so store the new one.
+- On the customer portal, a proposal no longer carries the organization's own fields (see
+  [Proposals](docs/organization/proposals.md)), a document's `sender_user` and `receiver_user` carry
+  only `id`, `name`, `first_name`, `last_name` and `avatar_url`, and an include the portal does not
+  offer throws before the request.
+- Page size is `limit`; `per_page` was never read, so lists returned 30 rows.
 
 ## 3.4.0
 
@@ -51,23 +78,3 @@ still need; your task statuses were kept, as task stages.
 - API credential writes merge: keys you leave out are kept, and a key sent empty is removed.
 - `misc->testEmail()` no longer needs `send_to`, and a failed check answers `422` with the checks
   under `metadata`.
-
-## 3.2.0
-
-| Before | After |
-|---|---|
-| `$client->payslipSchemas`, `Organization\PayslipSchema`, `Enums\Payslip\Fields`, the payslip's schema id, `information`, include and filter | the payslip's `lines`, now required on create |
-| `Organization\ContractConnection` | `Organization\Connection` |
-| `$client->projectPermissionProspects` | `$client->projectPermissionPipelines` |
-| `$portal->prospects->board()` | `$portal->pipelines->board()` or `boardForProject()` |
-
-- `contracts->connections()` keeps its name, but each row now carries `entity`, `liveness` and the
-  record itself under `item`.
-- Pipeline grants take `view_scope` and `edit_scope` instead of the `can_view_*` and `can_edit_*`
-  booleans, and name a pipeline instead of a stage. A grant cannot be repointed: delete it and
-  create another.
-- The portal board's `meta.project_id` is now `meta.organization_project_id`.
-- These now answer `422`: accepting a proposal without `payment_method_kind` when it needs one, a
-  prefix `current_number` that is not a positive integer or would reissue a number, and a product
-  naming a retired `organization_tax_class_id`.
-- Payroll writes need the `payroll` feature pack, and answer `402` without it.

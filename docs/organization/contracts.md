@@ -342,10 +342,11 @@ generated from it arrives with the tier already set — see
 ```php
 <?php
 
-$contracts = $client->contracts->list();
+$contracts = $client->contracts->list(['include' => ['contract_status']]);
 
 foreach ($contracts as $contract) {
-    echo "{$contract->number}: {$contract->title} ({$contract->status->name})\n";
+    $status = $contract->contract_status?->data->title_lang_map['en'] ?? 'No status';
+    echo "{$contract->number}: {$contract->title} ({$status})\n";
 }
 ```
 
@@ -379,6 +380,15 @@ $expiringSoon = $client->contracts->list([
     'ends_at_to' => date('Y-m-d', strtotime('+30 days')),
 ]);
 
+// Contracts still waiting on a signature
+$unsigned = $client->contracts->list(['awaiting_signature' => true]);
+
+// Waiting on this party's signature, or only on the others'
+$mine = $client->contracts->list([
+    'organization_user_id' => 'org_user_xxx',
+    'awaiting_my_signature' => true, // or 'awaiting_others_signature' => true
+]);
+
 // Outbound contracts
 $outbound = $client->contracts->list([
     'direction' => 'outbound',
@@ -396,22 +406,17 @@ $romanianContracts = $client->contracts->list([
 <?php
 
 $contracts = $client->contracts->list([
-    'include' => ['sender_user', 'receiver_user', 'status', 'signatures', 'prefix', 'chapters', 'parties'],
+    'include' => ['sender_user', 'receiver_user', 'contract_status', 'contract_prefix', 'contract_chapters', 'contract_parties'],
 ]);
 
 foreach ($contracts as $contract) {
-    $senderName = $contract->sender_user->name
-        ?? "{$contract->sender_user->first_name} {$contract->sender_user->last_name}";
-    $receiverName = $contract->receiver_user->name
-        ?? "{$contract->receiver_user->first_name} {$contract->receiver_user->last_name}";
-
     echo "{$contract->title}\n";
-    echo "  From: {$senderName}\n";
-    echo "  To: {$receiverName}\n";
-    echo "  Status: {$contract->status->name}\n";
+    echo "  From: {$contract->sender_user?->data->name}\n";
+    echo "  To: {$contract->receiver_user?->data->name}\n";
+    echo "  Status: {$contract->contract_status?->data->title_lang_map['en']}\n";
 
-    if ($contract->parties) {
-        foreach ($contract->parties as $party) {
+    if ($contract->contract_parties) {
+        foreach ($contract->contract_parties->data as $party) {
             $signed = $party->is_signed ? 'Signed' : 'Pending';
             echo "  Party: {$party->first_name} {$party->last_name} - {$signed}\n";
         }
@@ -425,7 +430,7 @@ foreach ($contracts as $contract) {
 <?php
 
 $contract = $client->contracts->retrieve('org_cont_xxx', [
-    'include' => ['sender_user', 'receiver_user', 'status', 'signatures', 'chapters', 'parties'],
+    'include' => ['sender_user', 'receiver_user', 'contract_status', 'contract_chapters', 'contract_parties'],
 ]);
 
 echo "Contract: {$contract->title}\n";
@@ -433,7 +438,7 @@ echo "Number: {$contract->number}\n";
 echo "Category: {$contract->category}\n";
 echo "Direction: {$contract->direction}\n";
 echo "Source: {$contract->source}\n";
-echo "Status: {$contract->status->name}\n";
+echo "Status: {$contract->contract_status?->data->title_lang_map['en']}\n";
 echo "Issued: {$contract->issued_at}\n";
 
 if ($contract->ends_at) {
@@ -488,7 +493,7 @@ $contract = $client->contracts->update('org_cont_xxx', [
 $statuses = $client->contractStatuses->list();
 
 foreach ($statuses as $status) {
-    echo "{$status->name} (order: {$status->order})\n";
+    echo "{$status->title_lang_map['en']} ({$status->contract_state}, order: {$status->order})\n";
 }
 ```
 
@@ -498,10 +503,11 @@ foreach ($statuses as $status) {
 <?php
 
 $status = $client->contractStatuses->create([
-    'name' => 'Under Review',
-    'color' => '#FFA500', // Orange
-    'order' => 2,
-    'is_default' => false,
+    'title_lang_map' => ['en' => 'Under Review'],
+    'description_lang_map' => ['en' => 'Waiting on the other party to review'],
+    'contract_state' => 'action_required',
+    'direction' => 'any',
+    'rgba_color_code' => '255, 165, 0, 1',
 ]);
 ```
 
@@ -512,9 +518,10 @@ $status = $client->contractStatuses->create([
 
 $contract = $client->contracts->update('org_cont_xxx', [
     'organization_contract_status_id' => 'org_cont_status_active_xxx',
+    'include' => ['contract_status'],
 ]);
 
-echo "New status: {$contract->status->name}\n";
+echo "New status: {$contract->contract_status->data->title_lang_map['en']}\n";
 ```
 
 ## E-Signatures
@@ -810,8 +817,8 @@ try {
     $activeStatus = null;
 
     foreach ($statuses as $status) {
-        if ($status->name === 'Draft') $draftStatus = $status;
-        if ($status->name === 'Active') $activeStatus = $status;
+        if ($status->contract_state === 'draft') $draftStatus ??= $status;
+        if ($status->contract_state === 'accepted') $activeStatus ??= $status;
     }
 
     // 2. Get prefix

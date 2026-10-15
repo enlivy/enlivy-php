@@ -18,7 +18,7 @@ $invoice = $client->invoices->retrieve('org_inv_xxx', [
 // Works on list, retrieve, create, update, and delete
 $invoices = $client->invoices->list([
     'include' => ['sender_user', 'receiver_user'],
-    'per_page' => 25,
+    'limit' => 25,
 ]);
 ```
 
@@ -162,12 +162,13 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 
 | Service | Includes |
 |---------|----------|
-| `helpdeskConversations` | `organization`, `inbox`, `organization_project`, `visitor`, `assigned_teammate`, `contact_organization_user`, `contact_organization_prospect`, `messages`, `attachments`, `participants`, `reads`, `merged_into`, `continued_from`, `tag_ids`, `deleted_by_user`, `lifecycle` |
+| `helpdeskConversations` | `organization`, `inbox`, `organization_project`, `visitor`, `assigned_teammate`, `team`, `contact_organization_user`, `contact_organization_prospect`, `messages`, `attachments`, `participants`, `reads`, `merged_into`, `continued_from`, `tag_ids`, `deleted_by_user`, `lifecycle` |
 | `helpdeskConversationMessages` | `organization`, `conversation`, `author_organization_user`, `author_organization_prospect`, `attachments`, `deliveries` |
 | `helpdeskConversationAttachments` | `organization`, `conversation`, `message`, `visitor`, `uploaded_by_user` |
 | `helpdeskConversationParticipants` | `organization`, `conversation`, `organization_user`, `organization_prospect` |
-| `helpdeskInboxes` | `organization`, `organization_project`, `owner_teammate`, `default_teammate`, `organization_api_credential`, `branding_logo_file`, `branding_icon_file`, `deleted_by_user` |
+| `helpdeskInboxes` | `organization`, `organization_project`, `team`, `owner_teammate`, `default_teammate`, `organization_api_credential`, `branding_logo_file`, `branding_icon_file`, `deleted_by_user` |
 | `helpdeskTeammates` | `organization`, `organization_user`, `owned_inboxes` |
+| `helpdeskTeams` | `organization`, `members`, `deleted_by_user` |
 | `helpdeskSettings` | `organization`, `branding_logo_file`, `branding_icon_file`, `inbox_defaults` |
 | `helpdeskInboundEmails` | `organization`, `inbox`, `organization_api_credential`, `blocked_identifier`, `conversation`, `message`, `content`, `headers`, `trust_assessment` |
 | `helpdeskInboundEmailRules` | `organization`, `inbox`, `deleted_by_user` |
@@ -228,6 +229,21 @@ that kind of record.
 | `proposals` | `organization`, `project`, `billing_package`, `billing_package_payment_plan`, `subscription_term`, `payments`, `proposal_contracts`, `billing_schedule`, `invoice`, `proforma_invoice`, `prospect`, `receiver_user`, `sender_user`, `created_by_user`, `deleted_by_user`, `expired_by_user`, `stage_detail` |
 | `notifications` | `organization`, `sent_to_organization_user`, `sent_by_user`, `subjects` |
 
+### Customer Portal
+
+The portal lane offers a narrower set, and the API refuses (`422`) any include a portal route does not
+list. The SDK checks these on `list()` and `retrieve()`, and on `$portal->billingPackages->claim()`
+with the proposal set:
+
+| Portal service | Includes |
+|---------|----------|
+| `invoices` | `bank_account`, `invoice_prefix`, `line_items`, `sender_user`, `receiver_user`, `receiver_user_address`, `receipts`, `last_peppol_exchange`, `contract`, `charge_logs`, `latest_charge_log` |
+| `receipts` | `invoice`, `bank_account`, `sender_user`, `receiver_user`, `contract` |
+| `contracts` | `sender_user`, `receiver_user`, `file`, `contract_status`, `contract_chapters`, `contract_parties`, `contract_prefix`, `abilities` |
+| `proposals` | `billing_package`, `subscription_term`, `payments`, `payments.line_items`, `proposal_contracts`, `stage_detail`, `invoice`, `proforma_invoice`, `receiver_user`, `sender_user` |
+
+`payments.line_items` is the one nested path the portal accepts.
+
 ### Global Services
 
 | Service | Includes |
@@ -236,5 +252,4 @@ that kind of record.
 | `exportData` | (no includes) |
 | `users` (global) | `organizations` |
 | `aiAgents` | `deleted_by_user` |
-| `oauthClients` | `user` |
 | `invitationCodes` | `deleted_by_user` |

@@ -116,4 +116,14 @@ class UserService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/overview/reports"), $params, $opts);
     }
+
+    /**
+     * The counts and totals a person's record page shows. A section the caller may not open is left out, not zeroed.
+     */
+    public function summaryOverview(string $userId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/overview/summary"), $params, $opts, EnlivyObject::class);
+    }
 }

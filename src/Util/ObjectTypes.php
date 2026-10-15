@@ -7,8 +7,6 @@ namespace Enlivy\Util;
 use Enlivy\AiAgent;
 use Enlivy\ApiResource;
 use Enlivy\InvitationCode;
-use Enlivy\OAuthAuthorization;
-use Enlivy\OAuthClient;
 use Enlivy\OAuthToken;
 use Enlivy\Organization;
 use Enlivy\Organization\ApiCredential;
@@ -32,6 +30,7 @@ use Enlivy\Organization\HelpdeskTeammate;
 use Enlivy\Organization\HelpdeskSettings;
 use Enlivy\Organization\HelpdeskInboundEmail;
 use Enlivy\Organization\HelpdeskInboundEmailRule;
+use Enlivy\Organization\HelpdeskTeam;
 use Enlivy\Organization\HelpdeskProactiveMessage;
 use Enlivy\Organization\HelpdeskVisitor;
 use Enlivy\Organization\HelpdeskVisitorEvent;
@@ -106,7 +105,6 @@ use Enlivy\Organization\WorkingTimeDay;
 use Enlivy\Organization\WorkingTimeDayBreak;
 use Enlivy\Organization\WorkingTimeTerm;
 use Enlivy\User;
-use Enlivy\UserToken;
 
 /**
  * Maps API object types to their corresponding PHP classes.
@@ -124,10 +122,7 @@ final class ObjectTypes
         // Global (non-org-scoped)
         'organization' => Organization::class,
         'user' => User::class,
-        'user_token' => UserToken::class,
         'ai_agent' => AiAgent::class,
-        'oauth_client' => OAuthClient::class,
-        'oauth_authorization' => OAuthAuthorization::class,
         'oauth_token' => OAuthToken::class,
         'invitation_code' => InvitationCode::class,
 
@@ -185,6 +180,7 @@ final class ObjectTypes
         'helpdesk_settings' => HelpdeskSettings::class,
         'helpdesk_inbound_email' => HelpdeskInboundEmail::class,
         'helpdesk_inbound_email_rule' => HelpdeskInboundEmailRule::class,
+        'helpdesk_team' => HelpdeskTeam::class,
         'helpdesk_proactive_message' => HelpdeskProactiveMessage::class,
         'helpdesk_visitor' => HelpdeskVisitor::class,
         'helpdesk_visitor_event' => HelpdeskVisitorEvent::class,

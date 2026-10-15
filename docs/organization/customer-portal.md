@@ -195,7 +195,7 @@ echo "Token: {$session->token}\n";
 echo "Status: {$session->status}\n";
 echo "Authentication Method: {$session->authentication_method}\n";
 echo "Permissions: " . implode(', ', $session->permissions ?? []) . "\n";
-echo "Customer: {$session->organization_user->email}\n";
+echo "Customer: {$session->organization_user?->data->email}\n";
 echo "Expires: {$session->expires_at}\n";
 echo "Last used: {$session->last_used_at}\n";
 ```
@@ -362,6 +362,18 @@ $pdf = $portal->payslips->download('org_pay_xxx');
 `attestMonth` takes no `attestation_method` on this lane — the portal caller is the worker, so it
 always records `worker_confirmed`. The back-office endpoint is the second-party half of the same
 confirmation and rejects that method. See [Payroll](payroll.md).
+
+## What the Portal Returns
+
+The portal answers each document as the customer reads it, not as the organization does:
+
+- A document's `sender_user` and `receiver_user` carry only `id`, `name`, `first_name`, `last_name` and
+  `avatar_url`.
+- An include a portal route does not list is refused with a `422`. The SDK checks the portal
+  `invoices`, `receipts`, `contracts` and `proposals` includes before sending; see
+  [Includes](../includes.md#customer-portal).
+- A proposal leaves out the organization-only fields; see
+  [Proposals](proposals.md#the-portal-shape).
 
 ## Security Best Practices
 

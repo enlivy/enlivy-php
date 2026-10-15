@@ -103,6 +103,7 @@ enum TriggerEvent: string
     case HELPDESK_CONVERSATION_SNOOZED = 'helpdesk_conversation.snoozed';
     case HELPDESK_CONVERSATION_UNSNOOZED = 'helpdesk_conversation.unsnoozed';
     case HELPDESK_CONVERSATION_UNANSWERED = 'helpdesk_conversation.unanswered';
+    case HELPDESK_CONVERSATION_OVERDUE = 'helpdesk_conversation.overdue';
     case HELPDESK_CONVERSATION_MESSAGE_CREATED = 'helpdesk_conversation_message.created';
     case HELPDESK_CONVERSATION_MESSAGE_UPDATED = 'helpdesk_conversation_message.updated';
 }

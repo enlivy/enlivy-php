@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\UserAddress;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasFilters;
@@ -15,6 +16,8 @@ class UserAddressService extends AbstractService
 {
     use HasIncludes;
     use HasFilters;
+
+    protected const ?string RESOURCE_CLASS = UserAddress::class;
 
     public const array AVAILABLE_INCLUDES = [
         'organization',
@@ -66,21 +69,19 @@ class UserAddressService extends AbstractService
         return $this->request('PUT', $this->orgPath($orgId, "users/{$userId}/addresses/{$addressId}"), $params, $opts);
     }
 
-    public function delete(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): UserAddress
+    public function delete(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var UserAddress */
-        return $this->request('DELETE', $this->orgPath($orgId, "users/{$userId}/addresses/{$addressId}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, "users/{$userId}/addresses/{$addressId}"), $params, $opts, EnlivyObject::class);
     }
 
-    public function restore(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): UserAddress
+    public function restore(string $userId, string $addressId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
         $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        /** @var UserAddress */
-        return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/addresses/restore/{$addressId}"), $params, $opts);
+        return $this->request('POST', $this->orgPath($orgId, "users/{$userId}/addresses/restore/{$addressId}"), $params, $opts, EnlivyObject::class);
     }
 }

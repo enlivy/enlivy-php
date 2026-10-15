@@ -91,6 +91,12 @@ This affects:
    | `organization_type` | Not needed | Required |
    | `organization_information` | Not needed | Required |
 
+   A business contact's `organization_information` needs only the fields its country's schema marks
+   `required_for_contact`; read them with `$client->frontend->informationSchema('RO')`
+   (`GET /frontend/information-schema/{country}`). The keys are the country's own: a Romanian
+   company takes `cui` (required), `j` (the trade register number) and `eu_vat`. Register numbers a company prints on its own documents may be left out of a contact's
+   record, and stay required on the organization's own profile.
+
 2. **UI display** — use `is_business_entity` to decide what to show:
 
 ```php
@@ -247,8 +253,8 @@ $company = $client->organizationUsers->create([
     // Organization-specific information (JSON object with tax IDs, registration numbers)
     'organization_information' => [
         'cui' => '12345678',              // Tax ID (CUI in Romania)
-        'registration_number' => 'J40/1234/2020', // Trade register number
-        'vat_number' => 'RO12345678',     // VAT number if registered
+        'j' => 'J40/1234/2020',           // Trade register number
+        'eu_vat' => 'RO12345678',         // EU VAT number if registered
     ],
 
     // Contact info
@@ -340,7 +346,7 @@ foreach ($users as $user) {
 
 $users = $client->organizationUsers->list([
     'page' => 1,
-    'per_page' => 25,
+    'limit' => 25,
 ]);
 
 echo "Total: {$users->getTotalCount()}\n";
@@ -350,7 +356,7 @@ echo "Page {$users->getCurrentPage()} of {$users->getTotalPages()}\n";
 while ($users->hasMore()) {
     $users = $client->organizationUsers->list([
         'page' => $users->getCurrentPage() + 1,
-        'per_page' => 25,
+        'limit' => 25,
     ]);
 
     foreach ($users as $user) {
@@ -391,16 +397,13 @@ $romanianUsers = $client->organizationUsers->list([
 <?php
 
 $users = $client->organizationUsers->list([
-    'include' => ['role', 'addresses', 'tags'],
+    'include' => ['user_role', 'tag_ids'],
 ]);
 
 foreach ($users as $user) {
     echo "User: {$user->email}\n";
-    echo "Role: {$user->role->name}\n";
-
-    foreach ($user->addresses ?? [] as $address) {
-        echo "  Address: {$address->address_line_1}, {$address->address_city}\n";
-    }
+    echo "Role: {$user->user_role?->data->name}\n";
+    echo "  Address: {$user->address_line_1}, {$user->address_city}\n";
 }
 ```
 
@@ -410,11 +413,11 @@ foreach ($users as $user) {
 <?php
 
 $customer = $client->organizationUsers->retrieve('org_user_xxx', [
-    'include' => ['role', 'addresses', 'invoices'],
+    'include' => ['user_role'],
 ]);
 
 // Display based on whether it's business or individual
-if ($customer->role->is_business_entity) {
+if ($customer->is_business_entity) {
     echo "Company: {$customer->name}\n";
     echo "Type: {$customer->organization_type}\n";
     if (isset($customer->organization_information['cui'])) {
@@ -425,8 +428,7 @@ if ($customer->role->is_business_entity) {
 }
 
 echo "Email: {$customer->email}\n";
-echo "Role: {$customer->role->name}\n";
-echo "Invoice count: " . count($customer->invoices ?? []) . "\n";
+echo "Role: {$customer->user_role?->data->name}\n";
 ```
 
 ## Updating a Customer
@@ -451,8 +453,8 @@ echo "Updated: {$customer->email}\n";
 $company = $client->organizationUsers->update('org_user_xxx', [
     'organization_information' => [
         'cui' => '87654321',
-        'registration_number' => 'J40/5678/2024',
-        'vat_number' => 'RO87654321',
+        'j' => 'J40/5678/2024',
+        'eu_vat' => 'RO87654321',
     ],
 ]);
 ```
@@ -486,13 +488,44 @@ View activity history for a customer:
 <?php
 
 $activity = $client->organizationUsers->activity('org_user_xxx', [
-    'per_page' => 50,
+    'limit' => 50,
 ]);
 
 foreach ($activity as $event) {
     echo "[{$event->created_at}] {$event->description}\n";
 }
 ```
+
+## Customer Summary
+
+The counts and totals a customer's record page shows, in one call:
+
+```php
+<?php
+
+$summary = $client->organizationUsers->summaryOverview('org_user_xxx');
+
+echo $summary->documents['invoice']['received'];
+foreach ($summary->money ?? [] as $row) {
+    echo "{$row['currency']}: {$row['receivable_open']} open\n";
+}
+```
+
+| Section | Holds |
+|---------|-------|
+| `documents` | `received` and `sent` counts for each of `invoice`, `receipt`, `billing_schedule`, `contract`, `payslip` |
+| `money` | One row per currency: `receivable_open`, `payable_open`, `invoiced_this_year`, `billed_this_year`, as decimal strings |
+| `year` | The `from` and `to` of the organization's current calendar year, which `money` counts in |
+| `proposals` | `live`: proposals to this customer still open |
+| `helpdesk` | `conversations` and `open_conversations` with this contact |
+| `reports` | `total` reports filed for this person |
+| `card` | Counts of `addresses`, `bank_accounts` and `payment_methods` |
+| `activity` | `total` entries in the customer's activity |
+| `last_activity_at` | When the latest activity happened, or null |
+
+A section the caller may not open is left out, not zeroed: `documents` holds only the kinds the
+caller may view, `money` and `year` need invoice access, and `proposals`, `helpdesk` and `reports`
+need their own module.
 
 ## Change History
 
@@ -519,15 +552,12 @@ record.
 ```php
 <?php
 
-// Add tags
-$customer = $client->organizationUsers->tag('org_user_xxx', [
-    'tags' => ['vip', 'wholesale'],
-]);
+// Add existing tags by id or alias (create them with $client->tags)
+$client->organizationUsers->addTag('org_user_xxx', 'vip');
+$client->organizationUsers->addTag('org_user_xxx', 'wholesale');
 
 // Remove tags
-$customer = $client->organizationUsers->untag('org_user_xxx', [
-    'tags' => ['wholesale'],
-]);
+$client->organizationUsers->removeTag('org_user_xxx', 'wholesale');
 ```
 
 ## Managing Addresses
@@ -538,22 +568,18 @@ Customers can have multiple addresses (billing, shipping, etc.):
 <?php
 
 // Add an address
-$address = $client->userAddresses->create([
-    'organization_user_id' => 'org_user_xxx',
-    'label' => 'Shipping',
+$address = $client->userAddresses->create('org_user_xxx', [
+    'name' => 'Shipping',
     'address_line_1' => 'Warehouse Street 789',
     'address_city' => 'Cluj-Napoca',
     'address_county' => 'Cluj',
     'address_zip_code' => '400000',
     'country_code' => 'RO',
     'address_iso_3166' => 'RO-CJ',
-    'is_default' => false,
 ]);
 
 // List addresses
-$addresses = $client->userAddresses->list([
-    'organization_user_id' => 'org_user_xxx',
-]);
+$addresses = $client->userAddresses->list('org_user_xxx');
 ```
 
 ## Field Reference
@@ -677,14 +703,12 @@ try {
     ]);
 
     // 3. Add tags
-    $customer = $client->organizationUsers->tag($customer->id, [
-        'tags' => ['new-customer', '2026'],
-    ]);
+    $client->organizationUsers->addTag($customer->id, 'new-customer');
+    $client->organizationUsers->addTag($customer->id, '2026');
 
     // 4. Add shipping address
-    $shippingAddress = $client->userAddresses->create([
-        'organization_user_id' => $customer->id,
-        'label' => 'Shipping',
+    $shippingAddress = $client->userAddresses->create($customer->id, [
+        'name' => 'Shipping',
         'address_line_1' => 'Depozit Central 100',
         'address_city' => 'Timisoara',
         'address_county' => 'Timis',

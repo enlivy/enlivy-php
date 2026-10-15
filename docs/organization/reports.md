@@ -52,13 +52,13 @@ echo "Schema created: {$schema->id}\n";
 <?php
 
 $schemas = $client->reportSchemas->list([
-    'include' => ['fields'],
+    'include' => ['report_schema_fields'],
 ]);
 
 foreach ($schemas as $schema) {
-    echo "{$schema->name}\n";
-    foreach ($schema->fields ?? [] as $field) {
-        echo "  - {$field->name} ({$field->type})\n";
+    echo "{$schema->title}\n";
+    foreach ($schema->report_schema_fields->data ?? [] as $field) {
+        echo "  - {$field->title} ({$field->type})\n";
     }
 }
 ```
@@ -232,11 +232,11 @@ foreach ($reports as $report) {
 
 $reports = $client->reports->list([
     'organization_report_schema_id' => 'org_schema_xxx',
-    'include' => ['schema', 'organization_user'],
+    'include' => ['report_schema', 'organization_user'],
 ]);
 
 foreach ($reports as $report) {
-    echo "Report by {$report->organization_user->first_name}\n";
+    echo "Report by {$report->organization_user?->data->first_name}\n";
     echo "  Revenue: {$report->report_map['revenue']}\n";
     echo "  Deals: {$report->report_map['deals_closed']}\n";
 }
@@ -275,15 +275,15 @@ $reports = $client->reports->list([
 <?php
 
 $report = $client->reports->retrieve('org_report_xxx', [
-    'include' => ['schema', 'organization_user', 'organization_project'],
+    'include' => ['report_schema', 'organization_user', 'organization_project'],
 ]);
 
 echo "Report: {$report->id}\n";
-echo "Schema: {$report->schema->name}\n";
-echo "Submitted by: {$report->organization_user->first_name}\n";
+echo "Schema: {$report->report_schema?->data->title}\n";
+echo "Submitted by: {$report->organization_user?->data->first_name}\n";
 
-if ($report->organization_project) {
-    echo "Project: {$report->organization_project->title_lang_map['en']}\n";
+if ($project = $report->organization_project?->data) {
+    echo "Project: {$project->title_lang_map['en']}\n";
 }
 
 echo "Data:\n";
@@ -397,7 +397,7 @@ try {
     echo "Added " . count($fields) . " fields\n";
 
     // 3. Get a user to submit the report
-    $users = $client->organizationUsers->list(['per_page' => 1]);
+    $users = $client->organizationUsers->list(['limit' => 1]);
     $user = $users->data[0];
 
     // 4. Create monthly report
@@ -418,12 +418,12 @@ try {
 
     // 5. Retrieve and display
     $report = $client->reports->retrieve($report->id, [
-        'include' => ['schema', 'organization_user'],
+        'include' => ['report_schema', 'organization_user'],
     ]);
 
     echo "\n--- Report Summary ---\n";
-    echo "Schema: {$report->schema->name}\n";
-    echo "Submitted by: {$report->organization_user->first_name}\n";
+    echo "Schema: {$report->report_schema?->data->title}\n";
+    echo "Submitted by: {$report->organization_user?->data->first_name}\n";
     echo "New Customers: {$report->report_map['new_customers']}\n";
     echo "Revenue: {$report->report_map['revenue']}\n";
     echo "Churn Rate: {$report->report_map['churn_rate']}%\n";

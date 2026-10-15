@@ -19,6 +19,8 @@ class AiAgentService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
+    protected const ?string RESOURCE_CLASS = AiAgent::class;
+
     public const array AVAILABLE_INCLUDES = [
         'deleted_by_user',
     ];
@@ -50,6 +52,6 @@ class AiAgentService extends AbstractService
      */
     public function run(string $id, array $params, ?RequestOptions $opts = null): EnlivyObject
     {
-        return $this->request('POST', "/ai-agents/{$id}/run", $params, $opts);
+        return $this->request('POST', "/ai-agents/{$id}/run", $params, $opts, EnlivyObject::class);
     }
 }

@@ -90,6 +90,28 @@ class BankTransactionService extends AbstractService
         return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
     }
 
+    /**
+     * Record that this transaction paid an invoice or receipt. Without `amount` the document takes what the
+     * transaction has not settled yet; without a cost type the API decides one or refuses.
+     *
+     * @param array{
+     *     organization_id?: string,
+     *     connection_entity_type: 'invoice'|'receipt',
+     *     connection_entity_id: string,
+     *     organization_bank_transaction_cost_type_id?: string|null,
+     *     amount?: float|string,
+     *     include?: string|list<string>,
+     * } $params
+     */
+    public function recordDocumentPayment(string $id, array $params, ?RequestOptions $opts = null): BankTransaction
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var BankTransaction */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/document-payments"), $params, $opts);
+    }
+
     public function delete(string $id, array $params = [], ?RequestOptions $opts = null): BankTransaction
     {
         $this->validateIncludes($params);

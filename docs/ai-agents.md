@@ -1,28 +1,31 @@
 # AI Agents
 
-Use AI-powered agents for entity processing, data transformation, and intelligent matching. AI Agents are configurable OpenAI-powered processors that transform input data into structured output.
+Run Enlivy's AI agents over your organization's records or over input you send. Agents are defined
+by Enlivy: the SDK lists them, reads one, and runs one. It cannot create, change or delete an agent.
 
 ## Key Concepts
 
 ### Agent Architecture
 
 ```
-AI Agent System
+AI Agent
     |
-    +-- Agent Configuration (prompts, output format)
-    |       +-- Input Target Entity (optional entity to process)
-    |       +-- Input Data (custom input fields)
+    +-- Definition (read-only)
+    |       +-- Input Target Entity (optional record type it processes)
+    |       +-- Input Data (custom input fields it accepts)
     |
-    +-- Run (execute agent with input)
+    +-- Run (execute the agent)
     |       +-- Organization context
-    |       +-- Entity ID (if target entity)
+    |       +-- Entity ID (if it has a target entity)
     |       +-- Custom instructions
     |
     +-- Output (parsed result)
-            +-- Text, JSON, or Entity structure
+            +-- Text, JSON, or entity structure
 ```
 
 ### Output Formats
+
+Each agent answers in one format:
 
 | Format | Description |
 |--------|-------------|
@@ -49,21 +52,17 @@ foreach ($agents as $agent) {
     $title = $agent->title_lang_map['en'] ?? 'Untitled';
     $description = $agent->description_lang_map['en'] ?? '';
 
-    echo "{$title}\n";
+    echo "{$title} ({$agent->slug})\n";
     echo "  ID: {$agent->id}\n";
     echo "  Description: {$description}\n";
-    echo "  Output Format: {$agent->output_format}\n";
     echo "  Has Input Target: " . ($agent->has_input_target ? 'Yes' : 'No') . "\n";
 
     if ($agent->input_target_entity) {
         echo "  Target Entity: {$agent->input_target_entity}\n";
     }
 
-    if ($agent->input_data) {
-        echo "  Input Fields:\n";
-        foreach ($agent->input_data as $field) {
-            echo "    - {$field['field_key']} ({$field['type']})\n";
-        }
+    foreach ($agent->input_data ?? [] as $field) {
+        echo "    - {$field['field_key']} ({$field['type']})\n";
     }
 }
 ```
@@ -78,59 +77,17 @@ $agent = $client->aiAgents->retrieve('ai_agent_xxx');
 echo "Agent: {$agent->id}\n";
 echo "Title: " . ($agent->title_lang_map['en'] ?? '') . "\n";
 echo "Description: " . ($agent->description_lang_map['en'] ?? '') . "\n";
-echo "Output Format: {$agent->output_format}\n";
 echo "Has Input Target: " . ($agent->has_input_target ? 'Yes' : 'No') . "\n";
 echo "Input Target Entity: {$agent->input_target_entity}\n";
 
-if ($agent->input_data) {
-    echo "Input Fields:\n";
-    foreach ($agent->input_data as $field) {
-        echo "  - {$field['field_key']}: {$field['title']}\n";
-    }
+foreach ($agent->input_data ?? [] as $field) {
+    echo "  - {$field['field_key']}: {$field['title']}\n";
 }
 ```
 
-## Creating an AI Agent
-
-```php
-<?php
-
-$agent = $client->aiAgents->create([
-    // Required
-    'title_lang_map' => [
-        'en' => 'Invoice Classifier',
-    ],
-    'description_lang_map' => [
-        'en' => 'Classifies invoices into categories based on line items',
-    ],
-
-    // Optional - prompt configuration
-    'system_prompt' => 'You are an invoice classifier. Analyze the invoice...',
-    'output_format' => 'json',
-    'output_structure' => [
-        'category' => 'string',
-        'confidence' => 'number',
-        'tags' => 'array',
-    ],
-
-    // Optional - input configuration
-    'input_target_entity' => 'invoice', // Process invoices
-    'input_data' => [
-        [
-            'field_key' => 'additional_context',
-            'type' => 'text',
-            'title' => 'Additional Context',
-        ],
-    ],
-
-    // Optional - entity schemas for context
-    'entity_schemas' => ['invoice', 'line_item'],
-]);
-
-echo "Created agent: {$agent->id}\n";
-```
-
 ## Running an AI Agent
+
+`run()` returns the agent's output itself, so a JSON answer's keys read straight off the result.
 
 ### Basic Run
 
@@ -140,106 +97,50 @@ echo "Created agent: {$agent->id}\n";
 $result = $client->aiAgents->run('ai_agent_xxx', [
     'organization_id' => 'org_xxx',
 
-    // Custom input fields (if defined in agent's input_data)
+    // Custom input fields (as listed in the agent's input_data)
     'input' => [
-        'additional_context' => 'This is a monthly recurring invoice',
+        'report_text' => 'Monthly Sales Report - January 2026 ...',
     ],
 
     // Optional additional instructions
-    'instructions' => 'Focus on the primary service category',
+    'instructions' => 'Report amounts in EUR',
 
     // Optional timezone for date processing
     'timezone' => 'Europe/Bucharest',
 ]);
 
-echo "Result: " . json_encode($result->output) . "\n";
+echo json_encode($result, JSON_PRETTY_PRINT) . "\n";
 ```
+
+When a JSON agent's answer cannot be parsed, the result carries `raw` with the model's text instead.
 
 ### Run with Target Entity
 
 ```php
 <?php
 
-// For agents with input_target_entity configured
+// For agents with an input_target_entity
 $result = $client->aiAgents->run('ai_agent_xxx', [
     'organization_id' => 'org_xxx',
 
-    // Required when agent has input_target_entity
-    'organization_entity_id' => 'org_inv_xxx', // The invoice to process
+    // Required when the agent has an input_target_entity
+    'organization_entity_id' => 'org_inv_xxx',
 
-    'input' => [
-        'additional_context' => 'Quarterly billing cycle',
-    ],
+    'instructions' => 'Be conservative with confidence scores',
 ]);
 
-echo "Classification: {$result->output['category']}\n";
-echo "Confidence: {$result->output['confidence']}\n";
-```
-
-## Updating an AI Agent
-
-```php
-<?php
-
-$agent = $client->aiAgents->update('ai_agent_xxx', [
-    'title_lang_map' => [
-        'en' => 'Updated Invoice Classifier',
-    ],
-    'system_prompt' => 'Updated prompt with improved instructions...',
-    'output_format' => 'entity_json',
-]);
-
-echo "Updated agent: {$agent->id}\n";
-```
-
-## Deleting an AI Agent
-
-```php
-<?php
-
-// Soft delete
-$agent = $client->aiAgents->delete('ai_agent_xxx');
-
-echo "Deleted at: {$agent->deleted_at}\n";
-```
-
-## Restoring an AI Agent
-
-```php
-<?php
-
-$agent = $client->aiAgents->restore('ai_agent_xxx');
-
-echo "Restored: {$agent->id}\n";
+print_r($result->toArray());
 ```
 
 ## Field Reference
-
-### Required Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `title_lang_map` | object | Agent title by language |
-| `description_lang_map` | object | Agent description by language |
-
-### Optional Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `system_prompt` | string | OpenAI system prompt instructions |
-| `output_format` | string | Output type (text, json, entity_json, entities_json) |
-| `output_structure` | object | Expected output JSON structure |
-| `input_target_entity` | string | Entity type to process (invoice, contract, etc.) |
-| `input_data` | array | Custom input field definitions |
-| `entity_schemas` | array | Entity types to include in context |
 
 ### Run Request Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `organization_id` | string | Yes | Organization context |
-| `organization_entity_id` | string | Conditional | Entity ID (required if agent has input_target_entity) |
-| `input` | object | No | Custom input values (matches agent's input_data) |
+| `organization_entity_id` | string | Conditional | Record to process (required if the agent has an `input_target_entity`) |
+| `input` | object | No | Custom input values (matches the agent's `input_data`) |
 | `instructions` | string | No | Additional instructions for this run |
 | `timezone` | string | No | Timezone for date processing |
 
@@ -247,16 +148,15 @@ echo "Restored: {$agent->id}\n";
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | string | Agent ID (ai_agent_xxx) |
+| `id` | string | Agent ID |
+| `slug` | string | Stable agent name |
+| `type` | string | Agent type |
 | `title_lang_map` | object | Title by language |
 | `description_lang_map` | object | Description by language |
-| `output_format` | string | Output format type |
-| `has_input_target` | boolean | Whether agent processes entities |
-| `input_target_entity` | string | Target entity type |
+| `has_input_target` | boolean | Whether the agent processes a record |
+| `input_target_entity` | string | Target record type |
 | `input_data` | array | Input field definitions |
 | `entity_schemas` | array | (Admin only) Entity schemas |
-| `system_prompt` | string | (Admin only) System prompt |
-| `output_structure` | object | (Admin only) Output structure |
 | `created_at` | datetime | (Admin only) Creation timestamp |
 | `updated_at` | datetime | (Admin only) Update timestamp |
 | `deleted_at` | datetime | (Admin only) Deletion timestamp |
@@ -267,7 +167,7 @@ echo "Restored: {$agent->id}\n";
 |---------|-------------|
 | `deleted_by_user` | User who deleted the agent |
 
-## Complete Example: Invoice Classification Workflow
+## Complete Example: Classify an Invoice
 
 ```php
 <?php
@@ -282,133 +182,30 @@ Enlivy::setOrganizationId('org_xxx');
 $client = new EnlivyClient();
 
 try {
-    // 1. Create a classification agent
-    $agent = $client->aiAgents->create([
-        'title_lang_map' => [
-            'en' => 'Invoice Category Classifier',
-        ],
-        'description_lang_map' => [
-            'en' => 'Automatically categorizes invoices based on line items and amounts',
-        ],
-        'system_prompt' => <<<PROMPT
-You are an invoice classification assistant. Analyze the invoice provided and determine:
-1. The primary category (Software, Hardware, Services, Subscription, Other)
-2. Confidence level (0.0 to 1.0)
-3. Relevant tags
+    // 1. Find an agent that processes invoices
+    $agent = null;
+    foreach ($client->aiAgents->list() as $candidate) {
+        if ($candidate->input_target_entity === 'invoice') {
+            $agent = $candidate;
+            break;
+        }
+    }
 
-Return your analysis as JSON.
-PROMPT,
-        'output_format' => 'json',
-        'output_structure' => [
-            'category' => 'string',
-            'confidence' => 'number',
-            'tags' => 'array',
-            'reasoning' => 'string',
-        ],
-        'input_target_entity' => 'invoice',
-        'entity_schemas' => ['invoice', 'invoice_line_item'],
-    ]);
+    if ($agent === null) {
+        exit("No invoice agent available\n");
+    }
 
-    echo "Agent created: {$agent->id}\n";
-
-    // 2. Get an invoice to classify
-    $invoices = $client->invoices->list(['per_page' => 1]);
+    // 2. Get an invoice to process
+    $invoices = $client->invoices->list(['limit' => 1]);
     $invoice = $invoices->data[0];
 
-    // 3. Run the classifier
+    // 3. Run the agent on it
     $result = $client->aiAgents->run($agent->id, [
         'organization_id' => 'org_xxx',
         'organization_entity_id' => $invoice->id,
-        'instructions' => 'Be conservative with confidence scores',
     ]);
 
-    // 4. Display results
-    echo "\nClassification Results:\n";
-    echo "  Invoice: {$invoice->id}\n";
-    echo "  Category: {$result->output['category']}\n";
-    echo "  Confidence: " . ($result->output['confidence'] * 100) . "%\n";
-    echo "  Tags: " . implode(', ', $result->output['tags']) . "\n";
-    echo "  Reasoning: {$result->output['reasoning']}\n";
-
-} catch (ValidationException $e) {
-    echo "Validation error: {$e->getMessage()}\n";
-    print_r($e->getErrors());
-}
-```
-
-## Complete Example: Text to JSON Converter
-
-```php
-<?php
-
-use Enlivy\Enlivy;
-use Enlivy\EnlivyClient;
-use Enlivy\Exception\ValidationException;
-
-Enlivy::setApiKey('1|your_token');
-Enlivy::setOrganizationId('org_xxx');
-
-$client = new EnlivyClient();
-
-try {
-    // 1. Create a text-to-JSON agent (no target entity)
-    $agent = $client->aiAgents->create([
-        'title_lang_map' => [
-            'en' => 'Report Parser',
-        ],
-        'description_lang_map' => [
-            'en' => 'Converts unstructured report text into structured JSON',
-        ],
-        'system_prompt' => <<<PROMPT
-Parse the provided report text and extract:
-- Report date
-- Total amount
-- Key metrics
-- Summary points
-
-Return as structured JSON.
-PROMPT,
-        'output_format' => 'json',
-        'output_structure' => [
-            'report_date' => 'string',
-            'total_amount' => 'number',
-            'metrics' => 'object',
-            'summary' => 'array',
-        ],
-        // No input_target_entity - uses custom input instead
-        'input_data' => [
-            [
-                'field_key' => 'report_text',
-                'type' => 'textarea',
-                'title' => 'Report Text',
-            ],
-        ],
-    ]);
-
-    echo "Agent created: {$agent->id}\n";
-
-    // 2. Run with custom input
-    $result = $client->aiAgents->run($agent->id, [
-        'organization_id' => 'org_xxx',
-        'input' => [
-            'report_text' => <<<REPORT
-Monthly Sales Report - January 2026
-
-Total Revenue: EUR 125,000
-New Customers: 47
-Returning Customers: 203
-
-Key Highlights:
-- 15% increase from December
-- Enterprise segment grew 25%
-- Average order value up to EUR 500
-REPORT,
-        ],
-    ]);
-
-    // 3. Use the parsed data
-    echo "\nParsed Report:\n";
-    echo json_encode($result->output, JSON_PRETTY_PRINT) . "\n";
+    echo json_encode($result, JSON_PRETTY_PRINT) . "\n";
 
 } catch (ValidationException $e) {
     echo "Validation error: {$e->getMessage()}\n";
@@ -419,9 +216,9 @@ REPORT,
 ## Notes
 
 - AI Agents require the `prompt_engine` feature to be enabled for your organization
-- Agent prompts and output structures are only visible to admin users
+- An agent's prompts are never returned by the API
 - All agent runs are logged for billing and debugging purposes
-- The `input_target_entity` determines which entity types can be processed
+- The `input_target_entity` determines which record type an agent processes
 
 ## Related
 

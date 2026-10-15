@@ -49,6 +49,8 @@ class BillingScheduleService extends AbstractService
         'organization_user_id',
         'organization_contract_id',
         'organization_bank_account_id',
+        'subscription_only',
+        'exclude_tenant_billing',
         'starts_at_from',
         'starts_at_to',
         'ends_at_from',

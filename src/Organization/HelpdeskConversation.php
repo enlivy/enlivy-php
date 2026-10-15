@@ -13,6 +13,7 @@ use Enlivy\ApiResource;
  * @property string|null $organization_project_id
  * @property string|null $organization_helpdesk_visitor_id
  * @property string|null $assigned_organization_helpdesk_teammate_id
+ * @property string|null $organization_helpdesk_team_id
  * @property string|null $contact_organization_user_id
  * @property string|null $contact_organization_prospect_id
  * @property string|null $merged_into_organization_helpdesk_conversation_id
@@ -38,6 +39,10 @@ use Enlivy\ApiResource;
  * @property string|null $last_message_type
  * @property string|null $last_message_preview
  * @property string|null $last_message_at
+ * @property string|null $waiting_on
+ * @property string|null $waiting_since
+ * @property string|null $reply_due_soon_at
+ * @property string|null $reply_due_at
  * @property array|null $lifecycle
  * @property string $created_at
  * @property string $updated_at

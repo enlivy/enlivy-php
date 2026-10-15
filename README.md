@@ -28,7 +28,7 @@ $client = new \Enlivy\EnlivyClient([
 ]);
 
 // List invoices
-$invoices = $client->invoices->list(['per_page' => 25]);
+$invoices = $client->invoices->list(['limit' => 25]);
 
 foreach ($invoices as $invoice) {
     echo $invoice->id . "\n";
@@ -186,7 +186,7 @@ try {
 ## Pagination
 
 ```php
-$invoices = $client->invoices->list(['page' => 1, 'per_page' => 25]);
+$invoices = $client->invoices->list(['page' => 1, 'limit' => 25]);
 
 echo "Page " . $invoices->getCurrentPage() . " of " . $invoices->getTotalPages();
 

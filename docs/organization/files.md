@@ -117,12 +117,11 @@ echo "Upload complete: {$file->id}\n";
 <?php
 
 $files = $client->files->list([
-    'per_page' => 50,
+    'limit' => 50,
 ]);
 
 foreach ($files as $file) {
     echo "{$file->name}\n";
-    echo "  Source: {$file->source_file_name}\n";
     echo "  Context: {$file->context}\n";
 }
 ```
@@ -137,18 +136,21 @@ $files = $client->files->list([
 ]);
 ```
 
-### Include Parent Folder
+### Include the Uploader
+
+A file names its folder by `parent_organization_files_id` (`null` at the root); there is no
+parent-folder include.
 
 ```php
 <?php
 
 $files = $client->files->list([
-    'include' => ['parent'],
+    'include' => ['uploaded_by_user'],
 ]);
 
 foreach ($files as $file) {
-    $parent = $file->parent ? $file->parent->name : 'Root';
-    echo "{$file->name} (in {$parent})\n";
+    $folder = $file->parent_organization_files_id ?? 'Root';
+    echo "{$file->name} (in {$folder}, by {$file->uploaded_by_user?->data->name})\n";
 }
 ```
 
@@ -160,7 +162,6 @@ foreach ($files as $file) {
 $file = $client->files->retrieve('org_file_xxx');
 
 echo "Name: {$file->name}\n";
-echo "Original filename: {$file->source_file_name}\n";
 echo "Description: {$file->description}\n";
 echo "Context: {$file->context}\n";
 echo "Created: {$file->created_at}\n";

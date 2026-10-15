@@ -11,7 +11,7 @@ Build third-party applications that integrate with Enlivy using OAuth 2.0. Enliv
 | Client ID | `oac_` | N/A | Identifies your application |
 | Authorization Code | `oauc_` | 10 min | Temporary code exchanged for tokens |
 | Access Token | `eat_` | 1 hour | API authentication |
-| Refresh Token | `ert_` | Never | Obtain new access tokens |
+| Refresh Token | `ert_` | 90 days unused | Obtain new access tokens; each refresh issues a new one |
 
 ### Authorization Flow
 
@@ -41,118 +41,34 @@ An access token acts only inside the organizations the user granted, within its 
 them it reaches its own grant (`oauth/me`) and the organization list, and nothing else: it cannot
 mint personal access tokens, register OAuth clients or read an organization it was not granted.
 
-## Managing OAuth Clients
+Responses are shaped by the token's scopes too: a section of a response that needs an ability the
+token was not granted is left out, even when the user who approved it could see it.
 
-### Create OAuth Client
-
-```php
-<?php
-
-use Enlivy\EnlivyClient;
-
-$client = new EnlivyClient([
-    'api_key' => '1|your_token',
-]);
-
-$oauthClient = $client->oauthClients->create([
-    // Required
-    'name_lang_map' => [
-        'en' => 'My Integration App',
-    ],
-    'slug' => 'my-integration-app',
-    'redirect_uris' => [
-        'https://myapp.com/callback',
-        'https://myapp.com/oauth/callback',
-    ],
-
-    // Optional
-    'description_lang_map' => [
-        'en' => 'Syncs invoices and prospects with MyApp',
-    ],
-    'homepage_url' => 'https://myapp.com',
-    'privacy_policy_url' => 'https://myapp.com/privacy',
-]);
-
-echo "Client ID: {$oauthClient->id}\n";
-echo "Client Secret: {$oauthClient->secret}\n"; // Store securely - only shown once!
-```
-
-### List OAuth Clients
+A refused organization call answers `403` with `meta.denied_by` set to `membership` (the user is
+not in the organization, or the token was not granted it), `scope` (the token lacks a scope) or
+`role` (the user's role lacks the ability). `meta.required_scopes` lists the scopes that would
+open the call when the reason is `scope`.
 
 ```php
 <?php
 
-$clients = $client->oauthClients->list([
-    'include' => ['user'],
-]);
+use Enlivy\Exception\ForbiddenException;
 
-foreach ($clients as $oauthClient) {
-    $name = $oauthClient->name_lang_map['en'] ?? 'Untitled';
-    echo "{$name} ({$oauthClient->slug}): {$oauthClient->id}\n";
-    echo "  Redirect URIs: " . implode(', ', $oauthClient->redirect_uris) . "\n";
-    echo "  Active: " . ($oauthClient->is_active ? 'Yes' : 'No') . "\n";
+try {
+    $client->invoices->list();
+} catch (ForbiddenException $e) {
+    $meta = $e->getBody()['meta'] ?? [];
+    if (($meta['denied_by'] ?? null) === 'scope') {
+        // Ask the user to authorize again with $meta['required_scopes']
+    }
 }
 ```
 
-### Retrieve OAuth Client
+## Registering Your Application
 
-```php
-<?php
-
-$oauthClient = $client->oauthClients->retrieve('oac_xxx', [
-    'include' => ['user'],
-]);
-
-echo "Client: {$oauthClient->id}\n";
-echo "Name: " . ($oauthClient->name_lang_map['en'] ?? '') . "\n";
-echo "Slug: {$oauthClient->slug}\n";
-echo "Homepage: {$oauthClient->homepage_url}\n";
-echo "Privacy Policy: {$oauthClient->privacy_policy_url}\n";
-echo "Logo URL: {$oauthClient->logo_url}\n";
-echo "First Party: " . ($oauthClient->is_first_party ? 'Yes' : 'No') . "\n";
-echo "Verified: " . ($oauthClient->is_verified ? 'Yes' : 'No') . "\n";
-echo "Active: " . ($oauthClient->is_active ? 'Yes' : 'No') . "\n";
-```
-
-### Update OAuth Client
-
-```php
-<?php
-
-$oauthClient = $client->oauthClients->update('oac_xxx', [
-    'name_lang_map' => [
-        'en' => 'My Updated App',
-    ],
-    'redirect_uris' => [
-        'https://myapp.com/callback',
-        'https://myapp.com/oauth/callback',
-        'https://staging.myapp.com/callback',
-    ],
-    'is_active' => true,
-]);
-
-echo "Updated: {$oauthClient->slug}\n";
-```
-
-### Delete OAuth Client
-
-```php
-<?php
-
-$client->oauthClients->delete('oac_xxx');
-
-echo "OAuth client deleted\n";
-```
-
-### Restore OAuth Client
-
-```php
-<?php
-
-$client->oauthClients->restore('oac_xxx');
-
-echo "OAuth client restored\n";
-```
+OAuth clients are registered and managed in the Enlivy app, where you receive the client ID
+(`oac_xxx`) and the client secret. The API endpoints behind that screen accept only a dashboard
+sign-in, so an API key or OAuth token cannot create or edit clients.
 
 ## Authorization Flow
 
@@ -281,6 +197,10 @@ $client = new EnlivyClient([
 $invoices = $client->invoices->list();
 ```
 
+A refresh token lapses after 90 days without use. Refreshing rotates it: always store the new
+refresh token. Presenting a refresh token that was already rotated, more than a minute after its
+rotation, revokes every token issued from it, so the user has to authorize your app again.
+
 ### Revoke Token
 
 ```php
@@ -300,6 +220,19 @@ curl_exec($ch);
 curl_close($ch);
 ```
 
+### Inspect the Current Token
+
+```php
+<?php
+
+$me = $client->oauthTokens->me();
+
+echo $me->client_id;       // the app the token was issued to
+print_r($me->scopes);
+print_r($me->organizations);
+echo $me->expires_at;      // epoch seconds
+```
+
 ## Available Scopes
 
 | Scope | Name | Description |
@@ -311,123 +244,34 @@ curl_close($ch);
 | `contracts:read` | Read Contracts | View contracts, signatures, statuses |
 | `contracts:write` | Write Contracts | Create, update, delete contracts |
 | `webhooks:manage` | Manage Event Destinations | Manage event destinations and subscribe to real-time event delivery |
+| `sales:read` | Read Sales | View billing packages and proposals |
+| `sales:write` | Write Sales | Create, update, and delete billing packages and proposals |
+| `workspace:read` | Read Workspace | View projects, tasks, playbooks, guidelines, reports, and files |
+| `workspace:write` | Write Workspace | Create, update, and delete projects, tasks, playbooks, guidelines, reports, and files |
+| `payroll:read` | Read Payroll | View payslips, employments and working time records |
+| `payroll:write` | Write Payroll | Create, update, and delete payslips, employments and working time records |
+| `helpdesk:read` | Read Helpdesk | View support conversations, inboxes, teammates, visitors, and inbound email |
+| `helpdesk:write` | Write Helpdesk | Reply to, assign, and manage support conversations, inboxes, teammates, and rules |
+| `team:read` | Read Team | View users, roles, portal sessions, and notifications |
+| `team:write` | Write Team | Create, update, and delete users, roles, portal sessions, and notifications |
+| `organization:manage` | Manage Organization | Manage organization settings, billing, and blocked identifiers |
 | `*` | Full Access | All scopes (wildcard) |
 
 ## Managing Consent
 
-This is the resource-owner's side of the flow, not the client's: listing what has been granted,
-narrowing it, revoking it. Authenticate with a first-party API key — an OAuth access token is
-rejected here, because a token approving its own consent could widen its own grant.
-
-```php
-<?php
-
-$grants = $client->oauthAuthorizations->list();
-
-// Drop an organization or a scope from an existing grant.
-// Each list is replaced wholesale - send the full set you want to keep.
-$client->oauthAuthorizations->update('oauth_cua_xxx', [
-    'scopes' => ['accounting:read'],
-]);
-
-$client->oauthAuthorizations->revoke('oauth_cua_xxx');
-```
-
-Access tokens are re-derived from the authorization record, so a scope or organization removed here
-stops working at the client's next token refresh — there is no need to revoke tokens as well.
-
-### The consent screen
-
-`info()`, `approve()` and `deny()` back a browser consent screen and are not usable standalone: the
-pending request lives in an encrypted cookie set by the `/oauth/authorize` redirect, so these calls
-only work from a client that carries it. `approve()` takes `organizations` (required) and an
-optional `scopes` list that narrows the grant to a subset of what was requested — omit it to grant
-everything. Scopes beyond the request are rejected.
-
-## Field Reference
-
-### OAuth Client Required Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `name_lang_map` | object | App name by language (en required) |
-| `slug` | string | Unique identifier (alpha-dash, max 100 chars) |
-| `redirect_uris` | array | Array of allowed redirect URIs |
-
-### OAuth Client Optional Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `description_lang_map` | object | App description by language |
-| `homepage_url` | string | App homepage URL |
-| `privacy_policy_url` | string | Privacy policy URL |
-| `is_active` | boolean | Whether client is active (update only) |
-
-### OAuth Client Response Fields
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Client ID (oac_xxx) |
-| `user_id` | string | Owner user ID |
-| `slug` | string | Unique slug |
-| `name_lang_map` | object | App name by language |
-| `description_lang_map` | object | App description by language |
-| `redirect_uris` | array | Allowed redirect URIs |
-| `allowed_scopes` | array | Restricted scopes (null = all) |
-| `logo_file_extension` | string | Logo file extension |
-| `logo_url` | string | Full logo URL |
-| `homepage_url` | string | App homepage |
-| `privacy_policy_url` | string | Privacy policy URL |
-| `is_first_party` | boolean | First-party app flag |
-| `is_active` | boolean | Active status |
-| `is_verified` | boolean | Verified status |
-| `created_at` | datetime | Creation timestamp |
-| `updated_at` | datetime | Last update timestamp |
-
-### Include Options
-
-| Include | Description |
-|---------|-------------|
-| `user` | Owner user details |
+Users review, narrow and revoke the apps they connected in the Enlivy app. A scope or organization
+removed there stops working at your app's next token refresh.
 
 ## Complete Example: OAuth Integration
 
 ```php
 <?php
 
-use Enlivy\Enlivy;
 use Enlivy\EnlivyClient;
-use Enlivy\Exception\ValidationException;
 
-// 1. Create OAuth Client (one-time setup)
-Enlivy::setApiKey('1|your_admin_token');
-$adminClient = new EnlivyClient();
+// Register the app in the Enlivy app first to get its client ID and secret.
 
-try {
-    $oauthApp = $adminClient->oauthClients->create([
-        'name_lang_map' => ['en' => 'Invoice Sync Pro'],
-        'description_lang_map' => ['en' => 'Automatically sync invoices to your accounting software'],
-        'slug' => 'invoice-sync-pro',
-        'redirect_uris' => [
-            'https://invoicesyncpro.com/oauth/callback',
-        ],
-        'homepage_url' => 'https://invoicesyncpro.com',
-        'privacy_policy_url' => 'https://invoicesyncpro.com/privacy',
-    ]);
-
-    echo "OAuth App Created!\n";
-    echo "Client ID: {$oauthApp->id}\n";
-    echo "Client Secret: {$oauthApp->secret}\n";
-    echo "\n";
-    echo "IMPORTANT: Store the client secret securely.\n";
-    echo "It cannot be retrieved later.\n";
-
-} catch (ValidationException $e) {
-    echo "Validation error: {$e->getMessage()}\n";
-    print_r($e->getErrors());
-}
-
-// 2. Later, in your app's OAuth callback handler:
+// In your app's OAuth callback handler:
 class OAuthCallbackHandler
 {
     private string $clientId = 'oac_xxx';

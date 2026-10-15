@@ -30,7 +30,10 @@ enum MessageContentTypes: string
     case INACTIVITY_REMINDER = 'inactivity_reminder';
     case AUTO_RESOLVED = 'auto_resolved';
     case AUTO_RESPONSE = 'auto_response';
+    case GREETING = 'greeting';
     case TRANSCRIPT = 'transcript';
     case MARKED_SPAM = 'marked_spam';
     case MARKED_NOT_SPAM = 'marked_not_spam';
+    case WAITING_ON_SET = 'waiting_on_set';
+    case TEAM_ASSIGNED = 'team_assigned';
 }

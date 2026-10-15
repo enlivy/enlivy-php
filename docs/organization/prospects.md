@@ -146,7 +146,7 @@ foreach ($prospects as $prospect) {
 
 $prospects = $client->prospects->list([
     'page' => 1,
-    'per_page' => 25,
+    'limit' => 25,
     'sort' => '-created_at', // Newest first
 ]);
 
@@ -208,16 +208,13 @@ $prospects = $client->prospects->list([
 foreach ($prospects as $prospect) {
     echo "{$prospect->title}\n";
 
-    if ($prospect->organization_prospect_stage) {
-        echo "  Stage: {$prospect->organization_prospect_stage->title_lang_map['en']}\n";
+    if ($stage = $prospect->organization_prospect_stage?->data) {
+        echo "  Stage: {$stage->title_lang_map['en']}\n";
     }
 
-    if ($prospect->assigned_organization_user) {
-        $name = $prospect->assigned_organization_user->first_name ?? $prospect->assigned_organization_user->name;
-        echo "  Assigned to: {$name}\n";
+    if ($assignee = $prospect->assigned_organization_user?->data) {
+        echo "  Assigned to: {$assignee->name}\n";
     }
-
-    echo "  Activities: " . count($prospect->activities ?? []) . "\n";
 }
 ```
 
@@ -238,7 +235,7 @@ $board = $client->prospects->board([
 ]);
 
 foreach ($board->columns as $column) {
-    echo "=== {$column->stage->title_lang_map['en']} ({$column->count}) ===\n";
+    echo "=== {$column->stage->title_lang_map['en']} ({$column->total_count}) ===\n";
 
     foreach ($column->prospects as $prospect) {
         echo "  - {$prospect->title}\n";
@@ -292,15 +289,15 @@ echo "Contact: {$prospect->first_name} {$prospect->last_name}\n";
 echo "Company: {$prospect->company_name}\n";
 echo "Email: {$prospect->email}\n";
 
-if ($prospect->organization_prospect_stage) {
-    echo "Stage: {$prospect->organization_prospect_stage->title_lang_map['en']}\n";
+if ($stage = $prospect->organization_prospect_stage?->data) {
+    echo "Stage: {$stage->title_lang_map['en']}\n";
 }
 
 echo "Budget: {$prospect->budget} {$prospect->budget_currency}\n";
 echo "Summary: {$prospect->summary}\n";
 
-if ($prospect->linked_user) {
-    echo "Linked to customer: {$prospect->linked_user->id}\n";
+if ($customer = $prospect->linked_organization_user?->data) {
+    echo "Linked to customer: {$customer->id}\n";
 }
 ```
 
@@ -603,38 +600,28 @@ read without resolving the status path. Both are null on activities that are not
 
 ## Importing Prospects
 
-Bulk import prospects from CSV or other sources.
-
-### Start Import
+Prospects load from a CSV through the shared import lane; see [Data Imports](data-imports.md) for the
+lifecycle, polling and resuming. Columns are addressed by 1-based position:
 
 ```php
 <?php
 
-$import = $client->prospects->import([
-    'file' => fopen('prospects.csv', 'r'),
-    'mapping' => [
-        'Company' => 'company_name',
-        'Contact Name' => 'first_name',
-        'Email' => 'email',
-        'Phone' => 'phone_number',
-        'Deal Value' => 'budget',
-    ],
+$import = $client->prospects->importCreate([
+    'job_file' => new CURLFile('/path/to/prospects.csv'),
+    'start_from_row' => 2,
+    'default_organization_prospect_stage_id' => 'org_pros_stage_xxx',
+    'field_position_company_name' => 1,
+    'field_position_first_name' => 2,
+    'field_position_email' => 3,
+    'field_position_phone_number' => 4,
+    'field_position_budget' => 5,
 ]);
 
-echo "Import started: {$import->id}\n";
-```
+$import = $client->prospects->importRetrieve($import->id);
 
-### Check Import Progress
-
-```php
-<?php
-
-$progress = $client->prospects->importProgress($import->id);
-
-echo "Status: {$progress->status}\n";
-echo "Processed: {$progress->processed_count} / {$progress->total_count}\n";
-echo "Success: {$progress->success_count}\n";
-echo "Failed: {$progress->failed_count}\n";
+if ($import->completed_at !== null) {
+    print_r($import->summary_json);
+}
 ```
 
 ## Deleting a Prospect

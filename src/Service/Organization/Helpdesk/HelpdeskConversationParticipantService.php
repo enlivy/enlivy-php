@@ -68,6 +68,6 @@ class HelpdeskConversationParticipantService extends AbstractService
     {
         $orgId = $this->resolveOrganizationId($params, $opts);
 
-        return $this->request('DELETE', $this->orgPath($orgId, "helpdesk/conversations/{$conversationId}/participants/{$participantId}"), $params, $opts);
+        return $this->request('DELETE', $this->orgPath($orgId, "helpdesk/conversations/{$conversationId}/participants/{$participantId}"), $params, $opts, EnlivyObject::class);
     }
 }

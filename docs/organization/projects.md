@@ -105,8 +105,8 @@ foreach ($projects as $project) {
     $title = $project->title_lang_map[$project->locale ?? 'en'] ?? 'Untitled';
     echo "{$title}\n";
 
-    if (!empty($project->resource_bundles)) {
-        echo "  Resource bundles: " . count($project->resource_bundles) . "\n";
+    if (!empty($project->resource_bundles->data)) {
+        echo "  Resource bundles: " . count($project->resource_bundles->data) . "\n";
     }
 }
 ```
@@ -118,7 +118,7 @@ foreach ($projects as $project) {
 
 $projects = $client->projects->list([
     'page' => 1,
-    'per_page' => 25,
+    'limit' => 25,
 ]);
 
 echo "Total: {$projects->getTotalCount()}\n";
@@ -202,15 +202,12 @@ echo "Restored: {$project->id}\n";
 ```php
 <?php
 
-// Add tags
-$project = $client->projects->tag('org_proj_xxx', [
-    'tags' => ['priority', 'q1-2026'],
-]);
+// Add existing tags by id or alias (create them with $client->tags)
+$client->projects->addTag('org_proj_xxx', 'priority');
+$client->projects->addTag('org_proj_xxx', 'q1-2026');
 
 // Remove tags
-$project = $client->projects->untag('org_proj_xxx', [
-    'tags' => ['priority'],
-]);
+$client->projects->removeTag('org_proj_xxx', 'priority');
 ```
 
 ## Project Members
@@ -241,9 +238,7 @@ $members = $client->projectMembers->list([
 ]);
 
 foreach ($members as $member) {
-    $userName = $member->organization_user->name ??
-                "{$member->organization_user->first_name} {$member->organization_user->last_name}";
-    echo "- {$userName}\n";
+    echo "- {$member->organization_user?->data->name}\n";
 }
 ```
 
@@ -330,9 +325,9 @@ $projects = $client->projects->list([
 foreach ($projects as $project) {
     echo "Project: " . ($project->title_lang_map['en'] ?? 'Untitled') . "\n";
 
-    if (!empty($project->resource_bundles)) {
+    if (!empty($project->resource_bundles->data)) {
         echo "  Resource bundles:\n";
-        foreach ($project->resource_bundles as $bundle) {
+        foreach ($project->resource_bundles->data as $bundle) {
             echo "    - {$bundle->id}\n";
         }
     }
@@ -420,9 +415,9 @@ try {
     ]);
 
     // 4. Tag project
-    $client->projects->tag($project->id, [
-        'tags' => ['enterprise', '2026', 'crm'],
-    ]);
+    $client->projects->addTag($project->id, 'enterprise');
+    $client->projects->addTag($project->id, '2026');
+    $client->projects->addTag($project->id, 'crm');
 
     echo "Project setup complete!\n";
 

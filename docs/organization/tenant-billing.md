@@ -46,9 +46,11 @@ $usage = $client->tenantBilling->usage();
 
 ```php
 $change = [
-    'feature_packs' => ['growth'],
-    'capacity_addons' => ['extra_seats' => 2],
     'billing_cycle' => 'yearly',
+    'changes' => [
+        ['type' => 'purchase_pack', 'pack_slug' => 'invoicing'],
+        ['type' => 'set_addon_quantity', 'addon_slug' => 'helpdesk_seats', 'quantity' => 2],
+    ],
 ];
 
 $preview = $client->tenantBilling->preview($change);
@@ -61,9 +63,12 @@ change nor a trial toggle accepts it any more.
 ## Trial
 
 ```php
-$client->tenantBillingTrial->activate();
-$client->tenantBillingTrial->addPack(['pack' => 'growth']);
-$client->tenantBillingTrial->dropPack('growth');
+$client->tenantBillingTrial->applyChangeSet([
+    'changes' => [
+        ['type' => 'add', 'pack_slug' => 'helpdesk'],
+        ['type' => 'drop', 'pack_slug' => 'reports'],
+    ],
+]);
 ```
 
 ## Payment Methods (Enlivy subscription)
