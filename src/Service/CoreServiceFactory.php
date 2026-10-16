@@ -39,8 +39,6 @@ use Enlivy\Service\Organization\PlaybookService;
 use Enlivy\Service\Organization\PreferenceService;
 use Enlivy\Service\Organization\ProductService;
 use Enlivy\Service\Organization\Project\ProjectMemberService;
-use Enlivy\Service\Organization\Project\ProjectPermissionGuidelineService;
-use Enlivy\Service\Organization\Project\ProjectPermissionPlaybookService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationMessageService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskConversationAttachmentService;
@@ -54,8 +52,6 @@ use Enlivy\Service\Organization\Helpdesk\HelpdeskTeamService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskProactiveMessageService;
 use Enlivy\Service\Organization\Helpdesk\HelpdeskVisitorService;
 use Enlivy\Service\Organization\BankAccount\BankAccountStatementService;
-use Enlivy\Service\Organization\Project\ProjectPermissionPipelineService;
-use Enlivy\Service\Organization\Project\ProjectPermissionReportService;
 use Enlivy\Service\Organization\Project\ProjectProspectStageService;
 use Enlivy\Service\Organization\Project\ProjectService;
 use Enlivy\Service\Organization\Proposal\ProposalNotificationLogService;
@@ -72,10 +68,10 @@ use Enlivy\Service\Organization\Receipt\ReceiptService;
 use Enlivy\Service\Organization\Report\ReportSchemaFieldService;
 use Enlivy\Service\Organization\Report\ReportSchemaService;
 use Enlivy\Service\Organization\Report\ReportService;
-use Enlivy\Service\Organization\ResourceBundle\ResourceBundlePermissionGuidelineService;
-use Enlivy\Service\Organization\ResourceBundle\ResourceBundlePermissionPlaybookService;
-use Enlivy\Service\Organization\ResourceBundle\ResourceBundlePermissionReportService;
+use Enlivy\Service\Organization\ResourceBundle\ResourceBundleAttachmentService;
 use Enlivy\Service\Organization\ResourceBundle\ResourceBundleService;
+use Enlivy\Service\Organization\AccessGrantService;
+use Enlivy\Service\Organization\Project\ProjectRoleService;
 use Enlivy\Service\Organization\ReusableContentService;
 use Enlivy\Service\Organization\SearchService;
 use Enlivy\Service\Organization\ServiceIntegration\ServiceIntegrationAnafService;
@@ -136,16 +132,14 @@ class CoreServiceFactory extends AbstractServiceFactory
             'prospectPipelines' => ProspectPipelineService::class,
             'projects' => ProjectService::class,
             'projectMembers' => ProjectMemberService::class,
-            'projectPermissionPipelines' => ProjectPermissionPipelineService::class,
-            'projectPermissionGuidelines' => ProjectPermissionGuidelineService::class,
-            'projectPermissionPlaybooks' => ProjectPermissionPlaybookService::class,
-            'projectPermissionReports' => ProjectPermissionReportService::class,
+            'projectRoles' => ProjectRoleService::class,
             'projectProspectStages' => ProjectProspectStageService::class,
 
             // Org-scoped: Users & Roles
             'organizationUsers' => OrganizationUserService::class,
             'userRoles' => UserRoleService::class,
             'userRoleAbilities' => UserRoleAbilityService::class,
+            'accessGrants' => AccessGrantService::class,
             'userAddresses' => UserAddressService::class,
             'userPaymentMethods' => UserPaymentMethodService::class,
             'userBankAccounts' => UserBankAccountService::class,
@@ -257,9 +251,7 @@ class CoreServiceFactory extends AbstractServiceFactory
             // Org-scoped: API & Integrations
             'apiCredentials' => ApiCredentialService::class,
             'resourceBundles' => ResourceBundleService::class,
-            'resourceBundlePermissionGuidelines' => ResourceBundlePermissionGuidelineService::class,
-            'resourceBundlePermissionPlaybooks' => ResourceBundlePermissionPlaybookService::class,
-            'resourceBundlePermissionReports' => ResourceBundlePermissionReportService::class,
+            'resourceBundleAttachments' => ResourceBundleAttachmentService::class,
             'stripeWebhookCallbacks' => StripeWebhookCallbackService::class,
             'serviceIntegrationAnaf' => ServiceIntegrationAnafService::class,
             'serviceIntegrationSlack' => ServiceIntegrationSlackService::class,

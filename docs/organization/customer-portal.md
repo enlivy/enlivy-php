@@ -47,6 +47,10 @@ everything. Every session keeps its profile, proposals, the package catalogue an
 session, which a narrow session needs to identify the customer and finish what it was opened for.
 The portal overview follows the same rule: a section the session cannot reach answers empty.
 
+Inside `reports`, `knowledge`, `projects` and `prospects`, which report schemas, playbooks,
+guidelines and pipelines a person reaches is set with access grants. See
+[Portal Access](portal-access.md).
+
 ### Portal Base URL
 
 Where customers actually land. Read it off the organization rather than hardcoding a host — an

@@ -33,6 +33,7 @@ class ReportSchemaService extends AbstractService
     public const array AVAILABLE_FILTERS = [
         'title',
         'description',
+        'kind',
     ];
 
     /**

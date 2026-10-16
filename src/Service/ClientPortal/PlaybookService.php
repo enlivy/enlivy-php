@@ -7,14 +7,24 @@ namespace Enlivy\Service\ClientPortal;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Playbook;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class PlaybookService extends AbstractPortalService
 {
+    use HasIncludes;
+
     protected const ?string RESOURCE_CLASS = Playbook::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'tag_ids',
+        'procedure_process_steps_files',
+        'procedure_files',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->portalPath($orgId, 'playbooks'), $params, $opts);
@@ -22,6 +32,7 @@ class PlaybookService extends AbstractPortalService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Playbook
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Playbook */
@@ -30,6 +41,7 @@ class PlaybookService extends AbstractPortalService
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Playbook
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Playbook */

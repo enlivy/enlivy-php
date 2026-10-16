@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization\Project;
 
 use Enlivy\Collection;
-use Enlivy\EnlivyObject;
 use Enlivy\Organization\Project;
 use Enlivy\Service\AbstractService;
 use Enlivy\Service\Concern\HasRestore;
@@ -31,8 +30,8 @@ class ProjectService extends AbstractService
         'deleted_by_user',
         'organization',
         'tag_ids',
-        'project_resource_bundles',
         'resource_bundles',
+        'resource_bundle_attachments',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -87,21 +86,5 @@ class ProjectService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var Project */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
-    }
-
-    public function attachBundle(string $projectId, string $bundleId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
-    {
-        $this->validateIncludes($params);
-        $orgId = $this->resolveOrganizationId($params, $opts);
-
-        return $this->request('PUT', $this->orgPath($orgId, self::RESOURCE . "/{$projectId}/bundle/{$bundleId}"), $params, $opts);
-    }
-
-    public function detachBundle(string $projectId, string $bundleId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
-    {
-        $this->validateIncludes($params);
-        $orgId = $this->resolveOrganizationId($params, $opts);
-
-        return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$projectId}/bundle/{$bundleId}"), $params, $opts);
     }
 }

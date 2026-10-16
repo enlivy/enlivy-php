@@ -7,14 +7,22 @@ namespace Enlivy\Service\ClientPortal;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Guideline;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class GuidelineService extends AbstractPortalService
 {
+    use HasIncludes;
+
     protected const ?string RESOURCE_CLASS = Guideline::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'tag_ids',
+    ];
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->portalPath($orgId, 'guidelines'), $params, $opts);
@@ -22,6 +30,7 @@ class GuidelineService extends AbstractPortalService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Guideline
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Guideline */
@@ -30,6 +39,7 @@ class GuidelineService extends AbstractPortalService
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Guideline
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Guideline */

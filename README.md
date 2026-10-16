@@ -113,7 +113,8 @@ Detailed guides with code examples for every feature:
 | [Prospects](docs/organization/prospects.md) | Sales pipeline, lead tracking, and CRM |
 | [Organization Users](docs/organization/users.md) | Customers, employees, and roles |
 | [Blocked Identifiers](docs/organization/blocked-identifiers.md) | Keep an email, domain, or phone number out of your organization |
-| [Projects](docs/organization/projects.md) | Projects, team members, and permissions |
+| [Projects](docs/organization/projects.md) | Projects and team members |
+| [Portal Access](docs/organization/portal-access.md) | Project roles, access grants and resource bundles for the customer portal |
 | [Tasks](docs/organization/tasks.md) | Tasks on a board of typed stages, with assignees, links, comments, and a feed |
 
 ### Support

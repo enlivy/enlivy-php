@@ -1,9 +1,39 @@
 # Upgrading
 
 What may need a change on your side in the last three releases, newest first. The notes for
-3.2.0 are in [UPGRADING.md at 3.4.0](https://github.com/enlivy/enlivy-php/blob/3.4.0/UPGRADING.md),
+3.3.0 are in [UPGRADING.md at 3.5.0](https://github.com/enlivy/enlivy-php/blob/3.5.0/UPGRADING.md),
+3.2.0 in [UPGRADING.md at 3.4.0](https://github.com/enlivy/enlivy-php/blob/3.4.0/UPGRADING.md),
 3.1.0 in [UPGRADING.md at 3.3.0](https://github.com/enlivy/enlivy-php/blob/3.3.0/UPGRADING.md),
 and older versions in [UPGRADING.md at 3.2.0](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md).
+
+## 4.0.0
+
+Portal permissions moved into access grants. Your existing permissions, bundle links and member roles
+were carried over by the API, so there is no data work; only code that called the old routes or read
+the old fields changes. See [Portal Access](docs/organization/portal-access.md).
+
+| Before | After |
+|---|---|
+| `$client->projectPermissionReports/Playbooks/Guidelines/Pipelines` | `$client->accessGrants` with `grantee_type`, `organization_project_id`, `resource_type` and `abilities` |
+| `$client->resourceBundlePermissionReports/Playbooks/Guidelines` | `$client->accessGrants` with `organization_resource_bundle_id` |
+| `projects->attachBundle($projectId, $bundleId)` | `resourceBundleAttachments->create($bundleId, ['organization_project_id' => $projectId])` |
+| `projects->detachBundle()` | `resourceBundleAttachments->delete($bundleId, $attachmentId)`; the id is on the project include `resource_bundle_attachments` |
+| project include `project_resource_bundles` | `resource_bundle_attachments` |
+| member `member_role`, filter `member_role`, `Enums\Project\MemberRoles` | `organization_project_role_id`, a role from `$client->projectRoles` (aliases `team_member`, `contractor`, `client`, `prospect`) |
+| report schema `type`, `Enums\ReportSchema\Types` | `kind`, `Enums\ReportSchema\Kinds` (`standup` and `end_of_day` became `daily_log`, `standard` became `general`) |
+| portal `organization_user_abilities_by_project_id`, `allowed_for_organization_project_ids` | `access` on each record; list filters `access_ability` and `access_project_id` |
+| portal project includes `available_report_schemas/playbooks/guidelines` | `access` |
+
+- A pipeline grant's abilities replace `view_scope`, `edit_scope`, `can_add`, `can_claim` and
+  `can_reassign`: `view_own`/`view_unassigned`/`view_all`, the same for `edit_`, and `add`, `claim`,
+  `reassign`. Bundle priority is gone: grants only add.
+- Creating a report schema needs `kind`. A report's kind decides whether `period_from`/`period_to` and
+  `recipient_organization_user_id` are required or refused, so a write that sends them where the kind
+  has no use for them now answers `422`.
+- Reports filed before this release read `status` `submitted`.
+- Assigning a role, or changing a role's abilities, answers `422` unless the caller holds every
+  ability involved.
+- The Reports pack caps report schemas: creating or restoring one over the cap answers `402`.
 
 ## 3.5.0
 
@@ -45,36 +75,3 @@ the API, so the old methods answered `404`.
 - `charge_result.next_action_url` is no longer a 3DS page to redirect to: it is a payment link the
   customer has already been emailed. Show it if they are with you; do not email it again.
 - An OAuth access token can no longer mint personal access tokens or register OAuth clients.
-
-## 3.3.0
-
-The API rebuilt tasks. Tasks created before the rebuild were removed, so recreate the ones you
-still need; your task statuses were kept, as task stages.
-
-| Before | After |
-|---|---|
-| `$client->taskStatuses`, `Organization\TaskStatus` | `$client->taskStages`, `Organization\TaskStage` |
-| stage `can_be_completed` | `stage_type` (`Enums\Task\TaskStatuses`) |
-| `organization_task_status_id`, include `organization_task_status` | `organization_task_stage_id`, `organization_task_stage` |
-| `title_lang_map`, `content_lang_map` | `title`, `content`, plain text |
-| `assigned_to_organization_user_id`, `assigned_by_organization_user_id` and their includes | write `assignee_organization_user_ids`; read the `organization_task_participants` include |
-| filter `assigned_to_organization_user_id` | `assignee_organization_user_id` |
-| `order`, `tasks->reorder()` | `board_rank`, `tasks->moveOnBoard()` |
-| `EntityManifest::TASK_STATUS` | `TASK_STAGE` |
-| the report fields and includes, filters `assigned_by_organization_user_id` and `has_lang_map` | — |
-
-- A task's `status` is the type of its stage and cannot be written: move the task, or call
-  `complete()`, `cancel()` or `reopen()`.
-- Existing statuses were typed by their position, so check each stage's `stage_type`.
-- `tasks->delete()` returns the status envelope as an `EnlivyObject` instead of a `Task`.
-- The `task_statuses.*` abilities are gone, since stages follow `tasks.*`, and the `tasks` feature
-  pack is retired: tasks are free.
-- Prospect `social_profiles` became `links`: rows with a `kind` (`Enums\WebLinkKinds`), a `url`
-  and an optional `label`. Sending `links` replaces the list, and a `social_profiles` key is
-  ignored.
-- `is_widget_enabled` turns an inbox's widget off outright, and `widget_origins` applies only while
-  `is_widget_origin_restricted` is on. Inboxes created through the API hold mail from unknown
-  senders unless you send `'is_quarantine_enabled' => false`.
-- API credential writes merge: keys you leave out are kept, and a key sent empty is removed.
-- `misc->testEmail()` no longer needs `send_to`, and a failed check answers `422` with the checks
-  under `metadata`.

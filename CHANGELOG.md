@@ -3,6 +3,53 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.0.0] - 2026-10-16
+
+Portal access moves into one model: access grants name who, where and what, project roles replace the
+fixed member role, and resource bundles attach to projects or the whole organization. Reports gain a
+kind, a lifecycle, a recipient and links. Major: the per-module permission services are gone.
+New docs: [Portal Access](docs/organization/portal-access.md). See [UPGRADING](UPGRADING.md).
+
+### Removed
+
+- `projectPermissionGuidelines`, `projectPermissionPlaybooks`, `projectPermissionReports` and `projectPermissionPipelines`
+- `resourceBundlePermissionGuidelines`, `resourceBundlePermissionPlaybooks` and `resourceBundlePermissionReports`
+- `projects->attachBundle()` and `projects->detachBundle()`
+- `Enums\Project\MemberRoles` and `Enums\ReportSchema\Types`
+- `ProjectMember::$member_role`, `ReportSchema::$type`, the projects include `project_resource_bundles` and the project members filter `member_role`
+- `organization_user_abilities_by_project_id` and `allowed_for_organization_project_ids` on portal report schemas, playbooks and guidelines, and the portal project includes `available_report_schemas`, `available_playbooks` and `available_guidelines`
+
+### Added
+
+- `accessGrants` (list/retrieve/create/update/delete) and the `AccessGrant` resource
+- `projectRoles` (list/retrieve/create/update/delete) and the `ProjectRole` resource
+- `resourceBundleAttachments` (list/create/delete) and the `ResourceBundleAttachment` resource
+- `organizationUsers->access()`: what a person may do in the portal
+- `ProjectMember::$organization_project_role_id`, include `organization_project_role` and filter `organization_project_role_id`
+- Projects include `resource_bundle_attachments`; user roles filter `manageable`
+- Report schema `kind`, `acknowledgement` and `kind_locked`, and filter `kind`
+- Report `status`, `acknowledgement`, `awaiting_acknowledgement`, `period_from`, `period_to`, `recipient_organization_user_id`, `organization_task_id`, `worked_minutes`, `submitted_at`, `acknowledged_at`, `acknowledged_by_organization_user_id`, and on the portal `can_edit`, `can_edit_until` and `can_acknowledge`
+- Report filters `kind`, `status`, `awaiting_acknowledgement`, `recipient_organization_user_id`, `organization_task_id`, `linked_type` and `linked_id`
+- Report includes `organization_task`, `recipient_organization_user`, `acknowledged_by_organization_user`, `links`, `schema_snapshot` and `author_portal_access`
+- Portal `reports->acknowledge()`; portal `access` on report schemas, playbooks, guidelines and projects
+- Portal lists of report schemas, playbooks and guidelines take `access_ability` and `access_project_id`; the portal report list takes the report filters above
+- `Task::$requested_report_schema_id`
+- Enums `Access\GranteeTypes`, `Access\ResourceTypes`, `Report\Statuses`, `ReportSchema\Kinds`, `ReportSchema\Requirements`, and `TenantBilling\MeteredDomains::REPORT_SCHEMA`
+
+### Changed
+
+- Portal reports, report schemas, playbooks, guidelines and projects check their includes before sending
+- Nobody hands out more than they hold: assigning a role needs every ability it holds, and changing a role's abilities needs holding them and not holding that role (`422` otherwise)
+- The Reports pack caps report schemas
+
+### Fixed
+
+- Reports accept the `report_schema.report_schema_fields` include, and playbooks `procedure_process_steps_files` and `procedure_files`
+
+### Docs
+
+- A person's summary documents its open, overdue and period money figures and `periods`
+
 ## [3.5.0] - 2026-10-15
 
 Helpdesk teams and reply deadlines. Sign-in and account management moved to the Enlivy app.

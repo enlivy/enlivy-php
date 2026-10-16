@@ -36,6 +36,8 @@ class PlaybookService extends AbstractService
         'organization_project',
         'parent_organization_playbook',
         'tag_ids',
+        'procedure_process_steps_files',
+        'procedure_files',
     ];
 
     public const array AVAILABLE_FILTERS = [

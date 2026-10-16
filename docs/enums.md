@@ -102,6 +102,11 @@ set. A selection relevant to recently added features:
 | `BankAccount\StatementFormats` | `pdf`, `mt940`, `camt_053`, `csv`, `spreadsheet`, `other` |
 | `Organization\ConnectionLiveness` | `live`, `historical`, `trashed` |
 | `Project\ProspectAccessScopes` | `none`, `own`, `own_and_unassigned`, `all` |
+| `Access\GranteeTypes` | `user_role`, `project_role`, `project_member`, `person` |
+| `Access\ResourceTypes` | `report_schema`, `playbook`, `guideline`, `prospect_pipeline` |
+| `Report\Statuses` | `draft`, `submitted`, `acknowledged` |
+| `ReportSchema\Kinds` | `daily_log`, `work_report`, `meeting_notes`, `acceptance`, `feedback`, `general` |
+| `ReportSchema\Requirements` | `none`, `optional`, `required` |
 | `TenantBilling\BillingEffects` | `prorated_now`, `trial`, `next_cycle`, `none` |
 | `BillingPackage\BillingEffect` | `now`, `next_cycle` |
 | `BillingPackage\SubscriptionTermStatuses` | `active`, `archived` |
@@ -146,6 +151,11 @@ set. A selection relevant to recently added features:
 > A category is read off the interpretation, so the two never disagree: filter on
 > `category` for the coarse view or `interpretation` for a single verdict
 > (`unclassified` is mail with no interpretation).
+
+> `Project\MemberRoles` and `ReportSchema\Types` are gone: a project member carries an
+> `organization_project_role_id` (see [Portal Access](organization/portal-access.md)), and a report
+> schema a `kind`. `TenantBilling\MeteredDomains::REPORT_SCHEMA` is what the Reports pack caps now;
+> `REPORT_SUBMISSION` stays so older usage rows still read.
 
 > `TenantBilling\FeaturePacks::TASKS` is retired as of 3.3.0: tasks are free, and
 > the pack can no longer be purchased or cancelled. The case stays, like the two

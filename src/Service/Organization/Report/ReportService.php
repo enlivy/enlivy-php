@@ -31,6 +31,13 @@ class ReportService extends AbstractService
         'organization_user_role',
         'deleted_by_user',
         'organization_project',
+        'organization_task',
+        'recipient_organization_user',
+        'acknowledged_by_organization_user',
+        'links',
+        'schema_snapshot',
+        'author_portal_access',
+        'report_schema.report_schema_fields',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -41,6 +48,13 @@ class ReportService extends AbstractService
         'report_date_from',
         'report_date_to',
         'reported_by_organization_user_id',
+        'organization_task_id',
+        'recipient_organization_user_id',
+        'kind',
+        'status',
+        'awaiting_acknowledgement',
+        'linked_type',
+        'linked_id',
     ];
 
     /**

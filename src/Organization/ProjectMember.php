@@ -13,7 +13,7 @@ use Enlivy\ApiResource;
  * @property string $organization_id
  * @property string $organization_project_id
  * @property string $organization_user_id
- * @property string $member_role
+ * @property string|null $organization_project_role_id
  * @property string $created_at
  * @property string $updated_at
  */

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Enlivy\Tests\Unit;
 
+use Enlivy\Enums\Access\GranteeTypes;
+use Enlivy\Enums\Access\ResourceTypes as AccessResourceTypes;
 use Enlivy\Enums\BankTransaction\States as BankTransactionStates;
 use Enlivy\Enums\BillingPackage\ContractPartySelections;
 use Enlivy\Enums\BillingPackage\ExchangeRateGuarantees;
@@ -20,6 +22,9 @@ use Enlivy\Enums\CheckoutSession\PaymentStatuses as CheckoutSessionPaymentStatus
 use Enlivy\Enums\CheckoutSession\Statuses as CheckoutSessionStatuses;
 use Enlivy\Enums\Concern\EnumValues;
 use Enlivy\Enums\Receipt\Directions as ReceiptDirections;
+use Enlivy\Enums\Report\Statuses as ReportStatuses;
+use Enlivy\Enums\ReportSchema\Kinds as ReportSchemaKinds;
+use Enlivy\Enums\ReportSchema\Requirements as ReportSchemaRequirements;
 use Enlivy\Enums\Receipt\Sources as ReceiptSources;
 use Enlivy\Enums\Import\StopReasons;
 use Enlivy\Enums\Invoice\Statuses as InvoiceStatuses;
@@ -46,6 +51,7 @@ use Enlivy\Enums\Task\TaskCancelReasons;
 use Enlivy\Enums\Task\TaskParticipantRoles;
 use Enlivy\Enums\Task\TaskStatuses;
 use Enlivy\Enums\TenantBilling\BillingCycles;
+use Enlivy\Enums\TenantBilling\MeteredDomains;
 use Enlivy\Enums\WebLinkKinds;
 use PHPUnit\Framework\TestCase;
 
@@ -173,6 +179,25 @@ final class EnumsTest extends TestCase
             ['double_payment', 'amount_mismatch', 'checkout_not_settled', 'proforma_part_paid', 'payment_on_cancelled_proforma'],
             AttentionIssue::values(),
         );
+        $this->assertSame(['user_role', 'project_role', 'project_member', 'person'], GranteeTypes::values());
+        $this->assertSame(['report_schema', 'playbook', 'guideline', 'prospect_pipeline'], AccessResourceTypes::values());
+        $this->assertSame(['draft', 'submitted', 'acknowledged'], ReportStatuses::values());
+        $this->assertSame(
+            ['daily_log', 'work_report', 'meeting_notes', 'acceptance', 'feedback', 'general'],
+            ReportSchemaKinds::values(),
+        );
+        $this->assertSame(['none', 'optional', 'required'], ReportSchemaRequirements::values());
+        $this->assertContains('report_schema', MeteredDomains::values());
+    }
+
+    /**
+     * Project member roles became project roles each organization owns, and report schema types
+     * became kinds.
+     */
+    public function testFixedProjectMemberRolesAndReportSchemaTypesStayRemoved(): void
+    {
+        $this->assertFalse(enum_exists('Enlivy\\Enums\\Project\\MemberRoles'));
+        $this->assertFalse(enum_exists('Enlivy\\Enums\\ReportSchema\\Types'));
     }
 
     /**
@@ -243,6 +268,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(181, $count, 'Expected at least 181 mirrored enums');
+        $this->assertGreaterThanOrEqual(184, $count, 'Expected at least 184 mirrored enums');
     }
 }

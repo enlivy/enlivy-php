@@ -9,7 +9,9 @@ use Enlivy\ApiResource;
 /**
  * @property string $id
  * @property string $object
- * @property string|null $type
+ * @property string $kind
+ * @property string $acknowledgement
+ * @property bool|null $kind_locked
  * @property string|null $title
  * @property array|null $title_lang_map
  * @property array|null $description_lang_map
@@ -18,8 +20,7 @@ use Enlivy\ApiResource;
  * @property string $created_at
  * @property string $updated_at
  * @property string|null $deleted_at
- * @property array|null $organization_user_abilities_by_project_id
- * @property array|null $allowed_for_organization_project_ids
+ * @property array|null $access
  */
 class ReportSchema extends ApiResource
 {

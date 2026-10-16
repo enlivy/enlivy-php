@@ -9,6 +9,7 @@ use Enlivy\ApiResource;
 use Enlivy\InvitationCode;
 use Enlivy\OAuthToken;
 use Enlivy\Organization;
+use Enlivy\Organization\AccessGrant;
 use Enlivy\Organization\ApiCredential;
 use Enlivy\Organization\BankAccount;
 use Enlivy\Organization\BankTransaction;
@@ -66,6 +67,7 @@ use Enlivy\Organization\Playbook;
 use Enlivy\Organization\Product;
 use Enlivy\Organization\Project;
 use Enlivy\Organization\ProjectMember;
+use Enlivy\Organization\ProjectRole;
 use Enlivy\Organization\Proposal;
 use Enlivy\Organization\ProposalNotificationLog;
 use Enlivy\Organization\Prospect;
@@ -79,6 +81,7 @@ use Enlivy\Organization\Report;
 use Enlivy\Organization\ReportSchema;
 use Enlivy\Organization\ReportSchemaField;
 use Enlivy\Organization\ResourceBundle;
+use Enlivy\Organization\ResourceBundleAttachment;
 use Enlivy\Organization\ReusableContent;
 use Enlivy\Organization\Tag;
 use Enlivy\Organization\Task;
@@ -134,10 +137,12 @@ final class ObjectTypes
         'prospect_duplicate' => ProspectDuplicate::class,
         'project' => Project::class,
         'project_member' => ProjectMember::class,
+        'project_role' => ProjectRole::class,
 
         // Organization-scoped: Users & Roles
         'organization_user' => OrganizationUser::class,
         'user_role' => UserRole::class,
+        'access_grant' => AccessGrant::class,
         'user_role_ability' => UserRoleAbility::class,
         'user_address' => UserAddress::class,
         'user_payment_method' => UserPaymentMethod::class,
@@ -248,6 +253,7 @@ final class ObjectTypes
         // Organization-scoped: API & Integrations
         'api_credential' => ApiCredential::class,
         'resource_bundle' => ResourceBundle::class,
+        'resource_bundle_attachment' => ResourceBundleAttachment::class,
     ];
 
     /**

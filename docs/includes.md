@@ -129,14 +129,16 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 |---------|----------|
 | `organizationUsers` | `organization`, `user_role`, `deleted_by_user`, `tag_ids` |
 | `userRoles` | `organization`, `user_role`, `deleted_by_user`, `tag_ids` |
+| `accessGrants` | `organization`, `organization_project`, `organization_resource_bundle`, `grantee_user_role`, `grantee_project_role`, `grantee_person` |
 | `userAddresses` | `organization`, `organization_user`, `deleted_by_user` |
 
 ### Projects
 
 | Service | Includes |
 |---------|----------|
-| `projects` | `deleted_by_user`, `organization`, `tag_ids`, `project_resource_bundles`, `resource_bundles` |
-| `projectMembers` | `deleted_by_user`, `organization`, `organization_project`, `organization_user` |
+| `projects` | `deleted_by_user`, `organization`, `tag_ids`, `resource_bundles`, `resource_bundle_attachments` |
+| `projectMembers` | `deleted_by_user`, `organization`, `organization_project`, `organization_project_role`, `organization_user` |
+| `projectRoles` | `organization` |
 
 ### Products & Banking
 
@@ -175,7 +177,6 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `helpdeskProactiveMessages` | `organization`, `inbox`, `sender_teammate`, `deleted_by_user` |
 | `helpdeskVisitors` | `organization`, `organization_user`, `organization_prospect`, `events` |
 | `bankAccountStatements` | `organization`, `bank_account`, `uploaded_by_user`, `deleted_by_user` |
-| `projectPermissionPipelines` | `organization`, `organization_project`, `organization_user`, `organization_prospect_pipeline` |
 
 On the portal lane, a customer's conversation offers only `messages`, and a message always carries
 its `attachments`.
@@ -194,9 +195,10 @@ reads null once the stored body has aged out. A conversation's
 | `employments` | `organization`, `organization_user`, `organization_contract`, `organization_employment_jurisdictions`, `organization_employment_agreements`, `deleted_by_user` |
 | `workingTimeTerms` | `organization`, `organization_employment`, `deleted_by_user` |
 | `workingTimeDays` | `organization`, `organization_employment`, `organization_working_time_day_breaks` |
-| `reports` | `organization`, `report_schema`, `organization_user`, `organization_user_role`, `deleted_by_user`, `organization_project`, `report_schema.report_schema_fields` |
+| `reports` | `organization`, `report_schema`, `organization_user`, `organization_user_role`, `deleted_by_user`, `organization_project`, `organization_task`, `recipient_organization_user`, `acknowledged_by_organization_user`, `links`, `schema_snapshot`, `author_portal_access`, `report_schema.report_schema_fields` |
 | `reportSchemas` | `organization`, `report_schema_fields`, `deleted_by_user` |
 | `resourceBundles` | `organization` |
+| `resourceBundleAttachments` | `organization_project`, `organization_resource_bundle` |
 | `reportSchemaFields` | `report_schema`, `deleted_by_user` |
 
 ### Content & Tasks
@@ -205,7 +207,6 @@ reads null once the stored body has aged out. A conversation's
 |---------|----------|
 | `files` | `organization`, `deleted_by_user`, `uploaded_by_user`, `tag_ids` |
 | `guidelines` | `deleted_by_user`, `organization`, `organization_owner_user`, `organization_project`, `tag_ids` |
-| `playbooks` | `organization`, `procedure_organization_owner_user`, `deleted_by_user`, `organization_project`, `parent_organization_playbook`, `tag_ids` |
 | `playbooks` | `organization`, `procedure_organization_owner_user`, `deleted_by_user`, `organization_project`, `parent_organization_playbook`, `tag_ids`, `procedure_process_steps_files`, `procedure_files` |
 | `tasks` | `created_by_organization_user`, `completed_by_organization_user`, `cancelled_by_organization_user`, `deleted_by_user`, `organization`, `parent_organization_task`, `organization_project`, `organization_task_stage`, `organization_task_participants`, `organization_invoices`, `organization_prospects`, `related_organization_tasks` |
 | `taskStages` | `organization`, `deleted_by_user` |
@@ -241,8 +242,16 @@ with the proposal set:
 | `receipts` | `invoice`, `bank_account`, `sender_user`, `receiver_user`, `contract` |
 | `contracts` | `sender_user`, `receiver_user`, `file`, `contract_status`, `contract_chapters`, `contract_parties`, `contract_prefix`, `abilities` |
 | `proposals` | `billing_package`, `subscription_term`, `payments`, `payments.line_items`, `proposal_contracts`, `stage_detail`, `invoice`, `proforma_invoice`, `receiver_user`, `sender_user` |
+| `reports` | `report_schema`, `organization_user`, `organization_project`, `recipient_organization_user`, `links`, `schema_snapshot`, `report_schema.report_schema_fields` |
+| `reportSchemas` | `report_schema_fields` |
+| `playbooks` | `tag_ids`, `procedure_process_steps_files`, `procedure_files` |
+| `guidelines` | `tag_ids` |
+| `projects` | `deleted_by_user`, `organization`, `tag_ids`, `access`, `available_pipelines` |
 
-`payments.line_items` is the one nested path the portal accepts.
+`payments.line_items` and `report_schema.report_schema_fields` are the nested paths the portal
+accepts. A portal project always carries `access` and `available_pipelines`. Portal `reports` also
+checks the includes on `create()`, `update()` and `acknowledge()`, and `playbooks` and `guidelines`
+on `update()`.
 
 ### Global Services
 

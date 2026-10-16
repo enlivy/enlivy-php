@@ -6,11 +6,11 @@ namespace Enlivy\Enums\ReportSchema;
 
 use Enlivy\Enums\Concern\EnumValues;
 
-enum Types: string
+enum Requirements: string
 {
     use EnumValues;
 
-    case STANDARD = 'standard';
-    case STANDUP = 'standup';
-    case END_OF_DAY = 'end_of_day';
+    case NONE = 'none';
+    case OPTIONAL = 'optional';
+    case REQUIRED = 'required';
 }

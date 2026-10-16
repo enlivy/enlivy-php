@@ -33,7 +33,12 @@ class UserRoleService extends AbstractService
         'tag_ids',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    /**
+     * `manageable` keeps the roles the caller may hand out, edit or delete.
+     */
+    public const array AVAILABLE_FILTERS = [
+        'manageable',
+    ];
 
     /**
      * @return Collection<UserRole>

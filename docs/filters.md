@@ -370,6 +370,13 @@ $invoices = $client->invoices->list([
 | `organization_project_id` | string |
 | `reported_by_organization_user_id` | string |
 | `report_date_from`, `report_date_to` | date (Y-m-d) |
+| `organization_task_id`, `recipient_organization_user_id` | string |
+| `kind` | `Enums\ReportSchema\Kinds` |
+| `status` | `Enums\Report\Statuses` |
+| `awaiting_acknowledgement` | boolean |
+| `linked_type`, `linked_id` | together: `invoice`, `contract`, `receipt`, `proposal`, `billing_schedule`, `prospect` or `task`, and its id |
+
+**`reportSchemas`**: `title`, `description`, and `kind` (`Enums\ReportSchema\Kinds`).
 
 ### Content
 
@@ -431,7 +438,18 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
-| `member_role` | `team_member`, `contractor`, `client`, `prospect` |
+| `organization_project_role_id` | string |
+
+**`accessGrants`**
+
+| Filter | Type |
+|--------|------|
+| `grantee_type` | `Enums\Access\GranteeTypes` |
+| `resource_type` | `Enums\Access\ResourceTypes` |
+| `grantee_id`, `organization_project_id`, `organization_resource_bundle_id`, `resource_id` | string |
+
+**`resourceBundleAttachments`**: `organization_project_id`; send it empty (`''`) for the
+organization-wide attachments.
 
 ### Users
 
@@ -445,6 +463,8 @@ $invoices = $client->invoices->list([
 | `can_use_backoffice` | bool |
 | `email` | string |
 | `organization_user_role_id` | string |
+
+**`userRoles`**: `manageable` (boolean), only the roles the caller may hand out, edit or delete.
 
 ### Organization Events
 
@@ -554,7 +574,7 @@ depends on what the resource calls its label:
 | Service | Filters |
 |---------|---------|
 | `prospectStages` | `title`, `description`, `organization_prospect_pipeline_id` |
-| `prospectPipelines`, `contractStatuses`, `taskStages`, `reportSchemas`, `resourceBundles` | `title`, `description` |
+| `prospectPipelines`, `contractStatuses`, `taskStages`, `resourceBundles` | `title`, `description` |
 | `taxClasses` | `name`, `description`, `retired` |
 | `bankTransactionCostTypes` | `title` |
 | `helpdeskConversations` | `state`, `organization_helpdesk_inbox_id`, `assigned_organization_helpdesk_teammate_id`, `organization_helpdesk_team_id`, `assignment` (`mine`, `unassigned`, `all`), `waiting_on` (`team`, `customer`), `reply_due` (`due_soon`, `overdue`), `has_unread`, `priority`, `source`, `contact_email`, `contact_organization_user_id`, `contact_organization_prospect_id`, `organization_project_id` |
@@ -572,4 +592,4 @@ reply deadline, then the longest wait.
 
 The following services accept only global filters (q, q_in, ids, page, limit, order_by, order, deleted, tag_ids):
 
-`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`, `tenantBillingPaymentMethods`, `userRoles`
+`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `projectRoles`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`, `tenantBillingPaymentMethods`

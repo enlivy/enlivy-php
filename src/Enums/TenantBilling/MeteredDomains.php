@@ -25,5 +25,6 @@ enum MeteredDomains: string
     case WEBHOOK_ENDPOINT = 'webhook_endpoint';
     case EMPLOYMENT = 'employment';
     case HELPDESK_SEAT = 'helpdesk_seat';
+    case REPORT_SCHEMA = 'report_schema';
     case STORAGE_BYTE = 'storage_byte';
 }

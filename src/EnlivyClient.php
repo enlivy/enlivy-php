@@ -21,6 +21,7 @@ use Enlivy\Service;
  * @property Service\Organization\UserService $organizationUsers
  * @property Service\Organization\UserRoleService $userRoles
  * @property Service\Organization\UserRoleAbilityService $userRoleAbilities
+ * @property Service\Organization\AccessGrantService $accessGrants
  * @property Service\Organization\UserAddressService $userAddresses
  * @property Service\Organization\UserPaymentMethodService $userPaymentMethods
  * @property Service\Organization\UserBankAccountService $userBankAccounts
@@ -33,10 +34,7 @@ use Enlivy\Service;
  * @property Service\Organization\Prospect\ProspectPipelineService $prospectPipelines
  * @property Service\Organization\Project\ProjectService $projects
  * @property Service\Organization\Project\ProjectMemberService $projectMembers
- * @property Service\Organization\Project\ProjectPermissionPipelineService $projectPermissionPipelines
- * @property Service\Organization\Project\ProjectPermissionGuidelineService $projectPermissionGuidelines
- * @property Service\Organization\Project\ProjectPermissionPlaybookService $projectPermissionPlaybooks
- * @property Service\Organization\Project\ProjectPermissionReportService $projectPermissionReports
+ * @property Service\Organization\Project\ProjectRoleService $projectRoles
  * @property Service\Organization\Project\ProjectProspectStageService $projectProspectStages
  *
  * Organization-scoped services - Accounting:
@@ -146,9 +144,7 @@ use Enlivy\Service;
  * Organization-scoped services - API & Integrations:
  * @property Service\Organization\ApiCredentialService $apiCredentials
  * @property Service\Organization\ResourceBundle\ResourceBundleService $resourceBundles
- * @property Service\Organization\ResourceBundle\ResourceBundlePermissionGuidelineService $resourceBundlePermissionGuidelines
- * @property Service\Organization\ResourceBundle\ResourceBundlePermissionPlaybookService $resourceBundlePermissionPlaybooks
- * @property Service\Organization\ResourceBundle\ResourceBundlePermissionReportService $resourceBundlePermissionReports
+ * @property Service\Organization\ResourceBundle\ResourceBundleAttachmentService $resourceBundleAttachments
  * @property Service\Organization\StripeWebhookCallbackService $stripeWebhookCallbacks
  * @property Service\Organization\ServiceIntegration\ServiceIntegrationService $serviceIntegration
  * @property Service\Organization\ServiceIntegration\ServiceIntegrationAnafService $serviceIntegrationAnaf

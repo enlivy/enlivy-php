@@ -21,12 +21,13 @@ class ProjectMemberService extends AbstractService
         'deleted_by_user',
         'organization',
         'organization_project',
+        'organization_project_role',
         'organization_user',
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'member_role',
         'organization_project_id',
+        'organization_project_role_id',
     ];
 
     /**

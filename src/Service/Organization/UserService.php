@@ -126,4 +126,15 @@ class UserService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/overview/summary"), $params, $opts, EnlivyObject::class);
     }
+
+    /**
+     * What a person may do in the customer portal, flattened from every grant that reaches them.
+     * `is_current` is false while a recent change is still being applied.
+     */
+    public function access(string $userId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/access"), $params, $opts, EnlivyObject::class);
+    }
 }

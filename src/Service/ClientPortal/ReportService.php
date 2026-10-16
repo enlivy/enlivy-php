@@ -7,11 +7,24 @@ namespace Enlivy\Service\ClientPortal;
 use Enlivy\Collection;
 use Enlivy\EnlivyObject;
 use Enlivy\Organization\Report;
+use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 class ReportService extends AbstractPortalService
 {
+    use HasIncludes;
+
     protected const ?string RESOURCE_CLASS = Report::class;
+
+    public const array AVAILABLE_INCLUDES = [
+        'report_schema',
+        'organization_user',
+        'organization_project',
+        'recipient_organization_user',
+        'links',
+        'schema_snapshot',
+        'report_schema.report_schema_fields',
+    ];
 
     public function overview(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
@@ -22,6 +35,7 @@ class ReportService extends AbstractPortalService
 
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->portalPath($orgId, 'reports'), $params, $opts);
@@ -29,6 +43,7 @@ class ReportService extends AbstractPortalService
 
     public function create(array $params, ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Report */
@@ -37,6 +52,7 @@ class ReportService extends AbstractPortalService
 
     public function retrieve(string $id, array $params = [], ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Report */
@@ -45,9 +61,23 @@ class ReportService extends AbstractPortalService
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): Report
     {
+        $this->validateIncludes($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var Report */
         return $this->request('PUT', $this->portalPath($orgId, "reports/{$id}"), $params, $opts);
+    }
+
+    /**
+     * Only the report's recipient acknowledges it, once it is submitted under a schema that asks for
+     * acknowledgement; `can_acknowledge` on the report says whether the reader may.
+     */
+    public function acknowledge(string $id, array $params = [], ?RequestOptions $opts = null): Report
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var Report */
+        return $this->request('POST', $this->portalPath($orgId, "reports/{$id}/acknowledge"), $params, $opts);
     }
 }

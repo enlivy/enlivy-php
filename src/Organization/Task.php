@@ -11,6 +11,7 @@ use Enlivy\ApiResource;
  * @property string $object
  * @property string $organization_id
  * @property string|null $organization_project_id
+ * @property string|null $requested_report_schema_id
  * @property string|null $parent_organization_task_id
  * @property string|null $organization_task_stage_id
  * @property string $title

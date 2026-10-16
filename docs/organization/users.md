@@ -514,8 +514,9 @@ foreach ($summary->money ?? [] as $row) {
 | Section | Holds |
 |---------|-------|
 | `documents` | `received` and `sent` counts for each of `invoice`, `receipt`, `billing_schedule`, `contract`, `payslip` |
-| `money` | One row per currency: `receivable_open`, `payable_open`, `invoiced_this_year`, `billed_this_year`, as decimal strings |
-| `year` | The `from` and `to` of the organization's current calendar year, which `money` counts in |
+| `money` | One row per currency, amounts as decimal strings: for each side (`receivable`, `payable`) `_open`, `_open_count`, `_overdue`, `_overdue_count` and `_oldest_overdue_due_at`; and `invoiced_` and `billed_` for `this_month`, `last_month_to_date`, `this_year`, `last_year_to_date` and `last_year` |
+| `periods` | The `from` and `to` of each window `money` counts in (`month`, `last_month_to_date`, `year`, `last_year_to_date`, `last_year`), in the organization's time zone |
+| `year` | The same as `periods.year` |
 | `proposals` | `live`: proposals to this customer still open |
 | `helpdesk` | `conversations` and `open_conversations` with this contact |
 | `reports` | `total` reports filed for this person |
@@ -524,8 +525,23 @@ foreach ($summary->money ?? [] as $row) {
 | `last_activity_at` | When the latest activity happened, or null |
 
 A section the caller may not open is left out, not zeroed: `documents` holds only the kinds the
-caller may view, `money` and `year` need invoice access, and `proposals`, `helpdesk` and `reports`
+caller may view, `money`, `periods` and `year` need invoice access, and `proposals`, `helpdesk` and `reports`
 need their own module.
+
+## Portal Access
+
+What a person may do in the customer portal, flattened from every grant that reaches them. See
+[Portal Access](portal-access.md).
+
+```php
+<?php
+
+$access = $client->organizationUsers->access('org_user_xxx');
+
+foreach ($access->access as $row) {
+    echo "{$row['resource_type']}.{$row['ability']}\n";
+}
+```
 
 ## Change History
 

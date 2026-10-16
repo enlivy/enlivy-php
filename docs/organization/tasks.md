@@ -75,6 +75,9 @@ Only people who can see tasks can be assigned or mentioned, and only someone who
 invoice or a prospect may link one. A task cannot be related to itself, its parent or its
 subtasks, since those are related already.
 
+`requested_report_schema_id` asks for a report of that schema. A report filed for the task under that
+schema completes it once submitted (see [Reports](reports.md)).
+
 ## Listing tasks
 
 ```php
@@ -309,6 +312,7 @@ with a status envelope, not the stage.
 ## Related
 
 - [Projects](projects.md) — tasks can belong to a project
+- [Reports](reports.md) — reports a task asks for
 - [Invoices](invoices.md) and [Prospects](prospects.md) — link tasks to the records they are about
 - [Event Trails](event-trails.md) — the history the feed draws on
 - [Enums](../enums.md) — `Enums\Task\*`

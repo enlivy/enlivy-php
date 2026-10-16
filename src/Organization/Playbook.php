@@ -30,8 +30,7 @@ use Enlivy\ApiResource;
  * @property string|null $deleted_by_user_id
  * @property string $created_at
  * @property string $updated_at
- * @property array|null $organization_user_abilities_by_project_id
- * @property array|null $allowed_for_organization_project_ids
+ * @property array|null $access
  */
 class Playbook extends ApiResource
 {
