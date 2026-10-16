@@ -16,6 +16,8 @@ class ReportSchemaFieldService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
+    protected const ?string RESOURCE_CLASS = ReportSchemaField::class;
+
     public const array AVAILABLE_INCLUDES = [
         'report_schema',
         'deleted_by_user',

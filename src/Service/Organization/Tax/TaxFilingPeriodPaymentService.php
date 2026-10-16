@@ -21,6 +21,8 @@ class TaxFilingPeriodPaymentService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
+    protected const ?string RESOURCE_CLASS = TaxFilingPeriodPayment::class;
+
     public const array AVAILABLE_INCLUDES = [
         'organization',
         'tax_filing_period',

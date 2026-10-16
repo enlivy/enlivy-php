@@ -17,6 +17,8 @@ class ProjectMemberService extends AbstractService
     use HasIncludes;
     use HasFilters;
 
+    protected const ?string RESOURCE_CLASS = ProjectMember::class;
+
     public const array AVAILABLE_INCLUDES = [
         'deleted_by_user',
         'organization',

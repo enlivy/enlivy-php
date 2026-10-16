@@ -3,6 +3,12 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.0.1] - 2026-10-16
+
+### Fixed
+
+- `reportSchemaFields`, `projectMembers` and `taxFilingPeriodPayments` return their resource (`ReportSchemaField`, `ProjectMember`, `TaxFilingPeriodPayment`) from create, retrieve, update, delete and restore instead of throwing a `TypeError`, and type the items of their lists
+
 ## [4.0.0] - 2026-10-16
 
 Portal access moves into one model: access grants name who, where and what, project roles replace the
