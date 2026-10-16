@@ -32,7 +32,13 @@ class TenantBillingPaymentMethodService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'payment_provider',
+        'type',
+        'origin',
+        'status',
+        'is_default',
+    ];
 
     /**
      * @return Collection<UserPaymentMethod>

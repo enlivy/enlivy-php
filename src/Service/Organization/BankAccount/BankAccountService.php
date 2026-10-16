@@ -84,7 +84,7 @@ class BankAccountService extends AbstractService
 
     public function balance(array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, []);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . '/balance'), $params, $opts);

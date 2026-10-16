@@ -28,7 +28,6 @@ class ProjectMemberService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'organization_project_id',
         'organization_project_role_id',
     ];
 

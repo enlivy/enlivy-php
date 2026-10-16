@@ -199,9 +199,8 @@ $exchange = $client->invoiceNetworkExchanges->retrieve('org_inv_peppol_xxx', [
 ]);
 ```
 
-Both includes are **retrieve-only** — the list endpoint does not offer them and answers `422`
-if you ask. The SDK validates includes from one set per service, so it will let
-`list(['include' => 'tax_mapping'])` through to the API rather than catching it locally.
+Both includes are **retrieve-only**: `list()` and `update()` refuse them before sending the
+request.
 
 `recording_suggestions` proposes the counterparty and the bank account to settle from, each
 carrying the basis it was drawn from (`NetworkExchange\RecordingSuggestionBases` — payment

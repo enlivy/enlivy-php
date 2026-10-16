@@ -23,11 +23,12 @@ class OrganizationService extends AbstractService
         'user_abilities',
         'settings',
         'deleted_by_user',
-        'remaining_credits',
-        'credits',
         'branding_icon',
         'branding_logo',
-        'membership_features',
+        'tenant_billing',
+        'tenant_billing.credits',
+        'tenant_billing.usage_stats',
+        'tenant_billing.billing_schedule',
     ];
 
     public const array AVAILABLE_FILTERS = [
@@ -35,6 +36,10 @@ class OrganizationService extends AbstractService
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
+        'created_at_from_strict',
+        'created_at_to_strict',
+        'updated_at_from_strict',
+        'updated_at_to_strict',
     ];
 
     /**

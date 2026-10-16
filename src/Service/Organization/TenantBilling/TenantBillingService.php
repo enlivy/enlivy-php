@@ -42,7 +42,7 @@ class TenantBillingService extends AbstractService
      */
     public function state(array $params = [], ?RequestOptions $opts = null): TenantBilling
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, []);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         /** @var TenantBilling */

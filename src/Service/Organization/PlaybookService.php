@@ -41,6 +41,7 @@ class PlaybookService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
+        'id',
         'parent_organization_playbook_id',
         'organization_project_id',
         'created_at_from',
@@ -99,7 +100,7 @@ class PlaybookService extends AbstractService
      */
     public function listRevisions(string $id, array $params = [], ?RequestOptions $opts = null): Collection
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, []);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/revisions"), $params, $opts);
@@ -107,7 +108,7 @@ class PlaybookService extends AbstractService
 
     public function retrieveRevision(string $id, string $revisionId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, []);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/revisions/{$revisionId}"), $params, $opts);

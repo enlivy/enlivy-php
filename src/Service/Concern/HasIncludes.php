@@ -9,20 +9,21 @@ use Enlivy\Exception\InvalidArgumentException;
 trait HasIncludes
 {
     /**
-     * Validate the 'include' parameter against AVAILABLE_INCLUDES.
+     * Validate the 'include' parameter against AVAILABLE_INCLUDES, or against $available for an endpoint
+     * that accepts a different set.
      *
      * Accepts both array (['a', 'b']) and comma-separated string ('a,b') formats.
      * Arrays are normalized to comma-separated strings for the API.
      *
      * @throws InvalidArgumentException If any requested include is not in AVAILABLE_INCLUDES.
      */
-    protected function validateIncludes(array &$params): void
+    protected function validateIncludes(array &$params, ?array $available = null): void
     {
         if (!isset($params['include'])) {
             return;
         }
 
-        $availableIncludes = static::AVAILABLE_INCLUDES;
+        $availableIncludes = $available ?? static::AVAILABLE_INCLUDES;
 
         $requested = is_array($params['include'])
             ? $params['include']

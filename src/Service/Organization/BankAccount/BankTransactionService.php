@@ -50,7 +50,6 @@ class BankTransactionService extends AbstractService
         'created_at_to',
         'updated_at_from',
         'updated_at_to',
-        'is_connected',
     ];
 
     /**

@@ -93,8 +93,8 @@ final class HasFiltersTest extends TestCase
         $this->assertSame('In Progress', $this->httpClient->getLastRequest()['params']['title']);
 
         $this->httpClient->addResponse(200, ['data' => []]);
-        $this->client->bankTransactions->list(['is_connected' => true]);
-        $this->assertTrue($this->httpClient->getLastRequest()['params']['is_connected']);
+        $this->client->bankTransactions->list(['state' => 'completed']);
+        $this->assertSame('completed', $this->httpClient->getLastRequest()['params']['state']);
     }
 
     public function testResourceSpecificFilterPasses(): void

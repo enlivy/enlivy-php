@@ -22,9 +22,11 @@ class InvitationCodeService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [
-        'user_id',
+    public const array REFERRAL_INCLUDES = [
+        'organizations',
     ];
+
+    public const array AVAILABLE_FILTERS = [];
 
     /**
      * @return Collection<InvitationCode>
@@ -73,7 +75,7 @@ class InvitationCodeService extends AbstractService
      */
     public function referrals(array $params = [], ?RequestOptions $opts = null): Collection
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, self::REFERRAL_INCLUDES);
 
         /** @var Collection<InvitationCode> */
         return $this->requestCollection('GET', '/invitation-codes/referrals', $params, $opts);
@@ -84,7 +86,7 @@ class InvitationCodeService extends AbstractService
      */
     public function referralsForCode(string $id, array $params = [], ?RequestOptions $opts = null): Collection
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, self::REFERRAL_INCLUDES);
 
         /** @var Collection<InvitationCode> */
         return $this->requestCollection('GET', "/invitation-codes/{$id}/referrals", $params, $opts);

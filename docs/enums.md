@@ -192,7 +192,7 @@ set. A selection relevant to recently added features:
 > and `unbalanced` while it is not — the old `classified`, `connected`,
 > `connected_partially` and `danger` reported how far along that reconciliation
 > was, which is a property of the connections and not of the transaction. Filter
-> on `state`, or read `is_connected`, rather than pinning the intermediate steps.
+> on `state` rather than pinning the intermediate steps.
 > See the [3.0.0 upgrade notes](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md#upgrading-to-300).
 
 > `BillingPackage\ExchangeRateGuarantees` picks when the rate for a proposal

@@ -39,6 +39,8 @@ try {
 }
 ```
 
+A few endpoints accept a different set than the rest of their service, and the SDK checks those too: `guidelines` and `playbooks` revisions, `prospects->board()`, `prospectPipelines->board()`, `organizationUsers->activity()`, `bankAccounts->balance()` and `tenantBilling->state()` take no includes.
+
 ## Referencing Available Includes
 
 Each service exposes its valid includes as a constant:
@@ -103,7 +105,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `receipts` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
 | `receiptPrefixes` | `organization`, `receipts`, `deleted_by_user` |
 
-¹ Retrieve-only: the list endpoint rejects these two with a `422`.
+¹ Retrieve-only: `list()` and `update()` refuse these two before sending the request.
 
 ### CRM
 
@@ -257,8 +259,8 @@ on `update()`.
 
 | Service | Includes |
 |---------|----------|
-| `organizations` | `schema`, `user_abilities`, `settings`, `deleted_by_user`, `remaining_credits`, `credits`, `branding_icon`, `branding_logo`, `membership_features` |
+| `organizations` | `schema`, `user_abilities`, `settings`, `deleted_by_user`, `branding_icon`, `branding_logo`, `tenant_billing`, `tenant_billing.credits`, `tenant_billing.usage_stats`, `tenant_billing.billing_schedule` |
 | `exportData` | (no includes) |
 | `users` (global) | `organizations` |
 | `aiAgents` | `deleted_by_user` |
-| `invitationCodes` | `deleted_by_user` |
+| `invitationCodes` | `deleted_by_user`; `referrals()` and `referralsForCode()` take `organizations` |

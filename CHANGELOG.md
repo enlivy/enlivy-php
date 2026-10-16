@@ -3,6 +3,28 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.1.0] - 2026-10-16
+
+Every include and filter name the SDK accepts now matches what the API accepts for that endpoint.
+See [UPGRADING](UPGRADING.md).
+
+### Added
+
+- `organizations` includes `tenant_billing`, `tenant_billing.credits`, `tenant_billing.usage_stats` and `tenant_billing.billing_schedule`, and the `created_at_*_strict` / `updated_at_*_strict` filters
+- `tenantBillingInvoices` includes `reversal_invoices`, `parent_invoice` and `organization_tasks`
+- `invitationCodes->referrals()` and `referralsForCode()` include `organizations`
+- Filters: `tenantBillingPaymentMethods` `payment_provider`, `type`, `origin`, `status`, `is_default`; `billingPackages` `name`, `description`; `organizationUsers` `status` and the `created_at` / `updated_at` ranges; `projectRoles` `alias`; `reportSchemas`, `guidelines` and `playbooks` `id`
+
+### Changed
+
+- An endpoint that accepts a different include set than the rest of its service is checked against its own: `invoiceNetworkExchanges->list()` and `update()` (`LIST_INCLUDES`), the referral lists (`REFERRAL_INCLUDES`), and guideline and playbook revisions, both boards, user activity, bank balance and tenant-billing state (none)
+
+### Removed
+
+- `organizations` includes `credits`, `remaining_credits` and `membership_features`, which the API no longer serves
+- `bankTransactions` filter `is_connected`, which the API no longer applies; use `state`
+- Filters the path already sets: `invitationCodes` `user_id`, `projectMembers` and `projectProspectStages` `organization_project_id`, `userAddresses` `organization_user_id`
+
 ## [4.0.1] - 2026-10-16
 
 ### Fixed

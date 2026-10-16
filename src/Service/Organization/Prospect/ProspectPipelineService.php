@@ -83,7 +83,7 @@ class ProspectPipelineService extends AbstractService
 
     public function board(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, []);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$id}/board"), $params, $opts);

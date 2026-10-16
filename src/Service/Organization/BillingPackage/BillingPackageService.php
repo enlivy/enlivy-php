@@ -42,6 +42,8 @@ class BillingPackageService extends AbstractService
         'type',
         'organization_project_id',
         'only_available',
+        'name',
+        'description',
     ];
 
     /**

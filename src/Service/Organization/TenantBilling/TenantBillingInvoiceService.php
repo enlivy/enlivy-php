@@ -41,6 +41,9 @@ class TenantBillingInvoiceService extends AbstractService
         'contract',
         'charge_logs',
         'latest_charge_log',
+        'reversal_invoices',
+        'parent_invoice',
+        'organization_tasks',
     ];
 
     public const array AVAILABLE_FILTERS = [];

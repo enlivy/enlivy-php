@@ -31,6 +31,14 @@ class InvoiceNetworkExchangeService extends AbstractService
         'tag_ids',
     ];
 
+    // tax_mapping and recording_suggestions are worked out for one exchange at a time
+    public const array LIST_INCLUDES = [
+        'organization',
+        'parsed_data',
+        'invoice',
+        'tag_ids',
+    ];
+
     public const array AVAILABLE_FILTERS = [
         'organization_invoice_id',
         'organization_user_id',
@@ -47,7 +55,7 @@ class InvoiceNetworkExchangeService extends AbstractService
      */
     public function list(array $params = [], ?RequestOptions $opts = null): Collection
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, self::LIST_INCLUDES);
         $this->validateFilters($params);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
@@ -65,7 +73,7 @@ class InvoiceNetworkExchangeService extends AbstractService
 
     public function update(string $id, array $params, ?RequestOptions $opts = null): InvoiceNetworkExchange
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, self::LIST_INCLUDES);
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var InvoiceNetworkExchange */
         return $this->request('PATCH', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);

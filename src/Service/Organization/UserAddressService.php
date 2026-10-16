@@ -25,9 +25,7 @@ class UserAddressService extends AbstractService
         'deleted_by_user',
     ];
 
-    public const array AVAILABLE_FILTERS = [
-        'organization_user_id',
-    ];
+    public const array AVAILABLE_FILTERS = [];
 
     /**
      * @return Collection<UserAddress>

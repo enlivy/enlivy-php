@@ -267,7 +267,6 @@ $invoices = $client->invoices->list([
 | `direction` | `inbound`, `outbound` |
 | `connection_entity_type` | `invoice`, `receipt`, `bank_transaction`, `user`, `payslip` |
 | `connection_entity_id` | string |
-| `is_connected` | bool |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
 
@@ -301,6 +300,7 @@ $invoices = $client->invoices->list([
 | `type` | string |
 | `organization_project_id` | string |
 | `only_available` | bool |
+| `name`, `description` | string |
 
 **`proposals`**
 
@@ -376,7 +376,7 @@ $invoices = $client->invoices->list([
 | `awaiting_acknowledgement` | boolean |
 | `linked_type`, `linked_id` | together: `invoice`, `contract`, `receipt`, `proposal`, `billing_schedule`, `prospect` or `task`, and its id |
 
-**`reportSchemas`**: `title`, `description`, and `kind` (`Enums\ReportSchema\Kinds`).
+**`reportSchemas`**: `id`, `title`, `description`, and `kind` (`Enums\ReportSchema\Kinds`).
 
 ### Content
 
@@ -384,6 +384,7 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
+| `id` | string |
 | `organization_project_id` | string |
 | `created_at_from`, `created_at_to` | datetime |
 | `updated_at_from`, `updated_at_to` | datetime |
@@ -392,6 +393,7 @@ $invoices = $client->invoices->list([
 
 | Filter | Type |
 |--------|------|
+| `id` | string |
 | `parent_organization_playbook_id` | string |
 | `organization_project_id` | string |
 | `created_at_from`, `created_at_to` | datetime |
@@ -448,6 +450,8 @@ $invoices = $client->invoices->list([
 | `resource_type` | `Enums\Access\ResourceTypes` |
 | `grantee_id`, `organization_project_id`, `organization_resource_bundle_id`, `resource_id` | string |
 
+**`projectRoles`**: `alias`.
+
 **`resourceBundleAttachments`**: `organization_project_id`; send it empty (`''`) for the
 organization-wide attachments.
 
@@ -463,6 +467,8 @@ organization-wide attachments.
 | `can_use_backoffice` | bool |
 | `email` | string |
 | `organization_user_role_id` | string |
+| `status` | string (with `q`) |
+| `created_at_from`, `created_at_to`, `updated_at_from`, `updated_at_to` | datetime (with `q`) |
 
 **`userRoles`**: `manageable` (boolean), only the roles the caller may hand out, edit or delete.
 
@@ -592,4 +598,8 @@ reply deadline, then the longest wait.
 
 The following services accept only global filters (q, q_in, ids, page, limit, order_by, order, deleted, tag_ids):
 
-`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `projectRoles`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`, `tenantBillingPaymentMethods`
+`aiAgents`, `apiCredentials`, `bankAccounts`, `contractPrefixes`, `emailPreviews`, `eventDestinations`, `files`, `notifications`, `receiptPrefixes`, `reportSchemaFields`, `serviceIntegration`, `stripeWebhookCallbacks`, `tags`, `taxFilingJurisdictions`, `taxTypes`, `tenantBillingInvoices`
+
+**`tenantBillingPaymentMethods`**: `payment_provider`, `type`, `origin`, `status`, `is_default`.
+
+**`organizations`**: `created_at_from`, `created_at_to`, `updated_at_from`, `updated_at_to` and their `_strict` variants (`created_at_from_strict`, …), which exclude the bound itself.

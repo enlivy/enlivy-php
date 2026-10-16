@@ -51,6 +51,11 @@ class UserService extends AbstractService
         'can_use_backoffice',
         'email',
         'organization_user_role_id',
+        'status',
+        'created_at_from',
+        'created_at_to',
+        'updated_at_from',
+        'updated_at_to',
     ];
 
     /**
@@ -103,7 +108,7 @@ class UserService extends AbstractService
      */
     public function activity(string $userId, array $params = [], ?RequestOptions $opts = null): Collection
     {
-        $this->validateIncludes($params);
+        $this->validateIncludes($params, []);
         $orgId = $this->resolveOrganizationId($params, $opts);
 
         return $this->requestCollection('GET', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/activity"), $params, $opts);

@@ -31,6 +31,7 @@ class ReportSchemaService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
+        'id',
         'title',
         'description',
         'kind',

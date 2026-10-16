@@ -6,6 +6,20 @@ What may need a change on your side in the last three releases, newest first. Th
 3.1.0 in [UPGRADING.md at 3.3.0](https://github.com/enlivy/enlivy-php/blob/3.3.0/UPGRADING.md),
 and older versions in [UPGRADING.md at 3.2.0](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md).
 
+## 4.1.0
+
+The SDK now refuses, before sending, the include and filter names the API rejects or ignores. A call
+that used one of them already failed with a `422` or had no effect; it now throws
+`InvalidArgumentException` locally.
+
+| Before | After |
+|---|---|
+| `organizations` include `credits`, `remaining_credits`, `membership_features` | `tenant_billing`, `tenant_billing.credits`, `tenant_billing.usage_stats`, `tenant_billing.billing_schedule` |
+| `invoiceNetworkExchanges->list()` / `update()` with `tax_mapping` or `recording_suggestions` | `retrieve()` |
+| Any include on `guidelines` / `playbooks` revisions, `prospects->board()`, `prospectPipelines->board()`, `organizationUsers->activity()`, `bankAccounts->balance()`, `tenantBilling->state()` | none; those endpoints take no includes |
+| `bankTransactions` filter `is_connected` | `state` (`backlog`, `completed`, `unbalanced`, `trashed`) |
+| `invitationCodes` filter `user_id`; `projectMembers` and `projectProspectStages` filter `organization_project_id`; `userAddresses` filter `organization_user_id` | drop it; the id in the path already scopes the list |
+
 ## 4.0.0
 
 Portal permissions moved into access grants. Your existing permissions, bundle links and member roles

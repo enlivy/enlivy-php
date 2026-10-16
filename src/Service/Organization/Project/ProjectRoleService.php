@@ -24,7 +24,9 @@ class ProjectRoleService extends AbstractService
         'organization',
     ];
 
-    public const array AVAILABLE_FILTERS = [];
+    public const array AVAILABLE_FILTERS = [
+        'alias',
+    ];
 
     /**
      * @return Collection<ProjectRole>

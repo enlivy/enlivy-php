@@ -23,7 +23,6 @@ class ProjectProspectStageService extends AbstractService
     ];
 
     public const array AVAILABLE_FILTERS = [
-        'organization_project_id',
         'organization_prospect_stage_id',
     ];
 
