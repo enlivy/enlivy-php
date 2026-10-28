@@ -19,6 +19,7 @@ use Enlivy\Organization\Employment;
 use Enlivy\Organization\EventTrail;
 use Enlivy\Organization\Invoice;
 use Enlivy\Organization\ProposalNotificationLog;
+use Enlivy\Organization\ReportNotificationLog;
 use Enlivy\Organization\PayslipLine;
 use Enlivy\Organization\Prospect;
 use Enlivy\Organization\ProspectDuplicate;
@@ -377,6 +378,77 @@ final class ServiceTest extends TestCase
         $this->assertSame('email_seller_viewed,email_seller_accepted', $request['params']['types']);
         $this->assertSame('org_prop_1', $request['params']['organization_proposal_id']);
         $this->assertSame('2026-08-01T00:00:00Z', $request['params']['created_at_from']);
+    }
+
+    public function testAReportIsEmailedToAnotherAddressWithCopies(): void
+    {
+        $this->httpClient->addResponse(200, ['status' => 'ok']);
+
+        $result = $this->client->reports->email('org_rep_1', [
+            'send_to' => 'client@example.com',
+            'cc' => ['accounts@example.com'],
+            'message' => 'This week in short.',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/reports/org_rep_1/email', $request['url']);
+        $this->assertSame('client@example.com', $request['params']['send_to']);
+        $this->assertSame(['accounts@example.com'], $request['params']['cc']);
+        $this->assertNotInstanceOf(\Enlivy\Organization\Report::class, $result);
+    }
+
+    public function testACustomerRecapIsSentForAChosenPeriod(): void
+    {
+        $this->httpClient->addResponse(200, ['status' => 'ok']);
+
+        $this->client->organizationUsers->recapEmail('org_user_1', [
+            'period_from' => '2026-09-01',
+            'period_to' => '2026-09-30',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString('/organizations/org_default/users/org_user_1/recap-email', $request['url']);
+        $this->assertSame('2026-09-01', $request['params']['period_from']);
+        $this->assertSame('2026-09-30', $request['params']['period_to']);
+    }
+
+    public function testReportNotificationLogsListByReportAndRestoreKeepTheNestedReportsPath(): void
+    {
+        $this->httpClient->addResponse(200, ['data' => []]);
+
+        $this->client->reportNotificationLogs->list([
+            'organization_report_id' => 'org_rep_1',
+            'types' => 'email',
+            'include' => 'report',
+        ]);
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertStringContainsString('/organizations/org_default/reports/notification-logs', $request['url']);
+        $this->assertSame('org_rep_1', $request['params']['organization_report_id']);
+
+        $this->httpClient->addResponse(200, ['data' => [
+            'id' => 'org_rep_n_log_1',
+            'type' => 'email',
+            'sent_to' => 'client@example.com',
+            'sent_cc' => ['accounts@example.com'],
+        ]]);
+
+        $log = $this->client->reportNotificationLogs->retrieve('org_rep_n_log_1');
+
+        $this->assertInstanceOf(ReportNotificationLog::class, $log);
+        $this->assertSame(['accounts@example.com'], $log->sent_cc);
+
+        $this->httpClient->addResponse(200, ['data' => ['id' => 'org_rep_n_log_1']]);
+        $this->client->reportNotificationLogs->restore('org_rep_n_log_1');
+
+        $request = $this->httpClient->getLastRequest();
+        $this->assertSame('POST', $request['method']);
+        $this->assertStringContainsString(
+            '/organizations/org_default/reports/notification-logs/restore/org_rep_n_log_1',
+            $request['url'],
+        );
     }
 
     public function testProposalNotificationLogRetrieveHydratesTypedAndRestoreKeepsItsNestedPath(): void

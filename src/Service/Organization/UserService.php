@@ -142,4 +142,16 @@ class UserService extends AbstractService
 
         return $this->request('GET', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/access"), $params, $opts, EnlivyObject::class);
     }
+
+    /**
+     * Email a person the recap of a period, exactly as their Customer Portal shows it: last calendar
+     * month unless `period_from` and `period_to` (Y-m-d, at most 92 days) are given, to their own
+     * address unless `send_to` is.
+     */
+    public function recapEmail(string $userId, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$userId}/recap-email"), $params, $opts, EnlivyObject::class);
+    }
 }

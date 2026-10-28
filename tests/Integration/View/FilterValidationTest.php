@@ -124,6 +124,16 @@ class FilterValidationTest extends IntegrationTestCase
         $this->assertInvalidFilterThrows('proposalNotificationLogs');
     }
 
+    public function testReportNotificationLogGlobalFilters(): void
+    {
+        $this->assertGlobalFiltersWork('reportNotificationLogs');
+    }
+
+    public function testReportNotificationLogInvalidFilterThrows(): void
+    {
+        $this->assertInvalidFilterThrows('reportNotificationLogs');
+    }
+
     // CRM
 
     public function testProspectGlobalFilters(): void

@@ -100,6 +100,7 @@ $playbook = $client->playbooks->retrieve('org_play_xxx', [
 | `invoiceNetworkExchanges` | `organization`, `parsed_data`, `tax_mapping`¹, `recording_suggestions`¹, `invoice`, `tag_ids` |
 | `invoiceNotificationLogs` | `deleted_by_user`, `organization` |
 | `proposalNotificationLogs` | `deleted_by_user`, `organization`, `proposal` |
+| `reportNotificationLogs` | `deleted_by_user`, `organization`, `report` |
 | `invoiceScheduledReminders` | _(none — rows are projected, not stored)_ |
 | `receipts` | `organization`, `invoice`, `bank_account`, `sender_user`, `receiver_user`, `deleted_by_user`, `tag_ids`, `taxes`, `contract` |
 | `receipts` (event trails) | `changes`, `actor_organization_user`, `charge_log` |
@@ -259,8 +260,10 @@ on `update()`.
 
 | Service | Includes |
 |---------|----------|
-| `organizations` | `schema`, `user_abilities`, `settings`, `deleted_by_user`, `branding_icon`, `branding_logo`, `tenant_billing`, `tenant_billing.credits`, `tenant_billing.usage_stats`, `tenant_billing.billing_schedule` |
+| `organizations` | `schema`, `user_abilities`, `settings`, `deleted_by_user`, `branding_icon`, `branding_logo`, `tenant_billing`, `tenant_billing.credits`, `tenant_billing.usage_stats`, `tenant_billing.billing_schedule`, `email_sending` |
 | `exportData` | (no includes) |
 | `users` (global) | `organizations` |
 | `aiAgents` | `deleted_by_user` |
 | `invitationCodes` | `deleted_by_user`; `referrals()` and `referralsForCode()` take `organizations` |
+| `userApps`, `appRegistrationRequests` | (no includes) |
+| `appInstallations`, `appInstallRequests` | (no includes) |

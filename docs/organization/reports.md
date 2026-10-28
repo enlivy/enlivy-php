@@ -345,6 +345,11 @@ $aboutInvoice = $client->reports->list([
 `kind`, `status`, `organization_task_id` and `recipient_organization_user_id` filter too.
 `linked_type` and `linked_id` go together.
 
+The `links` include answers each linked record as its summary for the reader, grouped by kind as the
+report prints them: `entity`, `id`, `reference`, `title`, `status`, `meta` and `opens`. A record the
+reader may not open keeps only `entity`, `id` and `reference`, with `opens` false; in the portal, what
+opens is what the reader's own portal shows them.
+
 ## Retrieving a Report
 
 ```php
@@ -471,11 +476,66 @@ echo "Restored: {$report->id}\n";
 | `organization_task` | The task that asked for the report |
 | `recipient_organization_user` | Who the report is for |
 | `acknowledged_by_organization_user` | Who acknowledged it |
-| `links` | The linked records, as `type` and `id` |
+| `links` | The linked records as summaries for the reader (`entity`, `id`, `reference`, `title`, `status`, `meta`, `opens`) |
 | `schema_snapshot` | The schema as it stood when the report was filed |
 | `author_portal_access` | Whether the author can still edit it in the portal |
 | `organization` | Organization details |
 | `deleted_by_user` | User who deleted |
+
+## Downloading a Report
+
+A report prints as a PDF in the `standard` or the `compact` layout (`$client->frontend->all()` lists
+them under `report.document_layouts`), in a language or `auto` for the report's own. A linked record
+prints its figures only to a reader who may open it.
+
+```php
+<?php
+
+$pdf = $client->reports->download('org_rep_xxx');
+file_put_contents('report.pdf', $pdf);
+
+$compact = $client->reports->download('org_rep_xxx', ['layout' => 'compact', 'locale' => 'ro']);
+```
+
+## Emailing a Report
+
+A submitted report can be emailed to its recipient, or to another address, with up to ten copies. It
+travels as it prints, with its PDF attached. A linked record shows its figures and a link only to a
+receiver whose Customer Portal opens it, and the portal button appears only when the receiver can open
+the report there. A draft is refused.
+
+```php
+<?php
+
+$client->reports->email('org_rep_xxx');
+
+$client->reports->email('org_rep_xxx', [
+    'send_to' => 'client@example.com',
+    'cc' => ['accounts@example.com'],
+    'message' => 'This week in short.',
+    'locale' => 'ro',
+]);
+```
+
+Each send is kept once, however many times delivery was retried:
+
+```php
+<?php
+
+$sends = $client->reportNotificationLogs->list([
+    'organization_report_id' => 'org_rep_xxx',
+    'include' => ['report'],
+]);
+
+foreach ($sends as $send) {
+    echo $send->sent_to;
+    var_dump($send->sent_cc);
+    echo $send->subject;
+}
+
+$client->reportNotificationLogs->delete('org_rep_n_log_xxx');
+$client->reportNotificationLogs->restore('org_rep_n_log_xxx');
+```
 
 ## In the Customer Portal
 
@@ -501,7 +561,18 @@ $fileable = $portal->reportSchemas->list(['access_ability' => 'create']);
 ```
 
 A person files a report for a task only when they are one of its assignees, and cannot link records
-from the portal.
+from the portal. A report filed in a project is written for someone in that project:
+`$portal->projectMembers->reportRecipients($projectId)` lists who, to whoever may file there. A portal
+reader downloads a report their access opens with `$portal->reports->download($id)`, taking the same
+`layout` and `locale` as the back office.
+
+```php
+<?php
+
+$recipients = $portal->projectMembers->reportRecipients('org_proj_xxx');
+
+$pdf = $portal->reports->download('org_rep_xxx', ['layout' => 'compact']);
+```
 
 ## Complete Example: KPI Reporting System
 

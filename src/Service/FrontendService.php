@@ -59,4 +59,13 @@ class FrontendService extends AbstractService
     {
         return $this->request('GET', '/misc/support-widget-token', $params, $opts);
     }
+
+    /**
+     * The public keys (`keys`, a JWK set) that verify the access tokens Enlivy sends an App's provider.
+     * Public; cache it for a minute.
+     */
+    public function appProviderKeys(?RequestOptions $opts = null): EnlivyObject
+    {
+        return $this->request('GET', '/misc/app-provider-keys', null, $opts);
+    }
 }

@@ -44,10 +44,12 @@ mint personal access tokens, register OAuth clients or read an organization it w
 Responses are shaped by the token's scopes too: a section of a response that needs an ability the
 token was not granted is left out, even when the user who approved it could see it.
 
-A refused organization call answers `403` with `meta.denied_by` set to `membership` (the user is
-not in the organization, or the token was not granted it), `scope` (the token lacks a scope) or
-`role` (the user's role lacks the ability). `meta.required_scopes` lists the scopes that would
-open the call when the reason is `scope`.
+A refused organization call answers `403` with the refusal code `route_denied` and the facts
+`denied_by`, `required_abilities` and `required_scopes`. `denied_by` is `membership` (the user is not
+in the organization), `organization` (the token was not granted it), `scope` (the token lacks a
+scope), `role` (the user's role lacks the ability) or `first_party` (the route answers Enlivy's own
+clients only). `required_scopes` lists the scopes that would open the call when the reason is
+`scope`. See [Errors](errors.md).
 
 ```php
 <?php
@@ -57,9 +59,8 @@ use Enlivy\Exception\ForbiddenException;
 try {
     $client->invoices->list();
 } catch (ForbiddenException $e) {
-    $meta = $e->getBody()['meta'] ?? [];
-    if (($meta['denied_by'] ?? null) === 'scope') {
-        // Ask the user to authorize again with $meta['required_scopes']
+    if ($e->getRefusalCode() === 'route_denied' && $e->getFacts()['denied_by'] === 'scope') {
+        // Ask the user to authorize again with $e->getFacts()['required_scopes']
     }
 }
 ```
@@ -232,6 +233,51 @@ print_r($me->scopes);
 print_r($me->organizations);
 echo $me->expires_at;      // epoch seconds
 ```
+
+## Device Sign-In
+
+A public client with no browser of its own (a CLI, an assistant) signs in with the device flow
+(RFC 8628): it asks for a code, shows the person where to approve it, and polls the token endpoint
+until they do. Public clients hold no secret and need S256 PKCE for the browser flow; the device flow
+needs neither.
+
+```php
+<?php
+
+$started = $client->oauthTokens->deviceCode([
+    'client_id' => 'oac_xxx',
+    'scope' => 'apps:develop',
+]);
+
+echo "Open {$started->verification_uri} and enter {$started->user_code}\n";
+// or send the person straight to $started->verification_uri_complete
+
+do {
+    sleep($started->interval);
+
+    try {
+        $token = $client->oauthTokens->create([
+            'grant_type' => 'urn:ietf:params:oauth:grant-type:device_code',
+            'device_code' => $started->device_code,
+            'client_id' => 'oac_xxx',
+        ]);
+        break;
+    } catch (\Enlivy\Exception\ApiException $e) {
+        $error = $e->getBody()['error'] ?? null;
+
+        if ($error === 'slow_down') {
+            $started->interval += 5;
+        } elseif ($error !== 'authorization_pending') {
+            throw $e; // access_denied, expired_token
+        }
+    }
+} while (true);
+
+echo $token->access_token;
+```
+
+The code lives `expires_in` seconds. `scope` defaults to everything the client may ask for; the
+`apps:develop` and `apps:draft` scopes are asked for by name and only by Enlivy's own clients.
 
 ## Available Scopes
 

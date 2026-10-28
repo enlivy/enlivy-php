@@ -321,6 +321,14 @@ $invoices = $client->invoices->list([
 | `types` | `email`, `email_seller_viewed`, `email_seller_accepted`, `email_seller_rejected`, `email_seller_expired`, `email_seller_contract_generated` (comma-separated or array) |
 | `created_at_from`, `created_at_to` | datetime |
 
+**`reportNotificationLogs`**
+
+| Filter | Type |
+|--------|------|
+| `organization_report_id` | string |
+| `types` | `email` (comma-separated or array) |
+| `created_at_from`, `created_at_to` | datetime |
+
 ### Payroll
 
 **`payslips`**

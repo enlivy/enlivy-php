@@ -56,9 +56,21 @@ set. A selection relevant to recently added features:
 
 | Enum | Values |
 |------|--------|
-| `EventDelivery\DestinationType` | `webhook`, `slack` |
+| `EventDelivery\DestinationType` | `webhook`, `slack`, and `app` (read only, an installed App's destination) |
 | `EventDelivery\DeliveryStatus` | `pending`, `success`, `failed`, `dropped`, `anomaly` |
 | `EventDelivery\TriggerEvent` | dotted event names (`invoice.paid`, `contract.all_parties_signed`, …) |
+| `Apps\Distributions` | `public`, `personal` |
+| `Apps\InstallationStatuses` | `active`, `suspended`, `removed` |
+| `Apps\ConnectionStatuses` | `connected`, `disconnected`, `revoked` |
+| `Apps\CapabilityHolders` | `everyone`, `admins`, `roles` |
+| `Apps\InstallRequestStatuses` | `pending`, `approved`, `declined`, `cancelled` |
+| `Apps\RegistrationRequestStatuses` | `pending`, `approved`, `claimed`, `cancelled`, `expired` |
+| `Apps\WidgetStatuses` | `ready`, `disconnected`, `suspended`, `unavailable` |
+| `Apps\LifecycleEvents` | `app.installed`, `app.upgraded`, `app.permissions_changed`, `app.suspended`, `app.resumed`, `app.removed`, `app.switched_off`, `app.switched_on`, `connection.revoked` |
+| `Apps\ProviderAccessRefusals` | `connection_disconnected`, `connection_revoked`, `installation_suspended`, `installation_removed`, `app_unavailable`, `permission_missing`, `forbidden` |
+| `PageLayout\Pages` | `dashboard`, `user_view`, `helpdesk_overview`, `prospect_overview`, `helpdesk_conversation_view`, `report_view`, `invoice_view`, `app_overview` |
+| `Report\Roles` | `author`, `recipient` |
+| `Analytics\SettlementStatuses` | `pending`, `paid`, `overdue`, `scheduled` (the frontend payload's `analytics.settlement_statuses`; `Analytics\StandardStatuses` is the same set and deprecated) |
 | `EventTrail\EventType` | event-trail subject change types |
 | `EventTrail\Origin` | `back_office`, `client_portal`, `cron`, `webhook`, `system` |
 | `Organization\ButtonStyles` | `primary`, `secondary`, `outline` |
@@ -105,6 +117,7 @@ set. A selection relevant to recently added features:
 | `Access\GranteeTypes` | `user_role`, `project_role`, `project_member`, `person` |
 | `Access\ResourceTypes` | `report_schema`, `playbook`, `guideline`, `prospect_pipeline` |
 | `Report\Statuses` | `draft`, `submitted`, `acknowledged` |
+| `Report\NotificationLogTypes` | `email` |
 | `ReportSchema\Kinds` | `daily_log`, `work_report`, `meeting_notes`, `acceptance`, `feedback`, `general` |
 | `ReportSchema\Requirements` | `none`, `optional`, `required` |
 | `TenantBilling\BillingEffects` | `prorated_now`, `trial`, `next_cycle`, `none` |
@@ -118,7 +131,7 @@ set. A selection relevant to recently added features:
 | `Payment\AttentionIssue` | the `issue` in a `needs_attention` event-trail entry's metadata: `double_payment`, `amount_mismatch`, `checkout_not_settled`, `proforma_part_paid`, `payment_on_cancelled_proforma` |
 | `BillingPackage\ContractSectionContentSources` | `standard`, `reusable_content`, `purchase_items`, `purchase_terms`, `purchase_summary`, `product_list`, `purchased_product_list` |
 | `CurrencyExchangeRateProviders` | `ecb`, `bnr`, `nbp`, `cnb`, `mnb`, `riksbank`, `dn` |
-| `ExportData\Types` | `full`, `accounting_saga` |
+| `ExportData\Types` | `full`, `accounting_saga`, `working_time_timesheet`, `payroll_handoff`, `app_access` |
 | `NetworkExchange\DocumentTypeCodes` | `380` (commercial invoice), `381` (credit note) |
 | `Invoice\NotificationLogTypes` | `network_exchange_auto_push`, `email`, `email_auto_send`, `email_reminder_upcoming`, `email_reminder_overdue` |
 | `Organization\SettingGroups` | `invoicing`, `invoice_payment_reminder`, `taxes`, `receipts`, `banking`, `contracts`, `sales`, `users`, `blocked_identifiers`, `email`, `stripe_connect`, `network_exchange`, `network_exchange_auto_push`, `ai`, `personalization` |

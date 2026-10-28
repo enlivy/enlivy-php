@@ -3,6 +3,40 @@
 All notable changes to `enlivy/enlivy-php` are documented here. This project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [4.2.0] - 2026-10-28
+
+Apps, as a developer's own tools reach them: register, revise and publish an App, install it or ask an
+organization to, and the drafts an agent makes. Refusals carry a code and facts. Administering installed
+Apps and arranging pages is the dashboard's and stays out of the SDK. New docs:
+[Apps](docs/organization/apps.md), [Developer Apps](docs/developer-apps.md), [Errors](docs/errors.md).
+See [UPGRADING](UPGRADING.md).
+
+### Added
+
+- `userApps`: list, retrieve, `register`, `validate`, `submitRevision`, `publishRevision`, `createOAuthClient`, `attachOAuthClient`, `rotateOAuthClientSecret`, `detachOAuthClient`, `webhookSecret`, `rotateWebhookSecret`, `installRequests`
+- `appRegistrationRequests`: list, retrieve, `create`, `validate`, `cancel`, `claim`
+- `appInstallations->create()` and `appInstallRequests->create()`, for an App the caller develops, with an OAuth token holding `apps:develop`
+- `frontend->appProviderKeys()`; `discovery->apps()`, `appsSection()`, `appsSchema()`
+- `oauthTokens->deviceCode()` starts a device sign-in
+- `reports->download()`, portal `reports->download()`, portal `projectMembers->reportRecipients()`
+- `reports->email()`, `organizationUsers->recapEmail()`, `reportNotificationLogs` (list/retrieve/delete/restore) with filters `organization_report_id`, `types`, `created_at_from` / `created_at_to` and includes `report`, `organization`, `deleted_by_user`
+- `eventDestinations->rotateSecret()`; `EventDestination::$sealed_signing_secret`, `$signing_secret_rotated_at`, `$organization_app_installation_id`; `recipient_key` on `create()` and `rotateSecret()`
+- `ApiException::getRefusalCode()`, `getFacts()` and `isConflict()`
+- `organizations` include `email_sending`; `organizationUsers->access()` rows carry `granted_by`; `organizationUsers->reportsOverview()` takes `role`
+- Resources `Organization\AppInstallation`, `Organization\AppInstallRequest`, `UserApp`, `UserAppRevision`, `AppRegistrationRequest`, `Organization\ReportNotificationLog`
+- Enums `Apps\{Distributions, InstallationStatuses, ConnectionStatuses, CapabilityHolders, InstallRequestStatuses, RegistrationRequestStatuses, WidgetStatuses, LifecycleEvents, ProviderAccessRefusals}`, `PageLayout\Pages`, `Report\Roles`, `Report\NotificationLogTypes`, `Analytics\SettlementStatuses`; `EventDelivery\DestinationType::APP`, `ExportData\Types::APP_ACCESS`
+
+### Changed
+
+- An event destination's `signing_secret` is answered only by `create()` and `rotateSecret()`; every other read leaves it null
+- The reports include `links` answers each linked record as a summary (`entity`, `id`, `reference`, `title`, `status`, `meta`, `opens`) instead of `type` and `id`
+- A refused organization call answers `error.code` `route_denied` with `denied_by`, `required_abilities` and `required_scopes`; `meta` still repeats `denied_by`
+- Analytics sums carry `settlement_status`; the frontend payload names the set `analytics.settlement_statuses`
+
+### Deprecated
+
+- `Enums\Analytics\StandardStatuses`: use `Analytics\SettlementStatuses`
+
 ## [4.1.0] - 2026-10-16
 
 Every include and filter name the SDK accepts now matches what the API accepts for that endpoint.

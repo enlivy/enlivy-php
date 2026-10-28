@@ -80,4 +80,15 @@ class ReportService extends AbstractPortalService
         /** @var Report */
         return $this->request('POST', $this->portalPath($orgId, "reports/{$id}/acknowledge"), $params, $opts);
     }
+
+    /**
+     * The report's PDF, for a reader whose access opens it. `layout` is `standard` or `compact`,
+     * `locale` a language code or `auto`.
+     */
+    public function download(string $id, array $params = [], ?RequestOptions $opts = null): string
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestRaw('GET', $this->portalPath($orgId, "reports/{$id}/download"), $params, $opts);
+    }
 }

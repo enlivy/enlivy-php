@@ -18,4 +18,15 @@ class ProjectMemberService extends AbstractPortalService
 
         return $this->requestCollection('GET', $this->portalPath($orgId, "projects/{$projectId}/members"), $params, $opts);
     }
+
+    /**
+     * The project members a report filed in the project can be written for, open to whoever may file
+     * a report there.
+     */
+    public function reportRecipients(string $projectId, array $params = [], ?RequestOptions $opts = null): Collection
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->requestCollection('GET', $this->portalPath($orgId, "reports/recipients/{$projectId}"), $params, $opts);
+    }
 }

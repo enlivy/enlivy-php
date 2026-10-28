@@ -1,10 +1,29 @@
 # Upgrading
 
 What may need a change on your side in the last three releases, newest first. The notes for
-3.3.0 are in [UPGRADING.md at 3.5.0](https://github.com/enlivy/enlivy-php/blob/3.5.0/UPGRADING.md),
+3.5.0 and 3.4.0 are in [UPGRADING.md at 4.1.0](https://github.com/enlivy/enlivy-php/blob/4.1.0/UPGRADING.md),
+3.3.0 in [UPGRADING.md at 3.5.0](https://github.com/enlivy/enlivy-php/blob/3.5.0/UPGRADING.md),
 3.2.0 in [UPGRADING.md at 3.4.0](https://github.com/enlivy/enlivy-php/blob/3.4.0/UPGRADING.md),
 3.1.0 in [UPGRADING.md at 3.3.0](https://github.com/enlivy/enlivy-php/blob/3.3.0/UPGRADING.md),
 and older versions in [UPGRADING.md at 3.2.0](https://github.com/enlivy/enlivy-php/blob/3.2.0/UPGRADING.md).
+
+## 4.2.0
+
+Nothing is removed. Three answers changed shape on the wire, and a refusal now says what to do.
+
+| Before | After |
+|---|---|
+| `eventDestinations->retrieve()`, `list()` and `update()` answered `signing_secret` | null everywhere except the answers to `create()` and the new `rotateSecret()`; keep the secret when you create the destination, or rotate it |
+| reports include `links` answered `[{type, id}]` | `[{entity, id, reference, title, status, meta, opens}]`, grouped by kind; `entity` replaces `type` |
+| a refused organization call carried `meta.denied_by` and `meta.required_scopes` | `getRefusalCode()` is `route_denied` and `getFacts()` holds `denied_by`, `required_abilities`, `required_scopes`; `meta.denied_by` is still repeated for now |
+| `Enums\Analytics\StandardStatuses`, frontend payload `analytics.standard_statuses` | `Enums\Analytics\SettlementStatuses` (same values), payload `analytics.settlement_statuses`; the old enum stays, deprecated |
+
+- A `409` is one of two kinds: without a code (`isConflict()` true) the record changed since you read
+  it, so reread and retry once; with a code, do what the code names first.
+- Event destination `destination_url` is now `string|null` on the resource: an installed App's
+  destination (`type` `app`) shows none. A webhook `destination_url` must be a public address.
+- Event deliveries to an `app` destination carry no `response` body.
+- Analytics sums carry a new `settlement_status` field beside `status`.
 
 ## 4.1.0
 
@@ -48,44 +67,3 @@ the old fields changes. See [Portal Access](docs/organization/portal-access.md).
 - Assigning a role, or changing a role's abilities, answers `422` unless the caller holds every
   ability involved.
 - The Reports pack caps report schemas: creating or restoring one over the cap answers `402`.
-
-## 3.5.0
-
-Signing in, starting an account and managing API keys, OAuth clients and OAuth consent happen in the
-Enlivy app now. The API removed those routes, or accepts them only from a signed-in dashboard, so
-the methods that called them are gone.
-
-| Before | After |
-|---|---|
-| `authentication->login/register/forgotPassword/resetPassword` | sign in and register in the Enlivy app |
-| `users->sendEmailVerificationToken()` and the other email and phone methods | managed in the Enlivy app |
-| `$client->userTokens`, `authentication->listTokens/deleteToken` | create and revoke API keys in the Enlivy app |
-| `$client->oauthClients`, `$client->oauthAuthorizations` | register clients and review consent in the Enlivy app |
-| `User::$email_verification_sent_at`, `User::$remember_token` | — |
-
-- `users->update()` accepts only `username`, `first_name`, `last_name`, `name`, `locale`,
-  `country_code` and `timezone`, and a user's names may be null.
-- `invitationCodes` and `userAddresses` `delete()`/`restore()` return an `EnlivyObject`: read
-  `->status`, not resource fields.
-- Read `access_token` and `refresh_token` from `oauthTokens->create()`. A rotated refresh token
-  presented again more than a minute later revokes every token issued from it, so store the new one.
-- On the customer portal, a proposal no longer carries the organization's own fields (see
-  [Proposals](docs/organization/proposals.md)), a document's `sender_user` and `receiver_user` carry
-  only `id`, `name`, `first_name`, `last_name` and `avatar_url`, and an include the portal does not
-  offer throws before the request.
-- Page size is `limit`; `per_page` was never read, so lists returned 30 rows.
-
-## 3.4.0
-
-The customer portal's proposal payment is one call now. The two routes it replaced are gone from
-the API, so the old methods answered `404`.
-
-| Before | After |
-|---|---|
-| `$portal->proposals->selectPaymentMethod($id, ['payment_method_kind' => …])` then `createPaymentIntent($id)` | `$portal->proposals->pay($id, ['payment_method_kind' => 'card'])` |
-
-- `pay()` answers `payment_method_kind`, `payment_provider` and what Stripe.js confirms for a card,
-  or the transfer instructions for a bank transfer. `confirmPayment()` is unchanged.
-- `charge_result.next_action_url` is no longer a 3DS page to redirect to: it is a payment link the
-  customer has already been emailed. Show it if they are with you; do not email it again.
-- An OAuth access token can no longer mint personal access tokens or register OAuth clients.

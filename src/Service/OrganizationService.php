@@ -29,6 +29,7 @@ class OrganizationService extends AbstractService
         'tenant_billing.credits',
         'tenant_billing.usage_stats',
         'tenant_billing.billing_schedule',
+        'email_sending',
     ];
 
     public const array AVAILABLE_FILTERS = [

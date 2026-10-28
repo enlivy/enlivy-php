@@ -16,6 +16,12 @@ use Enlivy\Service;
  * @property Service\FrontendService $frontend
  * @property Service\DiscoveryService $discovery
  * @property Service\OAuth\OAuthTokenService $oauthTokens
+ * @property Service\UserAppService $userApps
+ * @property Service\AppRegistrationRequestService $appRegistrationRequests
+ *
+ * Organization-scoped services - Apps:
+ * @property Service\Organization\Apps\AppInstallationService $appInstallations
+ * @property Service\Organization\Apps\AppInstallRequestService $appInstallRequests
  *
  * Organization-scoped services - Users & Roles:
  * @property Service\Organization\UserService $organizationUsers
@@ -94,6 +100,7 @@ use Enlivy\Service;
  *
  * Organization-scoped services - Reports:
  * @property Service\Organization\Report\ReportService $reports
+ * @property Service\Organization\Report\ReportNotificationLogService $reportNotificationLogs
  * @property Service\Organization\Report\ReportSchemaService $reportSchemas
  * @property Service\Organization\Report\ReportSchemaFieldService $reportSchemaFields
  *

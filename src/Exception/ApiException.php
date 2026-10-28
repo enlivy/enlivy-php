@@ -31,6 +31,46 @@ class ApiException extends \Exception
         return $this->headers;
     }
 
+    /**
+     * The stable name of a refusal the caller can act on (`error.code`), such as `route_denied`,
+     * `tenant_feature_required`, `storage_limit_exceeded` or `email_sending_not_connected`; null when
+     * the answer carries none. A 409 with a code needs something else to happen first; see `isConflict()`.
+     */
+    public function getRefusalCode(): ?string
+    {
+        $code = $this->body['error']['code'] ?? null;
+
+        return is_string($code) && $code !== '' ? $code : null;
+    }
+
+    /**
+     * What a client needs to act on the refusal: everything under `error` except `code`, such as
+     * `denied_by`, `required_abilities` and `required_scopes` on `route_denied`, or `can_connect` on
+     * `email_sending_not_connected`.
+     */
+    public function getFacts(): array
+    {
+        $error = $this->body['error'] ?? null;
+
+        if (!is_array($error)) {
+            return [];
+        }
+
+        unset($error['code']);
+
+        return $error;
+    }
+
+    /**
+     * True for a 409 without a code: the record changed since it was read (a stale revision, a
+     * concurrent write, work already in flight). Reread, then retry once. A 409 with a code is not a
+     * conflict of this kind; retrying cannot change it.
+     */
+    public function isConflict(): bool
+    {
+        return $this->statusCode === 409 && $this->getRefusalCode() === null;
+    }
+
     public static function factory(int $statusCode, ?array $body, array $headers = []): self
     {
         $message = $body['message'] ?? "API error: HTTP {$statusCode}";

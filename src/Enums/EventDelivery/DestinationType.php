@@ -12,4 +12,6 @@ enum DestinationType: string
 
     case WEBHOOK = 'webhook';
     case SLACK = 'slack';
+    /** Served for an installed App's destination; a destination cannot be created or updated with it. */
+    case APP = 'app';
 }

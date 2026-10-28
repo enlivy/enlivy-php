@@ -7,6 +7,8 @@ namespace Enlivy\Service;
 use Enlivy\Service\OAuth\OAuthTokenService;
 use Enlivy\Service\Organization\AnalyticsService;
 use Enlivy\Service\Organization\ApiCredentialService;
+use Enlivy\Service\Organization\Apps\AppInstallationService;
+use Enlivy\Service\Organization\Apps\AppInstallRequestService;
 use Enlivy\Service\Organization\BankAccount\BankAccountDataService;
 use Enlivy\Service\Organization\BankAccount\BankAccountService;
 use Enlivy\Service\Organization\BankAccount\BankTransactionCostTypeService;
@@ -67,6 +69,7 @@ use Enlivy\Service\Organization\Receipt\ReceiptPrefixService;
 use Enlivy\Service\Organization\Receipt\ReceiptService;
 use Enlivy\Service\Organization\Report\ReportSchemaFieldService;
 use Enlivy\Service\Organization\Report\ReportSchemaService;
+use Enlivy\Service\Organization\Report\ReportNotificationLogService;
 use Enlivy\Service\Organization\Report\ReportService;
 use Enlivy\Service\Organization\ResourceBundle\ResourceBundleAttachmentService;
 use Enlivy\Service\Organization\ResourceBundle\ResourceBundleService;
@@ -124,6 +127,12 @@ class CoreServiceFactory extends AbstractServiceFactory
             'frontend' => FrontendService::class,
             'discovery' => DiscoveryService::class,
             'userOrganizationSettings' => UserOrganizationSettingService::class,
+            'userApps' => UserAppService::class,
+            'appRegistrationRequests' => AppRegistrationRequestService::class,
+
+            // Org-scoped: Apps
+            'appInstallations' => AppInstallationService::class,
+            'appInstallRequests' => AppInstallRequestService::class,
 
             // Org-scoped: CRM
             'prospects' => ProspectService::class,
@@ -202,6 +211,7 @@ class CoreServiceFactory extends AbstractServiceFactory
 
             // Org-scoped: Reports
             'reports' => ReportService::class,
+            'reportNotificationLogs' => ReportNotificationLogService::class,
             'reportSchemas' => ReportSchemaService::class,
             'reportSchemaFields' => ReportSchemaFieldService::class,
 

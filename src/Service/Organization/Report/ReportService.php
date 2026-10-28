@@ -5,19 +5,25 @@ declare(strict_types=1);
 namespace Enlivy\Service\Organization\Report;
 
 use Enlivy\Collection;
+use Enlivy\EnlivyObject;
 use Enlivy\Organization\Report;
 use Enlivy\Service\AbstractService;
+use Enlivy\Service\Concern\HasDownload;
 use Enlivy\Service\Concern\HasRestore;
 use Enlivy\Service\Concern\HasFilters;
 use Enlivy\Service\Concern\HasIncludes;
 use Enlivy\Util\RequestOptions;
 
 /**
+ * `download()` answers the report's PDF; `layout` is `standard` or `compact` and `locale` a language
+ * code or `auto`. A linked record prints its figures only to a reader who may open it.
+ *
  * @method Report restore(string $id, array $params = [], ?RequestOptions $opts = null)
  */
 class ReportService extends AbstractService
 {
     use HasRestore;
+    use HasDownload;
     use HasIncludes;
     use HasFilters;
 
@@ -100,5 +106,16 @@ class ReportService extends AbstractService
         $orgId = $this->resolveOrganizationId($params, $opts);
         /** @var Report */
         return $this->request('DELETE', $this->orgPath($orgId, self::RESOURCE . "/{$id}"), $params, $opts);
+    }
+
+    /**
+     * Email a submitted report, with its PDF, to its recipient or to `send_to`, with up to ten `cc`.
+     * A draft is refused. Each send is kept once in `reportNotificationLogs`.
+     */
+    public function email(string $id, array $params = [], ?RequestOptions $opts = null): EnlivyObject
+    {
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/email"), $params, $opts, EnlivyObject::class);
     }
 }

@@ -6,11 +6,14 @@ namespace Enlivy\Util;
 
 use Enlivy\AiAgent;
 use Enlivy\ApiResource;
+use Enlivy\AppRegistrationRequest;
 use Enlivy\InvitationCode;
 use Enlivy\OAuthToken;
 use Enlivy\Organization;
 use Enlivy\Organization\AccessGrant;
 use Enlivy\Organization\ApiCredential;
+use Enlivy\Organization\AppInstallation;
+use Enlivy\Organization\AppInstallRequest;
 use Enlivy\Organization\BankAccount;
 use Enlivy\Organization\BankTransaction;
 use Enlivy\Organization\BankTransactionCostType;
@@ -78,6 +81,7 @@ use Enlivy\Organization\ProspectStage;
 use Enlivy\Organization\Receipt;
 use Enlivy\Organization\ReceiptPrefix;
 use Enlivy\Organization\Report;
+use Enlivy\Organization\ReportNotificationLog;
 use Enlivy\Organization\ReportSchema;
 use Enlivy\Organization\ReportSchemaField;
 use Enlivy\Organization\ResourceBundle;
@@ -108,6 +112,8 @@ use Enlivy\Organization\WorkingTimeDay;
 use Enlivy\Organization\WorkingTimeDayBreak;
 use Enlivy\Organization\WorkingTimeTerm;
 use Enlivy\User;
+use Enlivy\UserApp;
+use Enlivy\UserAppRevision;
 
 /**
  * Maps API object types to their corresponding PHP classes.
@@ -128,6 +134,13 @@ final class ObjectTypes
         'ai_agent' => AiAgent::class,
         'oauth_token' => OAuthToken::class,
         'invitation_code' => InvitationCode::class,
+        'user_app' => UserApp::class,
+        'user_app_revision' => UserAppRevision::class,
+        'app_registration_request' => AppRegistrationRequest::class,
+
+        // Organization-scoped: Apps
+        'app_installation' => AppInstallation::class,
+        'app_install_request' => AppInstallRequest::class,
 
         // Organization-scoped: CRM
         'prospect' => Prospect::class,
@@ -212,6 +225,7 @@ final class ObjectTypes
 
         // Organization-scoped: Reports
         'report' => Report::class,
+        'report_notification_log' => ReportNotificationLog::class,
         'report_schema' => ReportSchema::class,
         'report_schema_field' => ReportSchemaField::class,
 

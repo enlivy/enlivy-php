@@ -14,4 +14,5 @@ enum Types: string
     case ACCOUNTING_SAGA = 'accounting_saga';
     case WORKING_TIME_TIMESHEET = 'working_time_timesheet';
     case PAYROLL_HANDOFF = 'payroll_handoff';
+    case APP_ACCESS = 'app_access';
 }

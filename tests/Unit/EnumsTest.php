@@ -6,6 +6,21 @@ namespace Enlivy\Tests\Unit;
 
 use Enlivy\Enums\Access\GranteeTypes;
 use Enlivy\Enums\Access\ResourceTypes as AccessResourceTypes;
+use Enlivy\Enums\Analytics\SettlementStatuses;
+use Enlivy\Enums\Analytics\StandardStatuses;
+use Enlivy\Enums\Apps\CapabilityHolders;
+use Enlivy\Enums\Apps\ConnectionStatuses;
+use Enlivy\Enums\Apps\Distributions;
+use Enlivy\Enums\Apps\InstallationStatuses;
+use Enlivy\Enums\Apps\InstallRequestStatuses;
+use Enlivy\Enums\Apps\LifecycleEvents;
+use Enlivy\Enums\Apps\ProviderAccessRefusals;
+use Enlivy\Enums\Apps\RegistrationRequestStatuses;
+use Enlivy\Enums\Apps\WidgetStatuses;
+use Enlivy\Enums\EventDelivery\DestinationType;
+use Enlivy\Enums\ExportData\Types as ExportDataTypes;
+use Enlivy\Enums\PageLayout\Pages as PageLayoutPages;
+use Enlivy\Enums\Report\Roles as ReportRoles;
 use Enlivy\Enums\BankTransaction\States as BankTransactionStates;
 use Enlivy\Enums\BillingPackage\ContractPartySelections;
 use Enlivy\Enums\BillingPackage\ExchangeRateGuarantees;
@@ -41,6 +56,7 @@ use Enlivy\Enums\Helpdesk\InboundEmailInterpretations;
 use Enlivy\Enums\Helpdesk\MessageContentTypes;
 use Enlivy\Enums\Helpdesk\ReplyDues;
 use Enlivy\Enums\Proposal\NotificationLogTypes as ProposalNotificationLogTypes;
+use Enlivy\Enums\Report\NotificationLogTypes as ReportNotificationLogTypes;
 use Enlivy\Enums\Proposal\PaymentMethodKind;
 use Enlivy\Enums\Proposal\StageActors as ProposalStageActors;
 use Enlivy\Enums\Proposal\Stages as ProposalStages;
@@ -113,6 +129,7 @@ final class EnumsTest extends TestCase
             ],
             ProposalNotificationLogTypes::values(),
         );
+        $this->assertSame(['email'], ReportNotificationLogTypes::values());
         $this->assertSame(
             ['email', 'email_domain', 'phone_number'],
             BlockedIdentifierTypes::values(),
@@ -200,6 +217,42 @@ final class EnumsTest extends TestCase
         $this->assertFalse(enum_exists('Enlivy\\Enums\\ReportSchema\\Types'));
     }
 
+    public function testAppEnumsCarryTheirWireValues(): void
+    {
+        $this->assertSame(['public', 'personal'], Distributions::values());
+        $this->assertSame(['everyone', 'admins', 'roles'], CapabilityHolders::values());
+        $this->assertSame(['active', 'suspended', 'removed'], InstallationStatuses::values());
+        $this->assertSame(['connected', 'disconnected', 'revoked'], ConnectionStatuses::values());
+        $this->assertSame(['pending', 'approved', 'declined', 'cancelled'], InstallRequestStatuses::values());
+        $this->assertSame(['pending', 'approved', 'claimed', 'cancelled', 'expired'], RegistrationRequestStatuses::values());
+        $this->assertSame(['ready', 'disconnected', 'suspended', 'unavailable'], WidgetStatuses::values());
+        $this->assertSame(
+            ['connection_disconnected', 'connection_revoked', 'installation_suspended', 'installation_removed', 'app_unavailable', 'permission_missing', 'forbidden'],
+            ProviderAccessRefusals::values(),
+        );
+        $this->assertSame(
+            ['app.installed', 'app.upgraded', 'app.permissions_changed', 'app.suspended', 'app.resumed', 'app.removed', 'app.switched_off', 'app.switched_on', 'connection.revoked'],
+            LifecycleEvents::values(),
+        );
+        $this->assertSame(
+            ['dashboard', 'user_view', 'helpdesk_overview', 'prospect_overview', 'helpdesk_conversation_view', 'report_view', 'invoice_view', 'app_overview'],
+            PageLayoutPages::values(),
+        );
+    }
+
+    public function testAppsJoinTheDestinationTypesAndTheExportTypes(): void
+    {
+        $this->assertSame(['webhook', 'slack', 'app'], DestinationType::values());
+        $this->assertContains('app_access', ExportDataTypes::values());
+    }
+
+    public function testReportRolesAndSettlementStatuses(): void
+    {
+        $this->assertSame(['author', 'recipient'], ReportRoles::values());
+        $this->assertSame(['pending', 'paid', 'overdue', 'scheduled'], SettlementStatuses::values());
+        $this->assertSame(StandardStatuses::values(), SettlementStatuses::values());
+    }
+
     /**
      * Task statuses became typed task stages in 3.3.0, and the entity was renamed with them.
      */
@@ -268,6 +321,6 @@ final class EnumsTest extends TestCase
             $count++;
         }
 
-        $this->assertGreaterThanOrEqual(184, $count, 'Expected at least 184 mirrored enums');
+        $this->assertGreaterThanOrEqual(197, $count, 'Expected at least 197 mirrored enums');
     }
 }

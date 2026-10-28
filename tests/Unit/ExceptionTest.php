@@ -106,4 +106,74 @@ final class ExceptionTest extends TestCase
 
         $this->assertSame([], $exception->errors());
     }
+
+    public function testACodedRefusalCarriesItsCodeAndFacts(): void
+    {
+        $exception = ApiException::factory(403, [
+            'message' => 'This token does not reach that organization.',
+            'error' => [
+                'code' => 'route_denied',
+                'denied_by' => 'scope',
+                'required_abilities' => ['invoices.view'],
+                'required_scopes' => ['accounting:read'],
+            ],
+            'meta' => ['denied_by' => 'scope'],
+        ], []);
+
+        $this->assertInstanceOf(ForbiddenException::class, $exception);
+        $this->assertSame('route_denied', $exception->getRefusalCode());
+        $this->assertSame([
+            'denied_by' => 'scope',
+            'required_abilities' => ['invoices.view'],
+            'required_scopes' => ['accounting:read'],
+        ], $exception->getFacts());
+        $this->assertFalse($exception->isConflict());
+    }
+
+    public function testA409WithoutACodeIsAConflictToRereadAndRetry(): void
+    {
+        $exception = ApiException::factory(409, ['message' => 'The layout changed since you read it.'], []);
+
+        $this->assertSame(ApiException::class, $exception::class);
+        $this->assertTrue($exception->isConflict());
+        $this->assertNull($exception->getRefusalCode());
+        $this->assertSame([], $exception->getFacts());
+    }
+
+    public function testA409WithACodeNeedsSomethingElseFirst(): void
+    {
+        $exception = ApiException::factory(409, [
+            'message' => 'Connect an email account before sending.',
+            'error' => ['code' => 'email_sending_not_connected', 'can_connect' => true],
+        ], []);
+
+        $this->assertFalse($exception->isConflict());
+        $this->assertSame('email_sending_not_connected', $exception->getRefusalCode());
+        $this->assertSame(['can_connect' => true], $exception->getFacts());
+    }
+
+    public function testATopLevelCodeOrAnOAuthErrorStringIsNotARefusalCode(): void
+    {
+        $this->assertNull(ApiException::factory(400, ['message' => 'Bad request', 'code' => 400], [])->getRefusalCode());
+
+        $oauth = ApiException::factory(400, ['error' => 'authorization_pending', 'error_description' => 'Waiting'], []);
+        $this->assertNull($oauth->getRefusalCode());
+        $this->assertSame([], $oauth->getFacts());
+
+        $this->assertNull(ApiException::factory(502, null, [])->getRefusalCode());
+        $this->assertFalse(ApiException::factory(502, null, [])->isConflict());
+    }
+
+    public function testEntitlementRefusalsKeepTheirCodeOnTheBaseException(): void
+    {
+        $exception = ApiException::factory(402, [
+            'message' => 'The Reports pack is needed.',
+            'error' => ['code' => 'tenant_feature_required', 'required_pack' => 'reports'],
+        ], []);
+
+        $this->assertSame(ApiException::class, $exception::class);
+        $this->assertSame(402, $exception->getStatusCode());
+        $this->assertSame('tenant_feature_required', $exception->getRefusalCode());
+        $this->assertSame(['required_pack' => 'reports'], $exception->getFacts());
+    }
 }

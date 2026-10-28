@@ -496,6 +496,19 @@ foreach ($activity as $event) {
 }
 ```
 
+## Reports Overview
+
+The reports written by and for a person, one row per schema and role: `author` for the reports they
+filed, `recipient` for the ones written for them (`Enums\Report\Roles`). `role` keeps one side;
+`organization_report_schema_id`, `organization_project_id` and the `report_date`, `created_at` and
+`updated_at` ranges (`_from` / `_to`) narrow it.
+
+```php
+<?php
+
+$overview = $client->organizationUsers->reportsOverview('org_user_xxx', ['role' => 'recipient']);
+```
+
 ## Customer Summary
 
 The counts and totals a customer's record page shows, in one call:
@@ -528,6 +541,29 @@ A section the caller may not open is left out, not zeroed: `documents` holds onl
 caller may view, `money`, `periods` and `year` need invoice access, and `proposals`, `helpdesk` and `reports`
 need their own module.
 
+## Customer Recap
+
+Email a person the recap of a period: what happened week by week, their active subscriptions and what
+waits for them in the Customer Portal. It shows exactly what their portal shows them, so a record their
+portal keeps from them never appears. Without a period it covers last calendar month in the
+organization's timezone; a chosen period is `Y-m-d` and at most 92 days. It goes to the person's own
+address unless `send_to` is given.
+
+```php
+<?php
+
+$client->organizationUsers->recapEmail('org_user_xxx');
+
+$client->organizationUsers->recapEmail('org_user_xxx', [
+    'period_from' => '2026-09-01',
+    'period_to' => '2026-09-30',
+    'send_to' => 'client@example.com',
+    'cc' => ['accounts@example.com'],
+]);
+```
+
+Recaps keep no send history.
+
 ## Portal Access
 
 What a person may do in the customer portal, flattened from every grant that reaches them. See
@@ -540,8 +576,12 @@ $access = $client->organizationUsers->access('org_user_xxx');
 
 foreach ($access->access as $row) {
     echo "{$row['resource_type']}.{$row['ability']}\n";
+    print_r($row['granted_by']); // the grants that give this right
 }
 ```
+
+Each row names in `granted_by` the grants behind the right, so an admin sees what to change to take
+it away.
 
 ## Change History
 

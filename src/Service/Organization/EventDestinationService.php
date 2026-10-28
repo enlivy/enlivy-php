@@ -120,4 +120,18 @@ class EventDestinationService extends AbstractService
 
         return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/test"), $params, $opts);
     }
+
+    /**
+     * A new signing secret, in this one answer: `signing_secret` in plain text, or `sealed_signing_secret`
+     * when `recipient_key` (an X25519 public key, base64url without padding) is sent. The previous secret
+     * keeps verifying for the overlap. `create()` answers the first secret the same way; no other read does.
+     */
+    public function rotateSecret(string $id, array $params = [], ?RequestOptions $opts = null): EventDestination
+    {
+        $this->validateIncludes($params);
+        $orgId = $this->resolveOrganizationId($params, $opts);
+
+        /** @var EventDestination */
+        return $this->request('POST', $this->orgPath($orgId, self::RESOURCE . "/{$id}/rotate-secret"), $params, $opts);
+    }
 }

@@ -47,4 +47,32 @@ class DiscoveryService extends AbstractService
     {
         return $this->request('GET', '/discovery/organization-user-client-portal', ['resource' => $name], $opts);
     }
+
+    /**
+     * The App builder's index: where to start, each section with its path and size, and the schemas.
+     * Public, no credentials needed.
+     */
+    public function apps(?RequestOptions $opts = null): EnlivyObject
+    {
+        return $this->request('GET', '/discovery/apps', null, $opts, EnlivyObject::class);
+    }
+
+    /**
+     * One section of the App builder (`overview`, `manifest`, `fields`, `resources`, `pages_and_menu`,
+     * `presentations`, `translations`, `protocol`, `connection`, `registration`, `development`,
+     * `scopes`, `example`), as `apps()` lists them.
+     */
+    public function appsSection(string $section, ?RequestOptions $opts = null): EnlivyObject
+    {
+        return $this->request('GET', "/discovery/apps/{$section}", null, $opts, EnlivyObject::class);
+    }
+
+    /**
+     * One JSON schema the App builder validates against (`manifest`, `presentation`, `field`,
+     * `provider_request`, `provider_response`, `provider_access`, `connection`, `sealed_secret`).
+     */
+    public function appsSchema(string $schema, ?RequestOptions $opts = null): EnlivyObject
+    {
+        return $this->request('GET', "/discovery/apps/schemas/{$schema}", null, $opts, EnlivyObject::class);
+    }
 }

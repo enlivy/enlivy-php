@@ -6,6 +6,9 @@ namespace Enlivy\Enums\Analytics;
 
 use Enlivy\Enums\Concern\EnumValues;
 
+/**
+ * @deprecated 4.2.0 Use {@see SettlementStatuses}; the API names these `settlement_statuses` now.
+ */
 enum StandardStatuses: string
 {
     use EnumValues;

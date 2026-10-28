@@ -10,7 +10,9 @@ it cares about), and every delivery attempt is recorded so you can inspect it.
 ## Key concepts
 
 - **Destination** — `type` (`webhook` or `slack`), plus where to deliver
-  (`destination_url` for webhooks, `config.channel` for Slack).
+  (`destination_url` for webhooks, `config.channel` for Slack). An installed
+  [App](apps.md) that declares webhooks appears as a third type, `app`, which is
+  read here but created, changed and removed with its installation.
 - **Subscription** — an `event` to listen for, with optional `includes` (related
   data to embed in the payload).
 - **Delivery** — a single attempt to deliver an event to a destination, with its
@@ -52,6 +54,48 @@ $destination = $client->eventDestinations->create([
 echo "Destination created: {$destination->id}\n";
 echo "Signing secret: {$destination->signing_secret}\n"; // Store this securely!
 ```
+
+The signing secret is answered only here and by `rotateSecret()`; every other read (`list()`,
+`retrieve()`, `update()`, includes) leaves `signing_secret` null. The webhook address must be public:
+a private or loopback address is a `422`.
+
+#### Receiving the secret sealed
+
+A caller whose answers may be logged or relayed (a CLI, an agent) sends a `recipient_key`, an X25519
+public key it made on its own machine (32 bytes, base64url without padding). The secret then comes
+back only as `sealed_signing_secret`, encrypted to that key; `signing_secret` stays null. The sealed
+shape and the opening recipe are `$client->discovery->appsSchema('sealed_secret')`; the SDK does not
+open it. An OAuth token issued to a public client or to Enlivy's own clients must send a key (`422`
+otherwise); an API key or a dashboard sign-in may leave it out.
+
+```php
+<?php
+
+$destination = $client->eventDestinations->create([
+    'type' => 'webhook',
+    'destination_url' => 'https://your-app.com/webhooks/enlivy',
+    'events' => [['event' => 'invoice.paid', 'includes' => null]],
+    'recipient_key' => $recipientKey,
+]);
+
+$sealed = $destination->sealed_signing_secret; // open on the machine holding the private key
+```
+
+#### Rotating the secret
+
+```php
+<?php
+
+$destination = $client->eventDestinations->rotateSecret('org_evt_dst_xxx');
+echo $destination->signing_secret;            // the new secret, this once
+echo $destination->signing_secret_rotated_at;
+
+$sealed = $client->eventDestinations->rotateSecret('org_evt_dst_xxx', ['recipient_key' => $recipientKey])
+    ->sealed_signing_secret;
+```
+
+The previous secret keeps verifying for an overlap after the rotation, so a receiver switches without
+losing deliveries: accept both until `signing_secret_rotated_at` plus the overlap has passed.
 
 ### Slack
 
@@ -187,6 +231,9 @@ $delivery = $client->eventDestinations->retrieveDelivery('org_evt_dlv_xxx');
 Delivery filters: `organization_event_destination_id`, `event`, `status`,
 `created_at_from`/`created_at_to`, `updated_at_from`/`updated_at_to`.
 
+A delivery to an `app` destination carries its `status` and `response_status` but no `response` body:
+what the App's service answered stays with the App.
+
 ## Verifying webhook signatures
 
 When receiving webhook deliveries, verify the signature to ensure authenticity.
@@ -284,13 +331,17 @@ Route::post('/webhooks/enlivy', function (Request $request) {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `type` | string | `webhook` or `slack` (see `EventDelivery\DestinationType`) |
-| `destination_url` | string | HTTPS URL — required for `webhook` destinations |
+| `type` | string | `webhook` or `slack` to write; `app` is read on an installed App's destination (see `EventDelivery\DestinationType`) |
+| `destination_url` | string | Public HTTPS URL — required for `webhook` destinations; null on an `app` destination |
 | `config` | array | Type-specific config, e.g. `['channel' => '#finance']` for Slack |
-| `name` | string | Optional label |
+| `name` | string | Optional label; an `app` destination reads its App's name |
 | `is_active` | boolean | Whether deliveries are sent (default: `true`) |
 | `events` | array | Subscriptions to create — `[{event, includes}]` |
-| `signing_secret` | string | Returned on creation; used to verify webhook payloads |
+| `recipient_key` | string | On `create()` and `rotateSecret()`: the key the secret is sealed to |
+| `signing_secret` | string\|null | Answered by `create()` and `rotateSecret()` only, and only without a `recipient_key` |
+| `sealed_signing_secret` | object\|null | The secret sealed to `recipient_key`, in the same two answers |
+| `signing_secret_rotated_at` | string\|null | When the secret last changed |
+| `organization_app_installation_id` | string\|null | The installation an `app` destination belongs to |
 
 ### Subscription object
 
@@ -304,10 +355,12 @@ Route::post('/webhooks/enlivy', function (Request $request) {
 1. **Always verify signatures** — never process unverified webhook payloads.
 2. **Respond quickly** — return `200` fast and process asynchronously.
 3. **Handle duplicates** — an event may be delivered more than once.
-4. **Store the signing secret** — it is shown once, on creation.
+4. **Store the signing secret** — it is shown once, on creation, and again only by `rotateSecret()`.
 5. **Inspect failures** — use `deliveries(['status' => ['failed']])` to debug.
 
 ## Related
 
 - [Event Trails](event-trails.md) — read-only audit history of changes
 - [Integrations](../integrations.md) — third-party integrations (Slack, Stripe)
+- [Apps](apps.md) — the installed Apps whose webhooks appear here as `app` destinations
+- [Errors](../errors.md) — the coded refusals a send can answer

@@ -92,6 +92,7 @@ Detailed guides with code examples for every feature:
 | [OAuth Server](docs/oauth.md) | OAuth 2.0 server for third-party app integrations |
 | [Includes (Eager Loading)](docs/includes.md) | Load related resources in a single request |
 | [Filters](docs/filters.md) | Search, sort, paginate, and filter list endpoints |
+| [Errors](docs/errors.md) | Exceptions by status, refusal codes and their facts, the two kinds of 409 |
 | [Sandboxes](docs/sandboxes.md) | Mirror an organization to test against, with outbound calls blocked |
 
 ### Billing & Invoicing
@@ -155,6 +156,8 @@ Detailed guides with code examples for every feature:
 
 | Guide | Description |
 |-------|-------------|
+| [Apps](docs/organization/apps.md) | Install your own App in an organization, or ask one to; what an installed App leaves behind |
+| [Developer Apps](docs/developer-apps.md) | Register, revise and publish your own App, its OAuth clients and secrets, and the drafts an agent makes |
 | [Event Destinations](docs/organization/event-destinations.md) | Real-time event delivery (webhooks, Slack) and signature verification |
 | [Event Trails](docs/organization/event-trails.md) | Read-only audit history for invoices, receipts, billing schedules, users, and tasks |
 | [Customer Portal](docs/organization/customer-portal.md) | Client-facing portal for invoices, contracts, and proposals |
@@ -183,6 +186,11 @@ try {
     $retryAfter = $e->retryAfter(); // seconds
 }
 ```
+
+A refusal the client should act on carries a stable code and its facts, readable on every exception:
+`getRefusalCode()` (`route_denied`, `tenant_feature_required`, `email_sending_not_connected`, …),
+`getFacts()` and `isConflict()` (a `409` without a code: reread the record and retry once).
+See [Errors](docs/errors.md).
 
 ## Pagination
 
@@ -250,6 +258,11 @@ $resources = $client->discovery->list();
 
 // Get detailed metadata for a specific resource
 $invoiceSpec = $client->discovery->resource('organization_invoices');
+
+// The App builder: an index, then one section or schema at a time
+$appsIndex = $client->discovery->apps();
+$manifest = $client->discovery->appsSection('manifest');
+$sealed = $client->discovery->appsSchema('sealed_secret');
 ```
 
 ## Key Concepts
